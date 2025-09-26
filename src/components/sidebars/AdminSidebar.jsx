@@ -1,0 +1,61 @@
+import { NavLink } from "react-router-dom";
+import {
+  LayoutDashboard,
+  GraduationCap,
+  Building2,
+  BarChart3,
+  Bell,
+  Settings,
+  Users,
+} from "lucide-react";
+import { cn } from "../../lib/utils";
+
+const AdminSidebar = () => {
+  const navigationItems = [
+    { name: "Admin Dashboard", href: "/dashboard", icon: LayoutDashboard },
+    { name: "Manage Students", href: "/students", icon: GraduationCap },
+    { name: "Manage Companies", href: "/companies", icon: Building2 },
+    { name: "System Reports", href: "/reports", icon: BarChart3 },
+    { name: "User Management", href: "/users", icon: Users },
+    { name: "System Settings", href: "/settings", icon: Settings },
+    { name: "Notifications", href: "/notifications", icon: Bell },
+  ];
+
+  return (
+    <div className="w-64 border-r border-gray-200 bg-white shadow-sm">
+      <div className="p-6">
+        <div className="flex items-center space-x-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-900 text-white">
+            <Settings className="h-4 w-4" />
+          </div>
+          <span className="text-lg font-bold text-gray-900">Admin Portal</span>
+        </div>
+      </div>
+
+      <nav className="space-y-1 px-3">
+        {navigationItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <NavLink
+              key={item.name}
+              to={item.href}
+              className={({ isActive }) =>
+                cn(
+                  "flex items-center space-x-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                  isActive
+                    ? "bg-gray-900 text-white"
+                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                )
+              }
+            >
+              <Icon className="h-4 w-4" />
+              <span>{item.name}</span>
+            </NavLink>
+          );
+        })}
+      </nav>
+    </div>
+  );
+};
+
+export default AdminSidebar;

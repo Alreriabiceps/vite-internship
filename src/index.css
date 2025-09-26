@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Simple base styles without root variables */
+* {
+  border-color: #e5e7eb;
+}
+
+body {
+  background-color: #f3f4f6;
+  color: #111827;
+  height: 100%;
+}
+
+html {
+  height: 100%;
+}
