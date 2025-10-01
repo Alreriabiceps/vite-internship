@@ -17,6 +17,11 @@ const StudentSidebar = () => {
     { name: "Dashboard", href: "/student/dashboard", icon: LayoutDashboard },
     { name: "My Profile", href: "/student/profile", icon: User },
     {
+      name: "Browse Internships",
+      href: "/student/browse-internships",
+      icon: Briefcase,
+    },
+    {
       name: "Interested Companies",
       href: "/student/interested-companies",
       icon: Heart,

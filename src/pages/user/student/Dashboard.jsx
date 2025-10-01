@@ -10,7 +10,11 @@ import {
 } from "../../../components/ui/card";
 import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "../../../components/ui/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "../../../components/ui/avatar";
 import Modal from "../../../components/ui/modal";
 import {
   MapPin,
@@ -739,37 +743,53 @@ const Dashboard = () => {
               </CardHeader>
               <CardContent className="pt-4">
                 {profileData.profileData?.certificates?.length > 0 ? (
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {profileData.profileData.certificates.map((cert, index) => (
                       <div
                         key={index}
-                        className="flex items-center justify-between p-3 bg-gray-50 hover:bg-yellow-50 rounded-lg border border-gray-200 hover:border-yellow-300 transition-all group"
+                        className="flex items-start gap-3 p-3 bg-gray-50 hover:bg-yellow-50 rounded-lg border border-gray-200 hover:border-yellow-300 transition-all group"
                       >
-                        <div className="flex items-center space-x-3 flex-1 min-w-0">
-                          <Award className="h-5 w-5 text-yellow-600 flex-shrink-0" />
-                          <p className="text-sm font-medium text-gray-900 truncate">
+                        {/* Certificate Thumbnail */}
+                        {cert.imageUrl && (
+                          <div
+                            className="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 border-gray-200 group-hover:border-yellow-400 transition-all cursor-pointer"
+                            onClick={() => openCertificateModal(cert)}
+                          >
+                            <img
+                              src={cert.imageUrl}
+                              alt={cert.name}
+                              className="w-full h-full object-cover hover:scale-110 transition-transform duration-200"
+                            />
+                          </div>
+                        )}
+
+                        {/* Certificate Info */}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 mb-2">
                             {cert.name}
                           </p>
-                        </div>
-                        <div className="flex items-center gap-1 flex-shrink-0">
-                          <button
-                            onClick={() => openCertificateModal(cert)}
-                            className="p-1.5 hover:bg-yellow-200 rounded-full transition-colors"
-                            title="View certificate"
-                          >
-                            <Eye className="h-4 w-4 text-gray-600 group-hover:text-yellow-700" />
-                          </button>
-                          {cert.url && (
-                            <a
-                              href={cert.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="p-1.5 hover:bg-yellow-200 rounded-full transition-colors"
-                              title="Open link"
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => openCertificateModal(cert)}
+                              className="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium text-yellow-700 bg-yellow-100 hover:bg-yellow-200 rounded-full transition-colors"
+                              title="View certificate"
                             >
-                              <ExternalLink className="h-4 w-4 text-gray-600 group-hover:text-yellow-700" />
-                            </a>
-                          )}
+                              <Eye className="h-3 w-3" />
+                              View
+                            </button>
+                            {cert.url && (
+                              <a
+                                href={cert.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 rounded-full transition-colors"
+                                title="Open link"
+                              >
+                                <ExternalLink className="h-3 w-3" />
+                                Link
+                              </a>
+                            )}
+                          </div>
                         </div>
                       </div>
                     ))}

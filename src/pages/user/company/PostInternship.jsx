@@ -277,16 +277,16 @@ const PostInternship = () => {
             </CardContent>
           </Card>
 
-          {/* Duration & Compensation */}
+          {/* Duration & Dates */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Clock className="h-5 w-5 text-green-600" />
-                Duration & Compensation
+                Duration & Important Dates
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <Label htmlFor="duration">
                     Duration (months) <span className="text-red-500">*</span>
@@ -306,6 +306,19 @@ const PostInternship = () => {
                   </p>
                 </div>
                 <div>
+                  <Label htmlFor="startDate">
+                    Expected Start Date <span className="text-red-500">*</span>
+                  </Label>
+                  <Input
+                    id="startDate"
+                    name="startDate"
+                    type="date"
+                    value={formData.startDate}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div>
                   <Label htmlFor="applicationDeadline">
                     Application Deadline <span className="text-red-500">*</span>
                   </Label>
@@ -318,47 +331,6 @@ const PostInternship = () => {
                     required
                   />
                 </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="allowanceMin">Minimum Allowance (₱)</Label>
-                  <Input
-                    id="allowanceMin"
-                    name="allowanceMin"
-                    type="number"
-                    min="0"
-                    placeholder="e.g., 5000"
-                    value={formData.allowanceMin}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="allowanceMax">Maximum Allowance (₱)</Label>
-                  <Input
-                    id="allowanceMax"
-                    name="allowanceMax"
-                    type="number"
-                    min="0"
-                    placeholder="e.g., 10000"
-                    value={formData.allowanceMax}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="startDate">
-                  Expected Start Date <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="startDate"
-                  name="startDate"
-                  type="date"
-                  value={formData.startDate}
-                  onChange={handleChange}
-                  required
-                />
               </div>
             </CardContent>
           </Card>
@@ -457,13 +429,21 @@ const PostInternship = () => {
                 <Textarea
                   id="benefits"
                   name="benefits"
-                  placeholder="List the benefits, perks, and learning opportunities..."
+                  placeholder="Enter each benefit on a new line. Example:
+Mentorship from senior professionals
+Hands-on experience with real projects
+Certificate of completion
+Flexible working hours
+Learning and development opportunities
+Networking events and workshops
+Free lunch and snacks
+Transportation allowance"
                   value={formData.benefits}
                   onChange={handleChange}
-                  rows={4}
+                  rows={6}
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  e.g., Mentorship, flexible hours, learning budget, etc.
+                  💡 Tip: List one benefit per line for better formatting
                 </p>
               </div>
             </CardContent>

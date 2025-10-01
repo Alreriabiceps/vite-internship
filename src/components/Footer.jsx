@@ -1,13 +1,15 @@
-import { Heart, Github, Linkedin, Mail } from "lucide-react";
+import { Heart, Github, Linkedin, Facebook } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 border-t border-gray-800">
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Company Info */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-bold text-white">Internship Portal</h3>
+    <footer className="bg-gray-900 border-t border-gray-800 mt-auto">
+      <div className="max-w-7xl mx-auto px-6 py-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {/* School Info */}
+          <div className="space-y-3">
+            <h3 className="text-lg font-bold text-white">
+              EXACT College of Asia
+            </h3>
             <p className="text-sm text-gray-300">
               Connecting students with companies for meaningful internship
               experiences.
@@ -16,26 +18,29 @@ const Footer = () => {
               <a
                 href="#"
                 className="text-gray-400 hover:text-white transition-colors"
+                title="GitHub"
               >
                 <Github className="h-5 w-5" />
               </a>
               <a
                 href="#"
                 className="text-gray-400 hover:text-white transition-colors"
+                title="LinkedIn"
               >
                 <Linkedin className="h-5 w-5" />
               </a>
               <a
                 href="#"
                 className="text-gray-400 hover:text-white transition-colors"
+                title="Facebook"
               >
-                <Mail className="h-5 w-5" />
+                <Facebook className="h-5 w-5" />
               </a>
             </div>
           </div>
 
           {/* Quick Links */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             <h4 className="text-sm font-bold text-white">Quick Links</h4>
             <ul className="space-y-2 text-sm text-gray-300">
               <li>
@@ -62,7 +67,7 @@ const Footer = () => {
           </div>
 
           {/* Support */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             <h4 className="text-sm font-bold text-white">Support</h4>
             <ul className="space-y-2 text-sm text-gray-300">
               <li>
@@ -89,34 +94,28 @@ const Footer = () => {
           </div>
 
           {/* Contact Info */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             <h4 className="text-sm font-bold text-white">Contact</h4>
             <div className="space-y-2 text-sm text-gray-300">
-              <p>Email: support@internshipportal.com</p>
-              <p>Phone: +1 (555) 123-4567</p>
-              <p>Address: 123 Education St, Learning City</p>
+              <p>Location: Suclayin, Arayat, Pampanga</p>
+              <p>Email: info@exactcollege.edu.ph</p>
+              <p>Phone: (To be updated)</p>
             </div>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-8 pt-8 border-t border-gray-800">
-          <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
+        <div className="mt-6 pt-6 border-t border-gray-800">
+          <div className="flex flex-col md:flex-row items-center justify-between space-y-2 md:space-y-0">
             <div className="flex items-center space-x-2 text-sm text-gray-300">
-              <span>© {new Date().getFullYear()} Internship Portal</span>
+              <span>© {new Date().getFullYear()} EXACT College of Asia</span>
               <span>•</span>
               <span>All rights reserved</span>
             </div>
-            <div className="flex items-center space-x-4 text-sm text-gray-300">
-              <span>Version 1.0.0</span>
-              <span>•</span>
-              <span>Powered by React & Node.js</span>
-              <span>•</span>
-              <span className="flex items-center space-x-1">
-                <span>Made with</span>
-                <Heart className="h-4 w-4 text-gray-400" />
-                <span>for students</span>
-              </span>
+            <div className="flex items-center space-x-1 text-sm text-gray-300">
+              <span>Made with</span>
+              <Heart className="h-4 w-4 text-red-500 fill-red-500" />
+              <span>for students</span>
             </div>
           </div>
         </div>
