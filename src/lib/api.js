@@ -33,15 +33,18 @@ api.interceptors.response.use(
   },
   (error) => {
     if (error.response?.status === 401) {
-      // Token expired or invalid
+      // Token expired or invalid – clear local session
       localStorage.removeItem("token");
       localStorage.removeItem("user");
-      // Only redirect if not already on login page
-      if (
-        window.location.pathname !== "/login" &&
-        window.location.pathname !== "/"
-      ) {
-        window.location.href = "/login";
+
+      const path = window.location.pathname || "";
+      // Avoid reload loops; pick the correct login page based on current section
+      if (path.startsWith("/company")) {
+        if (path !== "/clogin") window.location.replace("/clogin");
+      } else if (path.startsWith("/admin")) {
+        if (path !== "/alogin") window.location.replace("/alogin");
+      } else if (path !== "/login" && path !== "/") {
+        window.location.replace("/login");
       }
     } else if (error.response?.status === 429) {
       // Rate limit exceeded
