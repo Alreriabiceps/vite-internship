@@ -8,10 +8,11 @@ import {
   User,
   Users,
   Briefcase,
+  X,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 
-const CompanySidebar = () => {
+const CompanySidebar = ({ sidebarOpen, onCloseMobile }) => {
   const navigationItems = [
     { name: "Dashboard", href: "/company/dashboard", icon: LayoutDashboard },
     { name: "Company Profile", href: "/company/profile", icon: Building2 },
@@ -21,7 +22,23 @@ const CompanySidebar = () => {
   ];
 
   return (
-    <div className="w-64 border-r border-gray-200 bg-white shadow-sm">
+    <div
+      className={cn(
+        "w-64 border-r border-gray-200 bg-white shadow-sm",
+        "fixed md:static inset-y-0 left-0",
+        "transform transition-transform duration-300 ease-in-out z-50",
+        sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+      )}
+    >
+      {/* Close button (mobile only) */}
+      <button
+        onClick={onCloseMobile}
+        className="md:hidden absolute top-4 right-4 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+        aria-label="Close menu"
+      >
+        <X className="h-5 w-5 text-gray-600" />
+      </button>
+
       <div className="p-6">
         <div className="flex items-center space-x-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-900 text-white">
@@ -33,13 +50,14 @@ const CompanySidebar = () => {
         </div>
       </div>
 
-      <nav className="space-y-1 px-3">
+      <nav className="space-y-1 px-3 pb-6">
         {navigationItems.map((item) => {
           const Icon = item.icon;
           return (
             <NavLink
               key={item.name}
               to={item.href}
+              onClick={onCloseMobile}
               className={({ isActive }) =>
                 cn(
                   "flex items-center space-x-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",

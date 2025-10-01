@@ -272,26 +272,27 @@ const CompanyProfile = () => {
   }
 
   return (
-    <div className="p-2 space-y-2">
-      <div className="flex items-center justify-between">
+    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-lg font-bold">Company Profile</h1>
-          <p className="text-xs text-muted-foreground">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">Company Profile</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Update your company information
           </p>
         </div>
         <Button
           onClick={() => setIsEditing(!isEditing)}
           variant={isEditing ? "outline" : "default"}
-          size="sm"
+          size="default"
+          className="w-full sm:w-auto"
         >
           {isEditing ? "Cancel" : "Edit Profile"}
         </Button>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-2">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
           {/* Left Column - Logo & Representative Info */}
           <div className="lg:col-span-1 space-y-2">
             {/* Company Logo */}

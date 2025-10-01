@@ -188,18 +188,18 @@ const Internships = () => {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
             Internship Positions
           </h1>
-          <p className="text-gray-600 mt-1">Manage your internship postings</p>
+          <p className="text-sm sm:text-base text-gray-600 mt-1">Manage your internship postings</p>
         </div>
         <Button
           onClick={() => navigate("/company/post-internship")}
-          className="bg-blue-600 hover:bg-blue-700 text-white"
+          className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto"
         >
           <Plus className="h-4 w-4 mr-2" />
           Post New Internship
@@ -283,18 +283,19 @@ const Internships = () => {
                     </div>
                   </div>
 
-                  <div className="flex gap-2 items-center">
+                  <div className="flex flex-wrap gap-2 items-center w-full sm:w-auto">
                     <Button
                       onClick={() =>
                         navigate(
                           `/company/browse-interns?internshipId=${internship._id}`
                         )
                       }
-                      className="relative bg-blue-600 hover:bg-blue-700 text-white"
+                      className="relative bg-blue-600 hover:bg-blue-700 text-white flex-1 sm:flex-initial"
                       size="sm"
                     >
                       <Users className="h-4 w-4 mr-1" />
-                      Applicants
+                      <span className="hidden xs:inline">Applicants</span>
+                      <span className="xs:hidden">Apply</span>
                       {internship.applicants?.length > 0 && (
                         <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center border-2 border-white">
                           {internship.applicants.length}

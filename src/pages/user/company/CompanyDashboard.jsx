@@ -176,35 +176,35 @@ const CompanyDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto p-6 space-y-6">
+      <div className="max-w-7xl mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
         {/* Header */}
-        <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-6">
-              <Avatar className="h-20 w-20 ring-4 ring-gray-200 shadow-lg">
+        <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-4 sm:p-6 lg:p-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-center space-x-3 sm:space-x-6">
+              <Avatar className="h-16 w-16 sm:h-20 sm:w-20 ring-2 sm:ring-4 ring-gray-200 shadow-lg flex-shrink-0">
                 <AvatarImage
                   src={user?.profilePicUrl}
                   alt={user?.companyName || user?.firstName}
                 />
-                <AvatarFallback className="text-xl font-bold bg-gray-900 text-white">
+                <AvatarFallback className="text-lg sm:text-xl font-bold bg-gray-900 text-white">
                   {user?.companyName?.[0] || user?.firstName?.[0]}
                 </AvatarFallback>
               </Avatar>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-1 sm:mb-2 truncate">
                   {user?.companyName || `${user?.firstName} ${user?.lastName}`}
                 </h1>
-                <p className="text-lg text-gray-600 flex items-center mb-1">
-                  <Building2 className="h-5 w-5 mr-2" />
+                <p className="text-sm sm:text-base lg:text-lg text-gray-600 flex items-center mb-1">
+                  <Building2 className="h-4 w-4 sm:h-5 sm:w-5 mr-2 flex-shrink-0" />
                   Company Dashboard
                 </p>
-                <p className="text-sm text-gray-500">
+                <p className="text-xs sm:text-sm text-gray-500 hidden sm:block">
                   Manage your internships and connect with talented students
                 </p>
               </div>
             </div>
-            <div className="flex space-x-3">
-              <Button asChild variant="outline" size="lg">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+              <Button asChild variant="outline" size="default" className="w-full sm:w-auto">
                 <Link to="/company/profile">
                   <Edit className="h-4 w-4 mr-2" />
                   Edit Profile
@@ -212,8 +212,8 @@ const CompanyDashboard = () => {
               </Button>
               <Button
                 asChild
-                size="lg"
-                className="bg-gray-900 hover:bg-gray-800 text-white"
+                size="default"
+                className="bg-gray-900 hover:bg-gray-800 text-white w-full sm:w-auto"
               >
                 <Link to="/company/post-internship">
                   <Plus className="h-4 w-4 mr-2" />
