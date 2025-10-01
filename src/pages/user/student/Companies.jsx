@@ -1,24 +1,24 @@
 import { useState, useEffect } from "react";
-import { useAuth } from "../contexts/AuthContext";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
+import { useAuth } from "../../../contexts/AuthContext";
+import { Button } from "../../../components/ui/button";
+import { Input } from "../../../components/ui/input";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../components/ui/card";
-import { Badge } from "../components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
+} from "../../../components/ui/card";
+import { Badge } from "../../../components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "../../../components/ui/avatar";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../components/ui/select";
-import { api } from "../lib/api";
+} from "../../../components/ui/select";
+import { api } from "../../../lib/api";
 import toast from "react-hot-toast";
 import {
   Search,

@@ -1,6 +1,6 @@
 import { useAuth } from "../contexts/AuthContext";
-import Profile from "./Profile";
-import CompanyProfile from "./CompanyProfile";
+import { StudentProfile } from "./user/student";
+import { CompanyProfile } from "./user/company";
 
 const ConditionalProfile = () => {
   const { user } = useAuth();
@@ -11,9 +11,8 @@ const ConditionalProfile = () => {
     case "student":
     case "admin":
     default:
-      return <Profile />;
+      return <StudentProfile />;
   }
 };
 
 export default ConditionalProfile;
-

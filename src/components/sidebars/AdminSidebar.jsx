@@ -12,13 +12,7 @@ import { cn } from "../../lib/utils";
 
 const AdminSidebar = () => {
   const navigationItems = [
-    { name: "Admin Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { name: "Manage Students", href: "/students", icon: GraduationCap },
-    { name: "Manage Companies", href: "/companies", icon: Building2 },
-    { name: "System Reports", href: "/reports", icon: BarChart3 },
-    { name: "User Management", href: "/users", icon: Users },
-    { name: "System Settings", href: "/settings", icon: Settings },
-    { name: "Notifications", href: "/notifications", icon: Bell },
+    { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
   ];
 
   return (

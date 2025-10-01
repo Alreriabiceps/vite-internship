@@ -4,14 +4,23 @@ import {
   User,
   MessageSquare,
   GraduationCap,
+  Building2,
+  Briefcase,
+  Bell,
+  MessagesSquare,
+  Heart,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 
 const StudentSidebar = () => {
   const navigationItems = [
-    { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { name: "My Profile", href: "/profile", icon: User },
-    { name: "Messages", href: "/chat", icon: MessageSquare },
+    { name: "Dashboard", href: "/student/dashboard", icon: LayoutDashboard },
+    { name: "My Profile", href: "/student/profile", icon: User },
+    {
+      name: "Interested Companies",
+      href: "/student/interested-companies",
+      icon: Heart,
+    },
   ];
 
   return (

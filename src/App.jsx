@@ -10,23 +10,30 @@ import { SocketProvider } from "./contexts/SocketContext";
 import ErrorBoundary from "./components/ErrorBoundary";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import AdminLogin from "./pages/AdminLogin";
-import CompanyLogin from "./pages/CompanyLogin";
-import CompanyRegister from "./pages/CompanyRegister";
-import Dashboard from "./pages/Dashboard";
-import Profile from "./pages/Profile";
-import Students from "./pages/Students";
-import Companies from "./pages/Companies";
-import Chat from "./pages/Chat";
-import Notifications from "./pages/Notifications";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import CompanyDashboard from "./pages/CompanyDashboard";
-import CompanyProfile from "./pages/CompanyProfile";
-import MyInternships from "./pages/MyInternships";
-import BrowseInterns from "./pages/BrowseInterns";
-import Messages from "./pages/Messages";
+// Student Pages
+import {
+  StudentLogin as Login,
+  StudentRegister as Register,
+  StudentDashboard as Dashboard,
+  StudentProfile as Profile,
+  InterestedCompanies,
+} from "./pages/user/student";
+
+// Company Pages
+import {
+  CompanyLogin,
+  CompanyRegister,
+  CompanyDashboard,
+  BrowseInterns,
+  CompanyChat,
+  PostInternship,
+  Internships,
+} from "./pages/user/company";
+
+// Admin Pages
+import { AdminLogin, AdminDashboard } from "./pages/user/admin";
+
+// Shared Pages
 import ConditionalDashboard from "./pages/ConditionalDashboard";
 import ConditionalProfile from "./pages/ConditionalProfile";
 import "./App.css";
@@ -46,23 +53,60 @@ function App() {
                 <Route path="/clogin" element={<CompanyLogin />} />
                 <Route path="/cregister" element={<CompanyRegister />} />
 
-                {/* Protected routes */}
+                {/* Legacy routes - redirect to role-based paths */}
+                <Route path="/dashboard" element={<ConditionalDashboard />} />
+                <Route path="/profile" element={<ConditionalProfile />} />
+
+                {/* STUDENT ROUTES */}
                 <Route
-                  path="/dashboard"
+                  path="/student/dashboard"
                   element={
-                    <ProtectedRoute>
+                    <ProtectedRoute allowedRoles={["student"]}>
                       <Layout />
                     </ProtectedRoute>
                   }
                 >
-                  <Route index element={<ConditionalDashboard />} />
+                  <Route index element={<Dashboard />} />
                 </Route>
 
-                {/* Individual protected routes */}
                 <Route
-                  path="/profile"
+                  path="/student/profile"
                   element={
-                    <ProtectedRoute>
+                    <ProtectedRoute allowedRoles={["student"]}>
+                      <Layout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<Profile />} />
+                </Route>
+
+                <Route
+                  path="/student/interested-companies"
+                  element={
+                    <ProtectedRoute allowedRoles={["student"]}>
+                      <Layout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<InterestedCompanies />} />
+                </Route>
+
+                {/* COMPANY ROUTES */}
+                <Route
+                  path="/company/dashboard"
+                  element={
+                    <ProtectedRoute allowedRoles={["company"]}>
+                      <Layout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<CompanyDashboard />} />
+                </Route>
+
+                <Route
+                  path="/company/profile"
+                  element={
+                    <ProtectedRoute allowedRoles={["company"]}>
                       <Layout />
                     </ProtectedRoute>
                   }
@@ -71,65 +115,9 @@ function App() {
                 </Route>
 
                 <Route
-                  path="/students"
+                  path="/company/browse-interns"
                   element={
-                    <ProtectedRoute>
-                      <Layout />
-                    </ProtectedRoute>
-                  }
-                >
-                  <Route index element={<Students />} />
-                </Route>
-
-                <Route
-                  path="/companies"
-                  element={
-                    <ProtectedRoute>
-                      <Layout />
-                    </ProtectedRoute>
-                  }
-                >
-                  <Route index element={<Companies />} />
-                </Route>
-
-                <Route
-                  path="/chat"
-                  element={
-                    <ProtectedRoute>
-                      <Layout />
-                    </ProtectedRoute>
-                  }
-                >
-                  <Route index element={<Chat />} />
-                </Route>
-
-                <Route
-                  path="/notifications"
-                  element={
-                    <ProtectedRoute>
-                      <Layout />
-                    </ProtectedRoute>
-                  }
-                >
-                  <Route index element={<Notifications />} />
-                </Route>
-
-                {/* Company specific routes */}
-                <Route
-                  path="/my-internships"
-                  element={
-                    <ProtectedRoute>
-                      <Layout />
-                    </ProtectedRoute>
-                  }
-                >
-                  <Route index element={<MyInternships />} />
-                </Route>
-
-                <Route
-                  path="/browse-interns"
-                  element={
-                    <ProtectedRoute>
+                    <ProtectedRoute allowedRoles={["company"]}>
                       <Layout />
                     </ProtectedRoute>
                   }
@@ -138,25 +126,49 @@ function App() {
                 </Route>
 
                 <Route
-                  path="/messages"
+                  path="/company/chat"
                   element={
-                    <ProtectedRoute>
+                    <ProtectedRoute allowedRoles={["company"]}>
                       <Layout />
                     </ProtectedRoute>
                   }
                 >
-                  <Route index element={<Messages />} />
+                  <Route index element={<CompanyChat />} />
                 </Route>
 
-                {/* Admin protected routes */}
                 <Route
-                  path="/admin"
+                  path="/company/post-internship"
                   element={
-                    <ProtectedRoute>
-                      <AdminDashboard />
+                    <ProtectedRoute allowedRoles={["company"]}>
+                      <Layout />
                     </ProtectedRoute>
                   }
-                />
+                >
+                  <Route index element={<PostInternship />} />
+                </Route>
+
+                <Route
+                  path="/company/internships"
+                  element={
+                    <ProtectedRoute allowedRoles={["company"]}>
+                      <Layout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<Internships />} />
+                </Route>
+
+                {/* ADMIN ROUTES */}
+                <Route
+                  path="/admin/dashboard"
+                  element={
+                    <ProtectedRoute allowedRoles={["admin"]}>
+                      <Layout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<AdminDashboard />} />
+                </Route>
 
                 {/* Catch all route */}
                 <Route path="*" element={<Navigate to="/" replace />} />

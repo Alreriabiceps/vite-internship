@@ -1,30 +1,30 @@
 import { useState, useEffect, useCallback } from "react";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../../../contexts/AuthContext";
 import { useForm } from "react-hook-form";
-import { studentsAPI, usersAPI, authAPI } from "../lib/api";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
+import { studentsAPI, usersAPI, authAPI } from "../../../lib/api";
+import { Button } from "../../../components/ui/button";
+import { Input } from "../../../components/ui/input";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "../components/ui/card";
-import { Badge } from "../components/ui/badge";
-import AutocompleteInput from "../components/ui/autocomplete-input";
-import BadgeDisplay from "../components/BadgeDisplay";
-import Modal from "../components/ui/modal";
+} from "../../../components/ui/card";
+import { Badge } from "../../../components/ui/badge";
+import AutocompleteInput from "../../../components/ui/autocomplete-input";
+import BadgeDisplay from "../../../components/BadgeDisplay";
+import Modal from "../../../components/ui/modal";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../components/ui/select";
-import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
-import { Checkbox } from "../components/ui/checkbox";
-import { Label } from "../components/ui/label";
-import { Textarea } from "../components/ui/textarea";
+} from "../../../components/ui/select";
+import { Avatar, AvatarFallback, AvatarImage } from "../../../components/ui/avatar";
+import { Checkbox } from "../../../components/ui/checkbox";
+import { Label } from "../../../components/ui/label";
+import { Textarea } from "../../../components/ui/textarea";
 import toast from "react-hot-toast";
 import Cropper from "react-easy-crop";
 import {
@@ -234,6 +234,10 @@ const Profile = () => {
             studentData.preferredFields?.workType === "Remote" || false,
           locationPreference: studentData.preferredFields?.location?.[0] || "",
           industryPreference: studentData.preferredFields?.role || [],
+          preferredSchedule: studentData.preferredFields?.schedule || "",
+          preferredDuration: String(
+            studentData.preferredFields?.durationHours || 486
+          ),
 
           // Additional URLs
           resumeUrl: studentData.resumeUrl || "",
@@ -245,8 +249,6 @@ const Profile = () => {
           middleName: user.middleName || "",
           age: user.age || "",
           sex: user.sex || "",
-          preferredSchedule: "",
-          preferredDuration: "486",
         };
 
         setProfileData(profileData);
@@ -348,24 +350,28 @@ const Profile = () => {
       const formData = new FormData();
       formData.append("profilePicture", file);
 
-      // Upload image to server
+      // Upload image to server using the profile picture endpoint
       const uploadResponse = await usersAPI.uploadProfilePicture(formData);
+      // The backend returns profilePictureUrl
       const imageUrl = uploadResponse.data.profilePictureUrl;
 
       if (type === "badge") {
         const newBadges = [...(watch("badges") || [])];
         newBadges[index] = { ...newBadges[index], imageUrl };
         setValue("badges", newBadges);
+        toast.success("Badge image uploaded successfully!");
       } else if (type === "certificate") {
         const newCerts = [...(watch("certificates") || [])];
         newCerts[index] = { ...newCerts[index], imageUrl };
         setValue("certificates", newCerts);
+        toast.success("Certificate image uploaded successfully!");
       }
-
-      toast.success("Image uploaded successfully!");
     } catch (error) {
       console.error("Error uploading image:", error);
-      toast.error("Failed to upload image");
+      toast.error(
+        "Failed to upload image: " +
+          (error.response?.data?.message || error.message)
+      );
     }
   };
 
@@ -447,43 +453,94 @@ const Profile = () => {
   }, [fetchProfileData]);
 
   const onSubmit = async (data) => {
+    console.log("🎯 ========== PROFILE SAVE STARTED ==========");
+    console.log("👤 User from AuthContext:", user);
+    console.log("👤 User role from AuthContext:", user?.role);
+    console.log("📝 ProfileData state:", profileData);
+    console.log("📝 ProfileData role:", profileData?.role);
+    console.log("📋 Form data received:", data);
+
+    // Check localStorage
+    const userFromStorage = localStorage.getItem("user");
+    console.log("🗄️ Raw user from localStorage:", userFromStorage);
+
+    // Get user from multiple sources
+    let currentUser = user;
+    if (!currentUser && userFromStorage) {
+      try {
+        currentUser = JSON.parse(userFromStorage);
+        console.log("✅ Parsed user from localStorage:", currentUser);
+      } catch (e) {
+        console.error("❌ Failed to parse user from localStorage:", e);
+      }
+    }
+
+    // If still no user, try to get from profileData
+    if (!currentUser && profileData) {
+      currentUser = {
+        role: profileData.role,
+        email: profileData.email,
+        firstName: profileData.firstName,
+        lastName: profileData.lastName,
+      };
+      console.log("✅ Using user from profileData:", currentUser);
+    }
+
+    // CRITICAL FIX: Infer role if missing but user data exists
+    if (currentUser && !currentUser.role) {
+      // If user has studentId and program, they're a student
+      if (
+        currentUser.studentId ||
+        currentUser.program ||
+        currentUser.yearLevel
+      ) {
+        currentUser.role = "student";
+        console.log(
+          "✅ Inferred role as 'student' from student-specific fields"
+        );
+      }
+      // If user has companyName, they're a company
+      else if (currentUser.companyName) {
+        currentUser.role = "company";
+        console.log(
+          "✅ Inferred role as 'company' from company-specific fields"
+        );
+      }
+    }
+
+    console.log("👤 Final current user:", currentUser);
+    console.log("👤 Final current user role:", currentUser?.role);
+
+    if (!currentUser || !currentUser.role) {
+      console.error("❌ No user data available!");
+      console.error("❌ Debug info:", {
+        hasUser: !!user,
+        hasUserFromStorage: !!userFromStorage,
+        hasProfileData: !!profileData,
+        profileDataRole: profileData?.role,
+      });
+      toast.error("User session error. Please log in again.");
+      return;
+    }
+
     try {
       setLoading(true);
 
       // Upload profile picture if selected
-      let profilePictureUrl = profileData?.profilePictureUrl;
+      let profilePictureUrl =
+        profileData?.profilePicUrl || profileData?.profilePictureUrl;
       if (selectedImage) {
         try {
           const formData = new FormData();
           formData.append("profilePicture", selectedImage, selectedImage.name);
 
           const uploadResponse = await usersAPI.uploadProfilePicture(formData);
+          // Backend returns profilePictureUrl in data
           profilePictureUrl = uploadResponse.data.profilePictureUrl;
-
-          // Update the local profile data with the new image URL
-          setProfileData((prev) => ({
-            ...prev,
-            profilePicUrl: profilePictureUrl,
-          }));
-
-          // Also update the user context if it exists
-          if (user) {
-            // Update localStorage with new user data
-            const updatedUser = {
-              ...user,
-              profilePicUrl: profilePictureUrl,
-            };
-            localStorage.setItem("user", JSON.stringify(updatedUser));
-
-            // Trigger custom event to notify other components
-            window.dispatchEvent(new CustomEvent("profileUpdated"));
-          }
-
-          // Clear the selected image
-          setSelectedImage(null);
 
           toast.success("Profile picture uploaded successfully!");
         } catch (uploadError) {
+          console.error("Profile picture upload error:", uploadError);
           toast.error(
             "Failed to upload profile picture: " +
               (uploadError.response?.data?.message || uploadError.message)
@@ -492,7 +549,18 @@ const Profile = () => {
         }
       }
 
-      if (user?.role === "student") {
+      if (currentUser?.role === "student") {
+        console.log("✅ User is STUDENT - preparing student profile data...");
+
+        // Get certificates and badges from watch() since they're not in react-hook-form data
+        const currentCertificates = watch("certificates") || [];
+        const currentBadges = watch("badges") || [];
+
+        console.log("🔍 Current certificates from watch:", currentCertificates);
+        console.log("🔍 Certificates count:", currentCertificates.length);
+        console.log("🔍 Current badges from watch:", currentBadges);
+        console.log("🔍 Badges count:", currentBadges.length);
+
         // Prepare student profile data
         const profileData = {
           // Academic Information
@@ -502,21 +570,35 @@ const Profile = () => {
 
           // Skills - convert comma-separated strings to objects
           skills: data.technicalSkills
-            ? data.technicalSkills
-                .split(",")
-                .map((skill) => ({ name: skill.trim(), level: "Beginner" }))
-                .filter((skill) => skill.name.length > 0)
+            ? (typeof data.technicalSkills === "string"
+                ? data.technicalSkills.split(",")
+                : Array.isArray(data.technicalSkills)
+                ? data.technicalSkills
+                : []
+              )
+                .map((skill) =>
+                  typeof skill === "string"
+                    ? { name: skill.trim(), level: "Beginner" }
+                    : skill
+                )
+                .filter((skill) => (skill.name || skill).trim().length > 0)
             : [],
           softSkills: data.softSkills
-            ? data.softSkills
-                .split(",")
-                .map((skill) => skill.trim())
-                .filter((skill) => skill.length > 0)
+            ? (typeof data.softSkills === "string"
+                ? data.softSkills.split(",")
+                : Array.isArray(data.softSkills)
+                ? data.softSkills
+                : []
+              )
+                .map((skill) =>
+                  typeof skill === "string" ? skill.trim() : skill
+                )
+                .filter((skill) => skill.trim().length > 0)
             : [],
 
           // Certificates & Badges - convert objects to proper format
           certifications:
-            data.certificates
+            currentCertificates
               ?.map((cert) => ({
                 name: cert.name,
                 issuer: cert.name, // Use certificate name as issuer for now
@@ -528,7 +610,7 @@ const Profile = () => {
               .filter((cert) => cert.name.trim().length > 0) || [],
 
           badges:
-            data.badges
+            currentBadges
               ?.map((badge) => ({
                 name: badge.name,
                 description: badge.name, // Use badge name as description
@@ -545,6 +627,10 @@ const Profile = () => {
             workType: data.workFromHome ? "Remote" : "On-site",
             location: data.locationPreference ? [data.locationPreference] : [],
             role: data.industryPreference || [],
+            schedule: data.preferredSchedule || undefined,
+            durationHours: data.preferredDuration
+              ? parseInt(data.preferredDuration, 10)
+              : undefined,
             allowance: {
               min: 0,
               max: 0,
@@ -559,14 +645,45 @@ const Profile = () => {
         };
 
         // Debug: Log the data being sent
+        console.log("📝 ========== STUDENT PROFILE DATA TO SAVE ==========");
+        console.log("Full profileData object:", profileData);
+        console.log("\n📊 Profile data summary:", {
+          hasSkills: profileData.skills?.length > 0,
+          skillsCount: profileData.skills?.length || 0,
+          hasSoftSkills: profileData.softSkills?.length > 0,
+          softSkillsCount: profileData.softSkills?.length || 0,
+          hasCertifications: profileData.certifications?.length > 0,
+          certificationsCount: profileData.certifications?.length || 0,
+          hasBadges: profileData.badges?.length > 0,
+          badgesCount: profileData.badges?.length || 0,
+          hasResumeUrl: !!profileData.resumeUrl,
+          hasPortfolioUrl: !!profileData.portfolioUrl,
+          hasLinkedinUrl: !!profileData.linkedinUrl,
+          hasGithubUrl: !!profileData.githubUrl,
+        });
+
+        console.log(
+          "\n🎖️ Certificates being saved:",
+          profileData.certifications
+        );
+        console.log("🏆 Badges being saved:", profileData.badges);
 
         // Update student profile via API
         try {
-          await studentsAPI.updateProfile(profileData);
+          console.log("\n🚀 Calling studentsAPI.updateProfile...");
+          const response = await studentsAPI.updateProfile(profileData);
+          console.log(
+            "✅ ========== STUDENT PROFILE SAVED SUCCESSFULLY =========="
+          );
+          console.log("Response data:", response.data);
         } catch (error) {
-          console.error(
-            "Detailed error:",
-            error.response?.data || error.message
+          console.error("❌ STUDENT PROFILE UPDATE FAILED!");
+          console.error("Error details:", error);
+          console.error("Error response:", error.response?.data);
+          console.error("Error message:", error.message);
+          toast.error(
+            "Failed to save student profile: " +
+              (error.response?.data?.message || error.message)
           );
           throw error;
         }
@@ -574,26 +691,37 @@ const Profile = () => {
         // Also update basic user info
         const userUpdateData = {
           firstName: data.firstName,
-          middleName: data.middleName,
+          middleName: data.middleName || undefined,
           lastName: data.lastName,
-          age: data.age,
-          sex: data.sex,
-          phone: data.phone,
-          email: data.email,
-          profilePictureUrl: profilePictureUrl,
+          age: data.age || undefined,
+          sex: data.sex || undefined,
+          phone: data.phone || undefined,
+          // Do not send email here to avoid identity mismatch
+          profilePicUrl: profilePictureUrl,
         };
 
+        // Remove undefined values to avoid sending empty strings
+        Object.keys(userUpdateData).forEach((key) => {
+          if (userUpdateData[key] === undefined || userUpdateData[key] === "") {
+            delete userUpdateData[key];
+          }
+        });
+
+        console.log("👤 Updating user basic info:", userUpdateData);
+
         // Update user profile via auth API
-        await authAPI.updateProfile(userUpdateData);
+        const userResponse = await authAPI.updateProfile(userUpdateData);
+        console.log("✅ User info updated successfully:", userResponse.data);
 
         // Update local storage with new user data
-        const updatedUser = { ...user, ...userUpdateData };
+        const updatedUser = { ...currentUser, ...userUpdateData };
         localStorage.setItem("user", JSON.stringify(updatedUser));
 
         // Update local state immediately
         setProfileData((prev) => ({
           ...prev,
           ...userUpdateData,
+          profilePictureUrl: profilePictureUrl, // Support both naming conventions
         }));
 
         // Update form values immediately
@@ -605,6 +733,9 @@ const Profile = () => {
 
         // Refresh user data in AuthContext
         refreshUser();
+
+        // Trigger custom event to notify Dashboard and other components
+        window.dispatchEvent(new CustomEvent("profileUpdated"));
 
         toast.success("Profile updated successfully!");
         setIsEditing(false);
@@ -613,25 +744,33 @@ const Profile = () => {
         // For non-students, just update basic user info
         const userUpdateData = {
           firstName: data.firstName,
-          middleName: data.middleName,
+          middleName: data.middleName || undefined,
           lastName: data.lastName,
-          age: data.age,
-          sex: data.sex,
-          phone: data.phone,
-          email: data.email,
-          profilePictureUrl: profilePictureUrl,
+          age: data.age || undefined,
+          sex: data.sex || undefined,
+          phone: data.phone || undefined,
+          // Do not send email here to avoid identity mismatch
+          profilePicUrl: profilePictureUrl,
         };
+
+        // Remove undefined values to avoid sending empty strings
+        Object.keys(userUpdateData).forEach((key) => {
+          if (userUpdateData[key] === undefined || userUpdateData[key] === "") {
+            delete userUpdateData[key];
+          }
+        });
 
         await authAPI.updateProfile(userUpdateData);
 
         // Update local storage with new user data
-        const updatedUser = { ...user, ...userUpdateData };
+        const updatedUser = { ...currentUser, ...userUpdateData };
         localStorage.setItem("user", JSON.stringify(updatedUser));
 
         // Update local state immediately
         setProfileData((prev) => ({
           ...prev,
           ...userUpdateData,
+          profilePictureUrl: profilePictureUrl, // Support both naming conventions
         }));
 
         // Update form values immediately
@@ -644,15 +783,23 @@ const Profile = () => {
         // Refresh user data in AuthContext
         refreshUser();
 
+        // Trigger custom event to notify Dashboard and other components
+        window.dispatchEvent(new CustomEvent("profileUpdated"));
+
         toast.success("Profile updated successfully!");
         setIsEditing(false);
         setSelectedImage(null); // Clear selected image
       }
     } catch (error) {
-      console.error("Error updating profile:", error);
+      console.error("❌❌❌ ========== PROFILE SAVE FAILED ==========");
+      console.error("Error object:", error);
+      console.error("Error message:", error.message);
+      console.error("Error stack:", error.stack);
+      console.error("Error response:", error.response);
       toast.error("Failed to update profile. Please try again.");
     } finally {
       setLoading(false);
+      console.log("🏁 ========== PROFILE SAVE ENDED ==========");
     }
   };
 
@@ -1174,7 +1321,9 @@ const Profile = () => {
                     </Label>
                     <AutocompleteInput
                       value={watch("technicalSkills") || ""}
-                      onChange={(value) => setValue("technicalSkills", value)}
+                      onChange={(value) => {
+                        setValue("technicalSkills", value);
+                      }}
                       suggestions={technicalSkillsSuggestions}
                       placeholder="JavaScript, React, Node.js, Python..."
                       disabled={!isEditing}
@@ -1202,7 +1351,9 @@ const Profile = () => {
                     </Label>
                     <AutocompleteInput
                       value={watch("softSkills") || ""}
-                      onChange={(value) => setValue("softSkills", value)}
+                      onChange={(value) => {
+                        setValue("softSkills", value);
+                      }}
                       suggestions={softSkillsSuggestions}
                       placeholder="Communication, Leadership, Teamwork..."
                       disabled={!isEditing}
@@ -1357,21 +1508,34 @@ const Profile = () => {
                             watch("certificates").map((cert, index) => (
                               <div
                                 key={index}
-                                className="flex items-center gap-2 p-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
-                                onClick={() => openCertificateModal(cert)}
+                                className="flex items-center justify-between p-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
                               >
-                                <Award className="h-3 w-3 text-yellow-600" />
-                                <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 flex-1 min-w-0">
+                                  <Award className="h-4 w-4 text-yellow-600 flex-shrink-0" />
                                   <p className="text-xs font-medium text-gray-900 truncate">
                                     {cert.name}
                                   </p>
                                 </div>
-                                <div className="flex items-center gap-1">
-                                  {cert.imageUrl && (
-                                    <Eye className="h-3 w-3 text-gray-500" />
-                                  )}
+                                <div className="flex items-center gap-1 flex-shrink-0">
+                                  <button
+                                    type="button"
+                                    onClick={() => openCertificateModal(cert)}
+                                    className="p-1 hover:bg-gray-200 rounded transition-colors"
+                                    title="View certificate"
+                                  >
+                                    <Eye className="h-3.5 w-3.5 text-gray-600" />
+                                  </button>
                                   {cert.url && (
-                                    <ExternalLink className="h-3 w-3 text-gray-500" />
+                                    <a
+                                      href={cert.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      onClick={(e) => e.stopPropagation()}
+                                      className="p-1 hover:bg-gray-200 rounded transition-colors"
+                                      title="Open link"
+                                    >
+                                      <ExternalLink className="h-3.5 w-3.5 text-gray-600" />
+                                    </a>
                                   )}
                                 </div>
                               </div>

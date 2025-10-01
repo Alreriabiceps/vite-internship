@@ -12,24 +12,24 @@ import {
   BookOpen,
   Hash,
 } from "lucide-react";
-import { authAPI } from "../lib/api";
+import { authAPI } from "../../../lib/api";
 import toast from "react-hot-toast";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
+import { Button } from "../../../components/ui/button";
+import { Input } from "../../../components/ui/input";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../components/ui/card";
+} from "../../../components/ui/card";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../components/ui/select";
+} from "../../../components/ui/select";
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);

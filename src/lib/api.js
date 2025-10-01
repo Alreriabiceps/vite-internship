@@ -77,6 +77,11 @@ export const studentsAPI = {
   updateChecklist: (id, data) => api.put(`/students/${id}/checklist`, data),
   addBadge: (id, data) => api.post(`/students/${id}/badges`, data),
   removeBadge: (id, badgeId) => api.delete(`/students/${id}/badges/${badgeId}`),
+  getInterestedCompanies: () => api.get("/students/interested-companies"),
+  acceptCompanyInterest: (companyId) =>
+    api.post(`/students/interested-companies/${companyId}/accept`),
+  declineCompanyInterest: (companyId) =>
+    api.post(`/students/interested-companies/${companyId}/decline`),
 };
 
 // Companies API
@@ -139,13 +144,31 @@ export const usersAPI = {
       baseURL: API_BASE_URL,
       withCredentials: true,
       timeout: 30000,
+      headers: {
+        // Don't set Content-Type for file uploads - let browser set it with boundary
+      },
     });
 
     // Add auth token
     const token = localStorage.getItem("token");
+    console.log("🔍 Token from localStorage:", {
+      token: token,
+      tokenLength: token ? token.length : 0,
+      tokenPreview: token ? `${token.substring(0, 50)}...` : "none",
+    });
+
     if (token) {
       uploadApi.defaults.headers.Authorization = `Bearer ${token}`;
+    } else {
+      console.error("❌ No token found in localStorage for upload");
     }
+
+    console.log("🔍 Upload request:", {
+      url: `${API_BASE_URL}/users/upload-profile-picture`,
+      hasToken: !!token,
+      tokenPreview: token ? `${token.substring(0, 20)}...` : "none",
+      formDataKeys: Array.from(formData.keys()),
+    });
 
     return uploadApi.post("/users/upload-profile-picture", formData);
   },

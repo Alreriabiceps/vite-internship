@@ -1,32 +1,35 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import {
   Eye,
   EyeOff,
   Mail,
   Lock,
-  Building2,
+  GraduationCap,
   AlertCircle,
   Info,
 } from "lucide-react";
-import { useAuth } from "../contexts/AuthContext";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
+import { useAuth } from "../../../contexts/AuthContext";
+import { Button } from "../../../components/ui/button";
+import { Input } from "../../../components/ui/input";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../components/ui/card";
+} from "../../../components/ui/card";
 
-const CompanyLogin = () => {
+const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState("");
   const [showEmailWarning, setShowEmailWarning] = useState(false);
   const { login, isLoading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = location.state?.from?.pathname || "/student/dashboard";
 
   const {
     register,
@@ -40,7 +43,7 @@ const CompanyLogin = () => {
 
     const result = await login(data);
     if (result.success) {
-      navigate("/dashboard", { replace: true });
+      navigate(from, { replace: true });
     } else {
       // Set specific error messages based on common issues
       if (data.email && !data.email.includes("@")) {
@@ -60,14 +63,14 @@ const CompanyLogin = () => {
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-4">
             <div className="p-3 bg-gray-100 rounded-full">
-              <Building2 className="h-8 w-8 text-gray-700" />
+              <GraduationCap className="h-8 w-8 text-gray-700" />
             </div>
           </div>
           <CardTitle className="text-2xl font-bold text-gray-900">
-            Company Portal
+            Student Portal
           </CardTitle>
           <CardDescription className="text-gray-600">
-            Access your company dashboard
+            Access your student dashboard
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -105,15 +108,15 @@ const CompanyLogin = () => {
                 htmlFor="email"
                 className="text-sm font-medium text-gray-700"
               >
-                Company Email
+                Student Email
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                 <Input
                   id="email"
                   type="email"
-                  placeholder="company@test.com"
-                  className="pl-10 border-gray-300 focus:border-green-500 focus:ring-green-500"
+                  placeholder="student@test.com"
+                  className="pl-10 border-gray-300 focus:border-gray-500 focus:ring-gray-500"
                   {...register("email", {
                     required: "Email is required",
                     pattern: {
@@ -140,8 +143,8 @@ const CompanyLogin = () => {
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="Enter company password"
-                  className="pl-10 pr-10 border-gray-300 focus:border-green-500 focus:ring-green-500"
+                  placeholder="Enter student password"
+                  className="pl-10 pr-10 border-gray-300 focus:border-gray-500 focus:ring-gray-500"
                   {...register("password", {
                     required: "Password is required",
                     minLength: {
@@ -170,7 +173,7 @@ const CompanyLogin = () => {
               className="w-full bg-gray-900 hover:bg-gray-800 text-white"
               disabled={isLoading}
             >
-              {isLoading ? "Signing in..." : "Access Company Portal"}
+              {isLoading ? "Signing in..." : "Access Student Portal"}
             </Button>
           </form>
 
@@ -183,7 +186,7 @@ const CompanyLogin = () => {
                 <p className="text-xs">
                   Email:{" "}
                   <code className="bg-gray-200 px-1 rounded">
-                    company@test.com
+                    student@test.com
                   </code>
                   <br />
                   Password:{" "}
@@ -194,20 +197,20 @@ const CompanyLogin = () => {
           </div>
 
           <div className="mt-6 text-center text-sm text-gray-600">
-            <p className="mb-2">Don't have a company account?</p>
+            <p className="mb-2">Don't have a student account?</p>
             <Link
-              to="/cregister"
+              to="/register"
               className="text-gray-900 hover:underline font-medium"
             >
-              Register as Company
+              Register as Student
             </Link>
           </div>
 
           <div className="mt-4 text-center text-sm text-gray-600">
             <p className="mb-2">Need access to other portals?</p>
             <div className="space-x-4">
-              <Link to="/" className="text-gray-700 hover:underline">
-                Student Login
+              <Link to="/clogin" className="text-gray-700 hover:underline">
+                Company Login
               </Link>
               <Link to="/alogin" className="text-gray-700 hover:underline">
                 Admin Login
@@ -220,4 +223,4 @@ const CompanyLogin = () => {
   );
 };
 
-export default CompanyLogin;
+export default Login;

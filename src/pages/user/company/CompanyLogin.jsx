@@ -1,35 +1,32 @@
 import { useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import {
   Eye,
   EyeOff,
   Mail,
   Lock,
-  GraduationCap,
+  Building2,
   AlertCircle,
   Info,
 } from "lucide-react";
-import { useAuth } from "../contexts/AuthContext";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
+import { useAuth } from "../../../contexts/AuthContext";
+import { Button } from "../../../components/ui/button";
+import { Input } from "../../../components/ui/input";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../components/ui/card";
+} from "../../../components/ui/card";
 
-const Login = () => {
+const CompanyLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState("");
   const [showEmailWarning, setShowEmailWarning] = useState(false);
   const { login, isLoading } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
-
-  const from = location.state?.from?.pathname || "/dashboard";
 
   const {
     register,
@@ -38,13 +35,19 @@ const Login = () => {
   } = useForm();
 
   const onSubmit = async (data) => {
+    console.log("🏢 Company login attempt");
     setLoginError(""); // Clear previous errors
     setShowEmailWarning(false);
 
     const result = await login(data);
+    console.log("📦 Login result:", result);
+    
     if (result.success) {
-      navigate(from, { replace: true });
+      // Redirect to company dashboard
+      console.log("✅ Login successful! Redirecting to /company/dashboard");
+      navigate("/company/dashboard", { replace: true });
     } else {
+      console.log("❌ Login failed - staying on login page");
       // Set specific error messages based on common issues
       if (data.email && !data.email.includes("@")) {
         setLoginError("Please enter a valid email address");
@@ -54,6 +57,8 @@ const Login = () => {
         );
         setShowEmailWarning(true);
       }
+      // DO NOT navigate anywhere on login failure - stay on login page
+      console.log("⚠️ Staying on company login page (/clogin)");
     }
   };
 
@@ -63,14 +68,14 @@ const Login = () => {
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-4">
             <div className="p-3 bg-gray-100 rounded-full">
-              <GraduationCap className="h-8 w-8 text-gray-700" />
+              <Building2 className="h-8 w-8 text-gray-700" />
             </div>
           </div>
           <CardTitle className="text-2xl font-bold text-gray-900">
-            Student Portal
+            Company Portal
           </CardTitle>
           <CardDescription className="text-gray-600">
-            Access your student dashboard
+            Access your company dashboard
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -108,15 +113,15 @@ const Login = () => {
                 htmlFor="email"
                 className="text-sm font-medium text-gray-700"
               >
-                Student Email
+                Company Email
               </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                 <Input
                   id="email"
                   type="email"
-                  placeholder="student@test.com"
-                  className="pl-10 border-gray-300 focus:border-gray-500 focus:ring-gray-500"
+                  placeholder="company@test.com"
+                  className="pl-10 border-gray-300 focus:border-green-500 focus:ring-green-500"
                   {...register("email", {
                     required: "Email is required",
                     pattern: {
@@ -143,8 +148,8 @@ const Login = () => {
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="Enter student password"
-                  className="pl-10 pr-10 border-gray-300 focus:border-gray-500 focus:ring-gray-500"
+                  placeholder="Enter company password"
+                  className="pl-10 pr-10 border-gray-300 focus:border-green-500 focus:ring-green-500"
                   {...register("password", {
                     required: "Password is required",
                     minLength: {
@@ -173,7 +178,7 @@ const Login = () => {
               className="w-full bg-gray-900 hover:bg-gray-800 text-white"
               disabled={isLoading}
             >
-              {isLoading ? "Signing in..." : "Access Student Portal"}
+              {isLoading ? "Signing in..." : "Access Company Portal"}
             </Button>
           </form>
 
@@ -186,7 +191,7 @@ const Login = () => {
                 <p className="text-xs">
                   Email:{" "}
                   <code className="bg-gray-200 px-1 rounded">
-                    student@test.com
+                    company@test.com
                   </code>
                   <br />
                   Password:{" "}
@@ -197,20 +202,20 @@ const Login = () => {
           </div>
 
           <div className="mt-6 text-center text-sm text-gray-600">
-            <p className="mb-2">Don't have a student account?</p>
+            <p className="mb-2">Don't have a company account?</p>
             <Link
-              to="/register"
+              to="/cregister"
               className="text-gray-900 hover:underline font-medium"
             >
-              Register as Student
+              Register as Company
             </Link>
           </div>
 
           <div className="mt-4 text-center text-sm text-gray-600">
             <p className="mb-2">Need access to other portals?</p>
             <div className="space-x-4">
-              <Link to="/clogin" className="text-gray-700 hover:underline">
-                Company Login
+              <Link to="/" className="text-gray-700 hover:underline">
+                Student Login
               </Link>
               <Link to="/alogin" className="text-gray-700 hover:underline">
                 Admin Login
@@ -223,4 +228,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default CompanyLogin;

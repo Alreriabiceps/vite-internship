@@ -40,9 +40,13 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     setIsLoading(true);
     try {
+      console.log("🔐 Login attempt:", { email: credentials.email });
       const response = await authAPI.login(credentials);
+      console.log("📦 Login response:", response);
 
       const { user: userData, token } = response.data.data;
+      console.log("👤 User data received:", userData);
+      console.log("🎭 User role:", userData.role);
 
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(userData));
@@ -50,10 +54,12 @@ export const AuthProvider = ({ children }) => {
       setUser(userData);
       setIsAuthenticated(true);
 
+      console.log("✅ Login successful! User set in context:", userData);
       toast.success("Login successful!");
       return { success: true };
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("❌ Login error:", error);
+      console.error("Error response:", error.response?.data);
       const errorMessage = error.response?.data?.message || "Login failed";
       toast.error(errorMessage);
       return { success: false };

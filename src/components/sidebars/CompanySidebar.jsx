@@ -1,20 +1,23 @@
 import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard,
-  GraduationCap,
-  Briefcase,
   MessageSquare,
   Building2,
+  Bell,
+  MessagesSquare,
+  User,
+  Users,
+  Briefcase,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 
 const CompanySidebar = () => {
   const navigationItems = [
-    { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { name: "Profile", href: "/profile", icon: Building2 },
-    { name: "My Internships", href: "/my-internships", icon: Briefcase },
-    { name: "Browse Interns", href: "/browse-interns", icon: GraduationCap },
-    { name: "Messages", href: "/messages", icon: MessageSquare },
+    { name: "Dashboard", href: "/company/dashboard", icon: LayoutDashboard },
+    { name: "Company Profile", href: "/company/profile", icon: Building2 },
+    { name: "Internships", href: "/company/internships", icon: Briefcase },
+    { name: "Browse Interns", href: "/company/browse-interns", icon: Users },
+    { name: "Messages", href: "/company/chat", icon: MessageSquare },
   ];
 
   return (

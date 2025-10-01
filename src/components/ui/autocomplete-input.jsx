@@ -17,10 +17,16 @@ const AutocompleteInput = ({
 
   useEffect(() => {
     if (value && suggestions.length > 0) {
+      // Ensure value is a string
+      const stringValue =
+        typeof value === "string" ? value : String(value || "");
+
       const filtered = suggestions.filter(
         (suggestion) =>
-          suggestion.toLowerCase().includes(value.toLowerCase()) &&
-          suggestion.toLowerCase() !== value.toLowerCase()
+          suggestion && // Check if suggestion exists
+          typeof suggestion === "string" && // Ensure it's a string
+          suggestion.toLowerCase().includes(stringValue.toLowerCase()) &&
+          suggestion.toLowerCase() !== stringValue.toLowerCase()
       );
       setFilteredSuggestions(filtered.slice(0, 5)); // Show max 5 suggestions
     } else {
@@ -65,7 +71,7 @@ const AutocompleteInput = ({
     <div className="relative">
       <Input
         ref={inputRef}
-        value={value}
+        value={typeof value === "string" ? value : String(value || "")}
         onChange={handleInputChange}
         onFocus={() => setIsOpen(true)}
         onKeyDown={handleKeyDown}

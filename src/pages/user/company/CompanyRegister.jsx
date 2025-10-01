@@ -14,23 +14,23 @@ import {
   Users,
   Briefcase,
 } from "lucide-react";
-import { authAPI } from "../lib/api";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
+import { authAPI } from "../../../lib/api";
+import { Button } from "../../../components/ui/button";
+import { Input } from "../../../components/ui/input";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../components/ui/card";
+} from "../../../components/ui/card";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../components/ui/select";
+} from "../../../components/ui/select";
 import toast from "react-hot-toast";
 
 const CompanyRegister = () => {
@@ -50,6 +50,8 @@ const CompanyRegister = () => {
   const password = watch("password");
 
   const onSubmit = async (data) => {
+    console.log("🏢 Company registration attempt");
+    
     if (data.password !== data.confirmPassword) {
       toast.error("Passwords do not match");
       return;
@@ -57,19 +59,32 @@ const CompanyRegister = () => {
 
     setIsLoading(true);
     try {
+      console.log("📤 Sending registration data...");
       const response = await authAPI.register({
         ...data,
         role: "company",
       });
 
+      console.log("✅ Registration response:", response);
+
       if (response.data.success) {
         toast.success("Company account created successfully!");
+        console.log("🔄 Redirecting to company login (/clogin)...");
         navigate("/clogin");
+      } else {
+        console.log("❌ Registration not successful");
+        toast.error("Registration failed. Please try again.");
       }
     } catch (error) {
+      console.error("❌ Registration error:", error);
+      console.error("Error response:", error.response?.data);
+      
       const errorMessage =
         error.response?.data?.message || "Registration failed";
       toast.error(errorMessage);
+      
+      // DO NOT navigate anywhere on error - stay on registration page
+      console.log("⚠️ Staying on registration page due to error");
     } finally {
       setIsLoading(false);
     }

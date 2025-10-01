@@ -10,16 +10,16 @@ import {
   AlertCircle,
   Info,
 } from "lucide-react";
-import { useAuth } from "../contexts/AuthContext";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
+import { useAuth } from "../../../contexts/AuthContext";
+import { Button } from "../../../components/ui/button";
+import { Input } from "../../../components/ui/input";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../components/ui/card";
+} from "../../../components/ui/card";
 
 const AdminLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -40,7 +40,7 @@ const AdminLogin = () => {
 
     const result = await login(data);
     if (result.success) {
-      navigate("/admin", { replace: true });
+      navigate("/admin/dashboard", { replace: true });
     } else {
       // Set specific error messages based on common issues
       if (data.email && !data.email.includes("@")) {

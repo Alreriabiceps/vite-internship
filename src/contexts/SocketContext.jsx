@@ -27,11 +27,29 @@ export const SocketProvider = ({ children }) => {
         transports: ["websocket"],
       });
 
-      newSocket.on("connect", () => setIsConnected(true));
-      newSocket.on("disconnect", () => setIsConnected(false));
-      newSocket.on("connect_error", () =>
-        toast.error("Connection to server failed")
-      );
+      newSocket.on("connect", () => {
+        console.log("✅ Socket connected");
+        setIsConnected(true);
+      });
+      newSocket.on("disconnect", () => {
+        console.log("⚠️ Socket disconnected");
+        setIsConnected(false);
+      });
+
+      let connectionAttempts = 0;
+      newSocket.on("connect_error", (error) => {
+        connectionAttempts++;
+        console.warn(
+          `⚠️ Socket connection error (attempt ${connectionAttempts}):`,
+          error.message
+        );
+        // Only show error after 3 failed attempts to avoid spamming on initial load
+        if (connectionAttempts >= 3) {
+          toast.error(
+            "Cannot connect to real-time server. Some features may be limited."
+          );
+        }
+      });
       newSocket.on("new_message", (data) => {
         toast.success(`New message from ${data.message.fromUser.firstName}`);
       });

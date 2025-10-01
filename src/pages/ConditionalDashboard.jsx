@@ -1,19 +1,24 @@
+import { Navigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import Dashboard from "./Dashboard";
-import CompanyDashboard from "./CompanyDashboard";
 
 const ConditionalDashboard = () => {
   const { user } = useAuth();
 
-  switch (user?.role) {
-    case "company":
-      return <CompanyDashboard />;
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
+
+  // Redirect to role-based dashboard paths
+  switch (user.role) {
     case "student":
+      return <Navigate to="/student/dashboard" replace />;
+    case "company":
+      return <Navigate to="/company/dashboard" replace />;
     case "admin":
+      return <Navigate to="/admin/dashboard" replace />;
     default:
-      return <Dashboard />;
+      return <Navigate to="/student/dashboard" replace />;
   }
 };
 
 export default ConditionalDashboard;
-
