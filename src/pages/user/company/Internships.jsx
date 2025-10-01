@@ -195,7 +195,9 @@ const Internships = () => {
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
             Internship Positions
           </h1>
-          <p className="text-sm sm:text-base text-gray-600 mt-1">Manage your internship postings</p>
+          <p className="text-sm sm:text-base text-gray-600 mt-1">
+            Manage your internship postings
+          </p>
         </div>
         <Button
           onClick={() => navigate("/company/post-internship")}

@@ -275,7 +275,9 @@ const CompanyProfile = () => {
     <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">Company Profile</h1>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">
+            Company Profile
+          </h1>
           <p className="text-sm sm:text-base text-muted-foreground">
             Update your company information
           </p>
@@ -290,7 +292,10 @@ const CompanyProfile = () => {
         </Button>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="space-y-4 sm:space-y-6"
+      >
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
           {/* Left Column - Logo & Representative Info */}

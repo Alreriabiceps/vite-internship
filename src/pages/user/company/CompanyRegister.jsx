@@ -51,7 +51,7 @@ const CompanyRegister = () => {
 
   const onSubmit = async (data) => {
     console.log("🏢 Company registration attempt");
-    
+
     if (data.password !== data.confirmPassword) {
       toast.error("Passwords do not match");
       return;
@@ -78,11 +78,11 @@ const CompanyRegister = () => {
     } catch (error) {
       console.error("❌ Registration error:", error);
       console.error("Error response:", error.response?.data);
-      
+
       const errorMessage =
         error.response?.data?.message || "Registration failed";
       toast.error(errorMessage);
-      
+
       // DO NOT navigate anywhere on error - stay on registration page
       console.log("⚠️ Staying on registration page due to error");
     } finally {

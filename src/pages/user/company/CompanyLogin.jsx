@@ -41,7 +41,7 @@ const CompanyLogin = () => {
 
     const result = await login(data);
     console.log("📦 Login result:", result);
-    
+
     if (result.success) {
       // Redirect to company dashboard
       console.log("✅ Login successful! Redirecting to /company/dashboard");

@@ -204,7 +204,12 @@ const CompanyDashboard = () => {
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
-              <Button asChild variant="outline" size="default" className="w-full sm:w-auto">
+              <Button
+                asChild
+                variant="outline"
+                size="default"
+                className="w-full sm:w-auto"
+              >
                 <Link to="/company/profile">
                   <Edit className="h-4 w-4 mr-2" />
                   Edit Profile
