@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { studentsAPI, companiesAPI } from "../../../lib/api";
 import { useAuth } from "../../../contexts/AuthContext";
 import {
@@ -43,6 +44,8 @@ import toast from "react-hot-toast";
 
 const BrowseInterns = () => {
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
+  const internshipId = searchParams.get("internshipId");
   const [students, setStudents] = useState([]);
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -50,6 +53,7 @@ const BrowseInterns = () => {
   const [selectedCourse, setSelectedCourse] = useState("All");
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [internshipTitle, setInternshipTitle] = useState("");
   const [shortlistedStudents, setShortlistedStudents] = useState(() => {
     // Load shortlist from localStorage
     const saved = localStorage.getItem("shortlistedStudents");
@@ -59,7 +63,7 @@ const BrowseInterns = () => {
   useEffect(() => {
     fetchStudents();
     fetchShortlistedStudents();
-  }, []);
+  }, [internshipId]);
 
   const fetchShortlistedStudents = async () => {
     try {
@@ -125,12 +129,60 @@ const BrowseInterns = () => {
   const fetchStudents = async () => {
     try {
       setLoading(true);
-      const response = await studentsAPI.getAll();
-      console.log("📚 Students fetched:", response.data);
 
-      const studentsData = response.data?.students || response.data || [];
-      setStudents(studentsData);
-      setFilteredStudents(studentsData);
+      // If internshipId is provided, fetch only applicants for that internship
+      if (internshipId) {
+        console.log("📋 Fetching applicants for internship:", internshipId);
+        const companyResponse = await companiesAPI.getProfile();
+        const companyData = companyResponse.data?.data || companyResponse.data;
+
+        // Find the specific internship
+        const internship = companyData.ojtSlots?.find(
+          (slot) => slot._id === internshipId
+        );
+
+        if (internship) {
+          setInternshipTitle(internship.title);
+
+          if (internship.applicants && internship.applicants.length > 0) {
+            console.log("👥 Found applicants:", internship.applicants.length);
+
+            // Fetch full student details for each applicant
+            const applicantDetails = await Promise.all(
+              internship.applicants.map(async (applicant) => {
+                try {
+                  const studentResponse = await studentsAPI.getById(
+                    applicant.studentId
+                  );
+                  return studentResponse.data?.data || studentResponse.data;
+                } catch (error) {
+                  console.error("⚠️ Error fetching applicant:", error);
+                  return null;
+                }
+              })
+            );
+
+            const validStudents = applicantDetails.filter(Boolean);
+            setStudents(validStudents);
+            setFilteredStudents(validStudents);
+          } else {
+            console.log("📭 No applicants yet for this internship");
+            setStudents([]);
+            setFilteredStudents([]);
+          }
+        } else {
+          console.log("❌ Internship not found");
+          toast.error("Internship not found");
+        }
+      } else {
+        // Fetch all students (normal browse mode)
+        const response = await studentsAPI.getAll();
+        console.log("📚 Students fetched:", response.data);
+
+        const studentsData = response.data?.students || response.data || [];
+        setStudents(studentsData);
+        setFilteredStudents(studentsData);
+      }
     } catch (error) {
       console.error("Error fetching students:", error);
       toast.error("Failed to load students");
@@ -248,9 +300,17 @@ const BrowseInterns = () => {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Browse Interns</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            {internshipId && internshipTitle
+              ? `Applicants for ${internshipTitle}`
+              : "Browse Interns"}
+          </h1>
           <p className="text-gray-600 mt-1">
-            Find the perfect intern for your company
+            {internshipId && internshipTitle
+              ? `Showing ${filteredStudents.length} ${
+                  filteredStudents.length === 1 ? "applicant" : "applicants"
+                } who applied to this position`
+              : "Find the perfect intern for your company"}
           </p>
         </div>
         {shortlistedStudents.length > 0 && (

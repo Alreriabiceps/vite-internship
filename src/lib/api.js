@@ -99,6 +99,8 @@ export const companiesAPI = {
   removePreferredApplicant: (id, studentId) =>
     api.delete(`/companies/${id}/preferred-applicants/${studentId}`),
   verify: (id, data) => api.put(`/companies/${id}/verify`, data),
+  applyToInternship: (companyId, slotId) =>
+    api.post(`/companies/${companyId}/slots/${slotId}/apply`),
 };
 
 // Admin API

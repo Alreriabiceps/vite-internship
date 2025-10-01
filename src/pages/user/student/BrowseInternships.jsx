@@ -43,8 +43,16 @@ const BrowseInternships = () => {
 
   useEffect(() => {
     fetchInternships();
-    loadAppliedInternships();
   }, []);
+
+  useEffect(() => {
+    if (user?.id) {
+      loadAppliedInternships();
+    } else {
+      // Clear applied internships if user logs out
+      setAppliedInternships(new Set());
+    }
+  }, [user?.id]);
 
   useEffect(() => {
     filterInternships();
@@ -96,10 +104,54 @@ const BrowseInternships = () => {
     }
   };
 
-  const loadAppliedInternships = () => {
-    const saved = localStorage.getItem(`appliedInternships_${user?.id}`);
-    if (saved) {
-      setAppliedInternships(new Set(JSON.parse(saved)));
+  const loadAppliedInternships = async () => {
+    if (!user?.id) return;
+
+    try {
+      // First, load from localStorage for immediate UI feedback
+      const saved = localStorage.getItem(`appliedInternships_${user.id}`);
+      if (saved) {
+        setAppliedInternships(new Set(JSON.parse(saved)));
+      }
+
+      // Then, fetch actual applications from the database
+      // We'll check all companies' internship slots to see if this student applied
+      const response = await companiesAPI.getAll();
+      const companies = response.data?.data || response.data || [];
+
+      const actuallyApplied = new Set();
+      companies.forEach((company) => {
+        if (company.ojtSlots && company.ojtSlots.length > 0) {
+          company.ojtSlots.forEach((slot) => {
+            // Check if student is in applicants array
+            if (
+              slot.applicants &&
+              slot.applicants.some((app) => app.studentId === user.id)
+            ) {
+              actuallyApplied.add(slot._id);
+            }
+          });
+        }
+      });
+
+      // Update state and localStorage with the actual data from database
+      setAppliedInternships(actuallyApplied);
+      localStorage.setItem(
+        `appliedInternships_${user.id}`,
+        JSON.stringify([...actuallyApplied])
+      );
+
+      console.log(
+        "📋 Loaded applied internships from database:",
+        actuallyApplied.size
+      );
+    } catch (error) {
+      console.error("❌ Error loading applied internships:", error);
+      // Fall back to localStorage if API fails
+      const saved = localStorage.getItem(`appliedInternships_${user.id}`);
+      if (saved) {
+        setAppliedInternships(new Set(JSON.parse(saved)));
+      }
     }
   };
 
@@ -143,12 +195,31 @@ const BrowseInternships = () => {
     setShowModal(true);
   };
 
-  const handleApply = (internshipId) => {
-    const newApplied = new Set(appliedInternships);
-    newApplied.add(internshipId);
-    setAppliedInternships(newApplied);
-    saveAppliedInternships(newApplied);
-    toast.success("Application submitted successfully! 🎉");
+  const handleApply = async (internship) => {
+    try {
+      console.log("📝 Applying to internship:", internship);
+
+      // Call API to submit application
+      await companiesAPI.applyToInternship(
+        internship.company._id,
+        internship._id
+      );
+
+      // Update local state
+      const newApplied = new Set(appliedInternships);
+      newApplied.add(internship._id);
+      setAppliedInternships(newApplied);
+      saveAppliedInternships(newApplied);
+
+      toast.success("Application submitted successfully! 🎉");
+    } catch (error) {
+      console.error("❌ Error applying:", error);
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("Failed to submit application. Please try again.");
+      }
+    }
   };
 
   const isApplied = (internshipId) => {
@@ -352,7 +423,7 @@ const BrowseInternships = () => {
                   onClick={(e) => {
                     e.stopPropagation();
                     if (!isApplied(internship._id)) {
-                      handleApply(internship._id);
+                      handleApply(internship);
                     }
                   }}
                   disabled={isApplied(internship._id)}
@@ -600,7 +671,7 @@ const BrowseInternships = () => {
                 }
                 onClick={() => {
                   if (!isApplied(selectedInternship._id)) {
-                    handleApply(selectedInternship._id);
+                    handleApply(selectedInternship);
                     setShowModal(false);
                   }
                 }}

@@ -283,7 +283,24 @@ const Internships = () => {
                     </div>
                   </div>
 
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 items-center">
+                    <Button
+                      onClick={() =>
+                        navigate(
+                          `/company/browse-interns?internshipId=${internship._id}`
+                        )
+                      }
+                      className="relative bg-blue-600 hover:bg-blue-700 text-white"
+                      size="sm"
+                    >
+                      <Users className="h-4 w-4 mr-1" />
+                      Applicants
+                      {internship.applicants?.length > 0 && (
+                        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center border-2 border-white">
+                          {internship.applicants.length}
+                        </span>
+                      )}
+                    </Button>
                     <Button
                       variant="outline"
                       size="sm"
