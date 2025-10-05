@@ -955,9 +955,9 @@ const Profile = () => {
               )
             : [],
           softSkills: Array.isArray(data.softSkills)
-            ? data.softSkills.filter(
-                (skill) => skill.name && skill.name.trim().length > 0
-              )
+            ? data.softSkills
+                .filter((skill) => skill.name && skill.name.trim().length > 0)
+                .map((skill) => ({ name: skill.name }))
             : [],
 
           // Certificates & Badges - convert objects to proper format
@@ -1838,7 +1838,7 @@ const Profile = () => {
                                 const currentSkills = watch("softSkills") || [];
                                 setValue("softSkills", [
                                   ...currentSkills,
-                                  { name: skillName, level: 1 },
+                                  { name: skillName },
                                 ]);
                                 e.target.value = "";
                               }
@@ -1858,7 +1858,7 @@ const Profile = () => {
                               const currentSkills = watch("softSkills") || [];
                               setValue("softSkills", [
                                 ...currentSkills,
-                                { name: skillName, level: "Beginner" },
+                                { name: skillName },
                               ]);
                               input.value = "";
                             }
@@ -1883,30 +1883,6 @@ const Profile = () => {
                           </div>
                           {isEditing ? (
                             <div className="flex items-center gap-2">
-                              <Select
-                                value={skill.level || 1}
-                                onValueChange={(level) => {
-                                  const currentSkills =
-                                    watch("softSkills") || [];
-                                  const updatedSkills = [...currentSkills];
-                                  updatedSkills[index] = { ...skill, level };
-                                  setValue("softSkills", updatedSkills);
-                                }}
-                              >
-                                <SelectTrigger className="h-6 w-24 text-xs">
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {proficiencyLevels.map((level) => (
-                                    <SelectItem
-                                      key={level.value}
-                                      value={level.value}
-                                    >
-                                      {level.label}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
                               <Button
                                 type="button"
                                 size="sm"
@@ -1925,11 +1901,7 @@ const Profile = () => {
                               </Button>
                             </div>
                           ) : (
-                            <Badge className="text-xs bg-yellow-50 text-yellow-800 border-yellow-200">
-                              {proficiencyLevels.find(
-                                (l) => l.value === skill.level
-                              )?.stars || "⭐"}
-                            </Badge>
+                            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                           )}
                         </div>
                       ))}
