@@ -120,7 +120,7 @@ const CompanyLogin = () => {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="company@test.com"
+                  placeholder="Enter company email"
                   className="pl-10 border-gray-300 focus:border-green-500 focus:ring-green-500"
                   {...register("email", {
                     required: "Email is required",
@@ -181,25 +181,6 @@ const CompanyLogin = () => {
               {isLoading ? "Signing in..." : "Access Company Portal"}
             </Button>
           </form>
-
-          {/* Test Credentials Hint */}
-          <div className="mt-4 p-3 bg-gray-100 border border-gray-300 rounded-lg">
-            <div className="flex items-start space-x-2">
-              <Info className="h-4 w-4 text-gray-600 mt-0.5" />
-              <div className="text-sm text-gray-800">
-                <p className="font-medium mb-1">Test Credentials:</p>
-                <p className="text-xs">
-                  Email:{" "}
-                  <code className="bg-gray-200 px-1 rounded">
-                    company@test.com
-                  </code>
-                  <br />
-                  Password:{" "}
-                  <code className="bg-gray-200 px-1 rounded">password123</code>
-                </p>
-              </div>
-            </div>
-          </div>
 
           <div className="mt-6 text-center text-sm text-gray-600">
             <p className="mb-2">Don't have a company account?</p>

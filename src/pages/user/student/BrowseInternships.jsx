@@ -361,7 +361,7 @@ const BrowseInternships = () => {
                 {/* Quick Info */}
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center gap-2 text-gray-700">
-                    <Building2 className="h-4 w-4 text-purple-600" />
+                    <Building2 className="h-4 w-4 text-blue-600" />
                     <span>{internship.department}</span>
                   </div>
                   <div className="flex items-center gap-2 text-gray-700">
@@ -396,7 +396,7 @@ const BrowseInternships = () => {
                   </Badge>
                   <Badge
                     variant="outline"
-                    className="text-xs text-orange-600 border-orange-300"
+                    className="text-xs text-green-600 border-green-300"
                   >
                     <Calendar className="h-3 w-3 mr-1" />
                     Deadline:{" "}
@@ -470,10 +470,10 @@ const BrowseInternships = () => {
           <div className="space-y-5 max-h-[75vh] overflow-y-auto pr-2">
             {/* Key Details */}
             <div className="grid grid-cols-2 gap-3">
-              <div className="bg-purple-50 p-4 rounded-lg">
+              <div className="bg-blue-50 p-4 rounded-lg">
                 <div className="flex items-center gap-2 mb-2">
-                  <Building2 className="h-5 w-5 text-purple-600" />
-                  <span className="text-xs text-purple-600 font-medium uppercase">
+                  <Building2 className="h-5 w-5 text-blue-600" />
+                  <span className="text-xs text-blue-600 font-medium uppercase">
                     Department
                   </span>
                 </div>
@@ -520,10 +520,10 @@ const BrowseInternships = () => {
                 </p>
               </div>
 
-              <div className="bg-orange-50 p-4 rounded-lg">
+              <div className="bg-green-50 p-4 rounded-lg">
                 <div className="flex items-center gap-2 mb-2">
-                  <Users className="h-5 w-5 text-orange-600" />
-                  <span className="text-xs text-orange-600 font-medium uppercase">
+                  <Users className="h-5 w-5 text-green-600" />
+                  <span className="text-xs text-green-600 font-medium uppercase">
                     Positions
                   </span>
                 </div>
@@ -588,7 +588,7 @@ const BrowseInternships = () => {
             {selectedInternship.qualifications?.length > 0 && (
               <div className="bg-white border border-gray-200 rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-3">
-                  <Target className="h-5 w-5 text-purple-600" />
+                  <Target className="h-5 w-5 text-blue-600" />
                   <h4 className="font-semibold text-gray-900">
                     Requirements & Qualifications
                   </h4>
@@ -599,7 +599,7 @@ const BrowseInternships = () => {
                       key={idx}
                       className="flex items-start gap-2 text-sm text-gray-600"
                     >
-                      <div className="h-1.5 w-1.5 rounded-full bg-purple-500 mt-1.5 flex-shrink-0" />
+                      <div className="h-1.5 w-1.5 rounded-full bg-blue-500 mt-1.5 flex-shrink-0" />
                       <span>{qual}</span>
                     </li>
                   ))}

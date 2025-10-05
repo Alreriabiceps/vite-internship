@@ -21,8 +21,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../../components/ui/select";
-import { Avatar, AvatarFallback, AvatarImage } from "../../../components/ui/avatar";
 import { Checkbox } from "../../../components/ui/checkbox";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "../../../components/ui/avatar";
 import { Label } from "../../../components/ui/label";
 import { Textarea } from "../../../components/ui/textarea";
 import toast from "react-hot-toast";
@@ -53,7 +57,9 @@ const Profile = () => {
 
   // Skill suggestions for autocomplete
   const technicalSkillsSuggestions = [
+    // Programming Languages
     "JavaScript",
+    "TypeScript",
     "Python",
     "Java",
     "C++",
@@ -63,22 +69,60 @@ const Profile = () => {
     "Go",
     "Rust",
     "Swift",
+    "Kotlin",
+    "Dart",
+    "R",
+    "MATLAB",
+    "Scala",
+    "Clojure",
+    "Haskell",
+    "Elixir",
+
+    // Web Technologies
+    "HTML5",
+    "CSS3",
+    "Sass",
+    "Less",
+    "SCSS",
     "React",
     "Vue.js",
     "Angular",
-    "Node.js",
-    "Express.js",
-    "Django",
-    "Flask",
-    "Spring Boot",
-    "HTML",
-    "CSS",
-    "Sass",
-    "Less",
-    "TypeScript",
+    "Svelte",
+    "Next.js",
+    "Nuxt.js",
+    "Gatsby",
     "jQuery",
     "Bootstrap",
     "Tailwind CSS",
+    "Material-UI",
+    "Ant Design",
+    "Chakra UI",
+    "Styled Components",
+    "Emotion",
+    "Framer Motion",
+
+    // Backend & Frameworks
+    "Node.js",
+    "Express",
+    "Fastify",
+    "Koa",
+    "Django",
+    "Flask",
+    "FastAPI",
+    "Spring Boot",
+    "Laravel",
+    "Symfony",
+    "CodeIgniter",
+    "Ruby on Rails",
+    "ASP.NET Core",
+    "NestJS",
+    "AdonisJS",
+    "Sails.js",
+    "Hapi.js",
+    "LoopBack",
+    "Feathers.js",
+
+    // Databases
     "MySQL",
     "PostgreSQL",
     "MongoDB",
@@ -86,100 +130,436 @@ const Profile = () => {
     "SQLite",
     "Oracle",
     "SQL Server",
+    "MariaDB",
+    "Cassandra",
+    "CouchDB",
+    "Neo4j",
+    "DynamoDB",
+    "Firebase",
+    "Supabase",
+    "Prisma",
+    "Sequelize",
+    "Mongoose",
+    "TypeORM",
+    "Drizzle",
+
+    // Cloud & DevOps
     "AWS",
     "Azure",
     "Google Cloud",
+    "DigitalOcean",
+    "Heroku",
+    "Vercel",
+    "Netlify",
     "Docker",
     "Kubernetes",
     "Jenkins",
-    "Git",
-    "Machine Learning",
-    "Data Science",
-    "Artificial Intelligence",
-    "Deep Learning",
-    "Mobile Development",
-    "iOS",
-    "Android",
+    "GitLab CI",
+    "GitHub Actions",
+    "CircleCI",
+    "Terraform",
+    "Ansible",
+    "Chef",
+    "Puppet",
+    "Prometheus",
+    "Grafana",
+    "ELK Stack",
+
+    // Mobile Development
     "React Native",
     "Flutter",
+    "Ionic",
     "Xamarin",
-    "Web Development",
-    "Backend Development",
-    "Frontend Development",
-    "Full Stack Development",
-    "DevOps",
-    "CI/CD",
-    "Linux",
-    "Windows Server",
-    "Networking",
+    "Cordova",
+    "PhoneGap",
+    "Unity",
+    "Unreal Engine",
+    "Swift",
+    "Kotlin",
+    "Dart",
+    "Objective-C",
+    "Java (Android)",
+
+    // AI & Data Science
+    "Machine Learning",
+    "Deep Learning",
+    "TensorFlow",
+    "PyTorch",
+    "Keras",
+    "Scikit-learn",
+    "Pandas",
+    "NumPy",
+    "Matplotlib",
+    "Seaborn",
+    "Jupyter",
+    "R",
+    "MATLAB",
+    "OpenCV",
+    "NLTK",
+    "spaCy",
+    "Hugging Face",
+    "LangChain",
+    "OpenAI API",
+    "Computer Vision",
+    "Natural Language Processing",
+    "Data Analysis",
+    "Statistics",
+    "Big Data",
+    "Apache Spark",
+
+    // Blockchain & Web3
+    "Solidity",
+    "Web3.js",
+    "Ethers.js",
+    "Hardhat",
+    "Truffle",
+    "Ganache",
+    "MetaMask",
+    "IPFS",
+    "Ethereum",
+    "Bitcoin",
+    "Smart Contracts",
+    "DeFi",
+    "NFTs",
+    "DApps",
+
+    // Game Development
+    "Unity",
+    "Unreal Engine",
+    "Godot",
+    "Blender",
+    "Maya",
+    "3ds Max",
+    "C# (Unity)",
+    "C++ (Unreal)",
+    "GDScript",
+    "Lua",
+    "Game Design",
+    "Level Design",
+    "3D Modeling",
+
+    // Security & Networking
     "Cybersecurity",
-    "Programming",
-    "Software Development",
-    "API Development",
-    "REST API",
-    "GraphQL",
-    "Database Design",
-    "System Design",
+    "Penetration Testing",
+    "Ethical Hacking",
+    "OWASP",
+    "Burp Suite",
+    "Nmap",
+    "Wireshark",
+    "Network Security",
+    "SSL/TLS",
+    "OAuth",
+    "JWT",
+    "Firewalls",
+    "VPN",
+    "Load Balancing",
+    "CDN",
+    "DNS",
+    "HTTP/HTTPS",
+    "WebSockets",
+
+    // Testing & QA
+    "Jest",
+    "Mocha",
+    "Chai",
+    "Cypress",
+    "Selenium",
+    "Playwright",
+    "Puppeteer",
+    "Unit Testing",
+    "Integration Testing",
+    "E2E Testing",
+    "TDD",
+    "BDD",
+    "API Testing",
+    "Performance Testing",
+    "Load Testing",
+    "Security Testing",
+
+    // Design & UX/UI
+    "Figma",
+    "Adobe XD",
+    "Sketch",
+    "InVision",
+    "Framer",
+    "Principle",
+    "Photoshop",
+    "Illustrator",
+    "After Effects",
+    "User Experience",
+    "User Interface",
+    "Wireframing",
+    "Prototyping",
+    "Design Systems",
+    "Accessibility",
+    "Responsive Design",
+
+    // Project Management & Methodologies
     "Agile",
     "Scrum",
+    "Kanban",
+    "Waterfall",
+    "Jira",
+    "Confluence",
+    "Trello",
+    "Asana",
     "Project Management",
+    "Product Management",
+    "Business Analysis",
+    "Requirements Gathering",
+    "Stakeholder Management",
+    "Risk Management",
+    "Quality Assurance",
+
+    // Version Control & Collaboration
+    "Git",
+    "GitHub",
+    "GitLab",
+    "Bitbucket",
+    "SVN",
+    "Mercurial",
+    "Code Review",
+    "Pull Requests",
+    "Branching Strategies",
+    "Continuous Integration",
+    "Continuous Deployment",
+
+    // Emerging Technologies
+    "IoT",
+    "AR/VR",
+    "WebXR",
+    "Blockchain",
+    "Quantum Computing",
+    "Edge Computing",
+    "Microservices",
+    "Serverless",
+    "GraphQL",
+    "REST API",
+    "gRPC",
+    "WebRTC",
+    "Progressive Web Apps",
+    "WebAssembly",
+    "Web Components",
+    "Micro Frontends",
   ];
 
   const softSkillsSuggestions = [
+    // Communication & Interpersonal
     "Communication",
-    "Leadership",
-    "Teamwork",
-    "Problem Solving",
-    "Critical Thinking",
-    "Time Management",
-    "Adaptability",
-    "Creativity",
-    "Work Ethic",
-    "Interpersonal Skills",
+    "Active Listening",
     "Public Speaking",
     "Presentation Skills",
-    "Negotiation",
-    "Conflict Resolution",
-    "Emotional Intelligence",
-    "Active Listening",
-    "Empathy",
-    "Patience",
-    "Flexibility",
-    "Organization",
-    "Attention to Detail",
-    "Analytical Thinking",
-    "Decision Making",
+    "Written Communication",
+    "Verbal Communication",
+    "Non-verbal Communication",
+    "Cross-cultural Communication",
+    "Interpersonal Skills",
+    "Relationship Building",
+    "Networking",
+    "Influence",
+    "Persuasion",
+
+    // Leadership & Management
+    "Leadership",
+    "Team Leadership",
+    "People Management",
     "Mentoring",
     "Coaching",
-    "Collaboration",
-    "Networking",
-    "Customer Service",
-    "Sales Skills",
-    "Marketing",
+    "Delegation",
     "Strategic Thinking",
-    "Innovation",
-    "Initiative",
-    "Self-Motivation",
+    "Vision Setting",
+    "Change Management",
+    "Crisis Management",
+    "Decision Making",
+    "Stakeholder Management",
+    "Vendor Management",
+    "Client Relations",
+    "Customer Service",
+
+    // Teamwork & Collaboration
+    "Teamwork",
+    "Collaboration",
+    "Cross-functional Collaboration",
+    "Remote Collaboration",
+    "Conflict Resolution",
+    "Mediation",
+    "Consensus Building",
+    "Team Building",
+    "Group Facilitation",
+    "Partnership Development",
+    "Community Building",
+    "Volunteer Leadership",
+
+    // Problem Solving & Critical Thinking
+    "Problem Solving",
+    "Critical Thinking",
+    "Analytical Thinking",
+    "Logical Reasoning",
+    "Creative Problem Solving",
+    "Design Thinking",
+    "Systems Thinking",
+    "Root Cause Analysis",
+    "Troubleshooting",
+    "Debugging",
+    "Quality Assurance",
+    "Risk Assessment",
+    "Risk Management",
+
+    // Adaptability & Learning
+    "Adaptability",
+    "Flexibility",
     "Resilience",
-    "Stress Management",
-    "Multitasking",
-    "Planning",
-    "Goal Setting",
-    "Feedback",
+    "Change Agility",
     "Learning Agility",
-    "Cultural Awareness",
-    "Diversity",
+    "Continuous Learning",
+    "Self-directed Learning",
+    "Knowledge Transfer",
+    "Training Others",
+    "Mentoring",
+    "Teaching",
+    "Knowledge Sharing",
+    "Documentation",
+    "Process Improvement",
+
+    // Time & Project Management
+    "Time Management",
+    "Project Management",
+    "Task Prioritization",
+    "Deadline Management",
+    "Resource Management",
+    "Budget Management",
+    "Scope Management",
+    "Agile Methodologies",
+    "Scrum Master",
+    "Product Owner",
+    "Sprint Planning",
+    "Retrospectives",
+    "Process Optimization",
+
+    // Creativity & Innovation
+    "Creativity",
+    "Innovation",
+    "Ideation",
+    "Brainstorming",
+    "Design Thinking",
+    "User Experience",
+    "User Research",
+    "Prototyping",
+    "Experimentation",
+    "A/B Testing",
+    "Market Research",
+    "Trend Analysis",
+    "Future Planning",
+    "Strategic Planning",
+
+    // Emotional Intelligence
+    "Emotional Intelligence",
+    "Self-awareness",
+    "Self-regulation",
+    "Empathy",
+    "Compassion",
+    "Patience",
+    "Tolerance",
+    "Cultural Sensitivity",
+    "Diversity & Inclusion",
+    "Unconscious Bias",
+    "Emotional Resilience",
+    "Stress Management",
+    "Work-Life Balance",
+    "Mindfulness",
+
+    // Professional Skills
     "Professionalism",
-    "Integrity",
-    "Accountability",
+    "Work Ethic",
     "Reliability",
+    "Accountability",
+    "Integrity",
+    "Honesty",
     "Punctuality",
+    "Dependability",
+    "Consistency",
+    "Attention to Detail",
+    "Accuracy",
+    "Quality Focus",
+    "Continuous Improvement",
+    "Best Practices",
+    "Standards Compliance",
+
+    // Technical Soft Skills
+    "Technical Writing",
+    "Documentation",
+    "Code Review",
+    "Technical Mentoring",
+    "Architecture Design",
+    "System Design",
+    "API Design",
+    "Database Design",
+    "Security Awareness",
+    "Performance Optimization",
+    "Scalability Planning",
+    "Technical Leadership",
+    "Technology Evaluation",
+    "Tool Selection",
+
+    // Business & Commercial
+    "Business Acumen",
+    "Commercial Awareness",
+    "Market Understanding",
+    "Customer Focus",
+    "Sales Skills",
+    "Negotiation",
+    "Contract Management",
+    "Vendor Relations",
+    "Procurement",
+    "Financial Literacy",
+    "Budget Planning",
+    "ROI Analysis",
+    "Cost Management",
+    "Value Creation",
+
+    // Research & Analysis
+    "Research Skills",
+    "Data Analysis",
+    "Market Research",
+    "Competitive Analysis",
+    "Trend Analysis",
+    "Statistical Analysis",
+    "Report Writing",
+    "Data Visualization",
+    "Insight Generation",
+    "Evidence-based Decision Making",
+    "Hypothesis Testing",
+    "A/B Testing",
+    "User Research",
+
+    // Global & Cultural
+    "Global Mindset",
+    "Cultural Intelligence",
+    "Cross-cultural Communication",
+    "International Experience",
+    "Language Skills",
+    "Cultural Adaptation",
+    "Global Team Management",
+    "Remote Work",
+    "Virtual Collaboration",
+    "Digital Communication",
+    "Online Presence",
+    "Personal Branding",
+  ];
+
+  const proficiencyLevels = [
+    { value: 1, label: "1 Star", stars: "⭐" },
+    { value: 2, label: "2 Stars", stars: "⭐⭐" },
+    { value: 3, label: "3 Stars", stars: "⭐⭐⭐" },
+    { value: 4, label: "4 Stars", stars: "⭐⭐⭐⭐" },
+    { value: 5, label: "5 Stars", stars: "⭐⭐⭐⭐⭐" },
   ];
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(null);
   const [showCropper, setShowCropper] = useState(false);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
+  const [selectedLocations, setSelectedLocations] = useState([]);
 
   const {
     register,
@@ -187,6 +567,7 @@ const Profile = () => {
     formState: { errors },
     setValue,
     watch,
+    getValues,
   } = useForm();
 
   const fetchProfileData = useCallback(async () => {
@@ -207,13 +588,9 @@ const Profile = () => {
           yearLevel: studentData.yearLevel || "",
           phone: user.phone || "",
 
-          // Map skills - convert arrays to comma-separated strings
-          technicalSkills: studentData.skills
-            ? studentData.skills.map((skill) => skill.name).join(", ")
-            : "",
-          softSkills: studentData.softSkills
-            ? studentData.softSkills.join(", ")
-            : "",
+          // Map skills - keep as objects with proficiency levels
+          technicalSkills: studentData.skills || [],
+          softSkills: studentData.softSkills || [],
 
           // Map certificates and badges - convert objects to simple format
           certificates:
@@ -232,7 +609,7 @@ const Profile = () => {
           // Map Internship preferences
           workFromHome:
             studentData.preferredFields?.workType === "Remote" || false,
-          locationPreference: studentData.preferredFields?.location?.[0] || "",
+          locationPreference: studentData.preferredFields?.location || [],
           industryPreference: studentData.preferredFields?.role || [],
           preferredSchedule: studentData.preferredFields?.schedule || "",
           preferredDuration: String(
@@ -265,6 +642,9 @@ const Profile = () => {
             setValue(key, profileData[key] || "");
           }
         });
+
+        // Sync location preferences with state
+        setSelectedLocations(profileData.locationPreference || []);
       } else {
         // For non-students, use basic user data
         const profileData = {
@@ -568,32 +948,16 @@ const Profile = () => {
           yearLevel: data.yearLevel,
           studentId: data.studentId,
 
-          // Skills - convert comma-separated strings to objects
-          skills: data.technicalSkills
-            ? (typeof data.technicalSkills === "string"
-                ? data.technicalSkills.split(",")
-                : Array.isArray(data.technicalSkills)
-                ? data.technicalSkills
-                : []
+          // Skills - handle objects with proficiency levels
+          skills: Array.isArray(data.technicalSkills)
+            ? data.technicalSkills.filter(
+                (skill) => skill.name && skill.name.trim().length > 0
               )
-                .map((skill) =>
-                  typeof skill === "string"
-                    ? { name: skill.trim(), level: "Beginner" }
-                    : skill
-                )
-                .filter((skill) => (skill.name || skill).trim().length > 0)
             : [],
-          softSkills: data.softSkills
-            ? (typeof data.softSkills === "string"
-                ? data.softSkills.split(",")
-                : Array.isArray(data.softSkills)
-                ? data.softSkills
-                : []
+          softSkills: Array.isArray(data.softSkills)
+            ? data.softSkills.filter(
+                (skill) => skill.name && skill.name.trim().length > 0
               )
-                .map((skill) =>
-                  typeof skill === "string" ? skill.trim() : skill
-                )
-                .filter((skill) => skill.trim().length > 0)
             : [],
 
           // Certificates & Badges - convert objects to proper format
@@ -625,7 +989,7 @@ const Profile = () => {
           // Internship Preferences
           preferredFields: {
             workType: data.workFromHome ? "Remote" : "On-site",
-            location: data.locationPreference ? [data.locationPreference] : [],
+            location: data.locationPreference || [],
             role: data.industryPreference || [],
             schedule: data.preferredSchedule || undefined,
             durationHours: data.preferredDuration
@@ -1228,6 +1592,50 @@ const Profile = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     <div className="space-y-1">
+                      <Label className="text-xs">Location Preference</Label>
+                      <div className="space-y-2">
+                        {[
+                          "Within Pampanga",
+                          "Outside Pampanga",
+                          "Work From Home",
+                        ].map((location) => (
+                          <div
+                            key={location}
+                            className="flex items-center space-x-2"
+                          >
+                            <Checkbox
+                              id={`location-${location}`}
+                              checked={selectedLocations.includes(location)}
+                              onChange={(e) => {
+                                const checked = e.target.checked;
+                                if (checked) {
+                                  const newLocations = [
+                                    ...selectedLocations,
+                                    location,
+                                  ];
+                                  setSelectedLocations(newLocations);
+                                  setValue("locationPreference", newLocations);
+                                } else {
+                                  const newLocations = selectedLocations.filter(
+                                    (loc) => loc !== location
+                                  );
+                                  setSelectedLocations(newLocations);
+                                  setValue("locationPreference", newLocations);
+                                }
+                              }}
+                              disabled={!isEditing}
+                            />
+                            <Label
+                              htmlFor={`location-${location}`}
+                              className="text-xs cursor-pointer"
+                            >
+                              {location}
+                            </Label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="space-y-1">
                       <Label htmlFor="preferredSchedule" className="text-xs">
                         Preferred Schedule
                       </Label>
@@ -1272,33 +1680,6 @@ const Profile = () => {
                         Standard internship duration: 486 hours
                       </p>
                     </div>
-                    <div className="space-y-1">
-                      <Label htmlFor="locationPreference" className="text-xs">
-                        Location Preference
-                      </Label>
-                      <Select
-                        disabled={!isEditing}
-                        value={watch("locationPreference") || ""}
-                        onValueChange={(value) =>
-                          setValue("locationPreference", value)
-                        }
-                      >
-                        <SelectTrigger className="h-8 text-sm">
-                          <SelectValue placeholder="Select location preference" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Within Pampanga">
-                            Within Pampanga
-                          </SelectItem>
-                          <SelectItem value="Outside Pampanga">
-                            Outside Pampanga
-                          </SelectItem>
-                          <SelectItem value="Work From Home">
-                            Work From Home
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -1314,24 +1695,122 @@ const Profile = () => {
                     Technical Skills
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="pt-0 space-y-1">
-                  <div className="space-y-1">
-                    <Label htmlFor="technicalSkills" className="text-xs">
-                      Skills (comma-separated)
-                    </Label>
-                    <AutocompleteInput
-                      value={watch("technicalSkills") || ""}
-                      onChange={(value) => {
-                        setValue("technicalSkills", value);
-                      }}
-                      suggestions={technicalSkillsSuggestions}
-                      placeholder="JavaScript, React, Node.js, Python..."
-                      disabled={!isEditing}
-                      className="h-16 text-xs resize-none"
-                    />
-                    <p className="text-xs text-gray-500">
-                      Enter skills separated by commas
-                    </p>
+                <CardContent className="pt-0 space-y-2">
+                  <div className="space-y-2">
+                    <Label className="text-xs">Add Technical Skills</Label>
+                    {isEditing && (
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Skill name (e.g., JavaScript)"
+                          className="h-8 text-xs flex-1"
+                          onKeyPress={(e) => {
+                            if (e.key === "Enter") {
+                              const skillName = e.target.value.trim();
+                              if (skillName) {
+                                const currentSkills =
+                                  watch("technicalSkills") || [];
+                                setValue("technicalSkills", [
+                                  ...currentSkills,
+                                  { name: skillName, level: 1 },
+                                ]);
+                                e.target.value = "";
+                              }
+                            }
+                          }}
+                        />
+                        <Button
+                          type="button"
+                          size="sm"
+                          className="h-8 text-xs"
+                          onClick={() => {
+                            const input = document.querySelector(
+                              'input[placeholder="Skill name (e.g., JavaScript)"]'
+                            );
+                            const skillName = input?.value.trim();
+                            if (skillName) {
+                              const currentSkills =
+                                watch("technicalSkills") || [];
+                              setValue("technicalSkills", [
+                                ...currentSkills,
+                                { name: skillName, level: "Beginner" },
+                              ]);
+                              input.value = "";
+                            }
+                          }}
+                        >
+                          Add
+                        </Button>
+                      </div>
+                    )}
+
+                    {/* Display Skills */}
+                    <div className="space-y-2">
+                      {watch("technicalSkills")?.map((skill, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg"
+                        >
+                          <div className="flex-1">
+                            <span className="text-xs font-medium">
+                              {skill.name}
+                            </span>
+                          </div>
+                          {isEditing ? (
+                            <div className="flex items-center gap-2">
+                              <Select
+                                value={String(skill.level || 1)}
+                                onValueChange={(level) => {
+                                  const currentSkills =
+                                    watch("technicalSkills") || [];
+                                  const updatedSkills = [...currentSkills];
+                                  updatedSkills[index] = {
+                                    ...skill,
+                                    level: parseInt(level),
+                                  };
+                                  setValue("technicalSkills", updatedSkills);
+                                }}
+                              >
+                                <SelectTrigger className="h-6 w-24 text-xs">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {proficiencyLevels.map((level) => (
+                                    <SelectItem
+                                      key={level.value}
+                                      value={String(level.value)}
+                                    >
+                                      {level.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                className="h-6 w-6 p-0 text-red-600 hover:bg-red-50"
+                                onClick={() => {
+                                  const currentSkills =
+                                    watch("technicalSkills") || [];
+                                  const updatedSkills = currentSkills.filter(
+                                    (_, i) => i !== index
+                                  );
+                                  setValue("technicalSkills", updatedSkills);
+                                }}
+                              >
+                                ×
+                              </Button>
+                            </div>
+                          ) : (
+                            <Badge className="text-xs bg-yellow-50 text-yellow-800 border-yellow-200">
+                              {proficiencyLevels.find(
+                                (l) => l.value === skill.level
+                              )?.stars || "⭐"}
+                            </Badge>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -1344,24 +1823,117 @@ const Profile = () => {
                     Soft Skills
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="pt-0 space-y-1">
-                  <div className="space-y-1">
-                    <Label htmlFor="softSkills" className="text-xs">
-                      Soft Skills (comma-separated)
-                    </Label>
-                    <AutocompleteInput
-                      value={watch("softSkills") || ""}
-                      onChange={(value) => {
-                        setValue("softSkills", value);
-                      }}
-                      suggestions={softSkillsSuggestions}
-                      placeholder="Communication, Leadership, Teamwork..."
-                      disabled={!isEditing}
-                      className="h-16 text-xs resize-none"
-                    />
-                    <p className="text-xs text-gray-500">
-                      Enter soft skills separated by commas
-                    </p>
+                <CardContent className="pt-0 space-y-2">
+                  <div className="space-y-2">
+                    <Label className="text-xs">Add Soft Skills</Label>
+                    {isEditing && (
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Skill name (e.g., Communication)"
+                          className="h-8 text-xs flex-1"
+                          onKeyPress={(e) => {
+                            if (e.key === "Enter") {
+                              const skillName = e.target.value.trim();
+                              if (skillName) {
+                                const currentSkills = watch("softSkills") || [];
+                                setValue("softSkills", [
+                                  ...currentSkills,
+                                  { name: skillName, level: 1 },
+                                ]);
+                                e.target.value = "";
+                              }
+                            }
+                          }}
+                        />
+                        <Button
+                          type="button"
+                          size="sm"
+                          className="h-8 text-xs"
+                          onClick={() => {
+                            const input = document.querySelector(
+                              'input[placeholder="Skill name (e.g., Communication)"]'
+                            );
+                            const skillName = input?.value.trim();
+                            if (skillName) {
+                              const currentSkills = watch("softSkills") || [];
+                              setValue("softSkills", [
+                                ...currentSkills,
+                                { name: skillName, level: "Beginner" },
+                              ]);
+                              input.value = "";
+                            }
+                          }}
+                        >
+                          Add
+                        </Button>
+                      </div>
+                    )}
+
+                    {/* Display Skills */}
+                    <div className="space-y-2">
+                      {watch("softSkills")?.map((skill, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg"
+                        >
+                          <div className="flex-1">
+                            <span className="text-xs font-medium">
+                              {skill.name}
+                            </span>
+                          </div>
+                          {isEditing ? (
+                            <div className="flex items-center gap-2">
+                              <Select
+                                value={skill.level || 1}
+                                onValueChange={(level) => {
+                                  const currentSkills =
+                                    watch("softSkills") || [];
+                                  const updatedSkills = [...currentSkills];
+                                  updatedSkills[index] = { ...skill, level };
+                                  setValue("softSkills", updatedSkills);
+                                }}
+                              >
+                                <SelectTrigger className="h-6 w-24 text-xs">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {proficiencyLevels.map((level) => (
+                                    <SelectItem
+                                      key={level.value}
+                                      value={level.value}
+                                    >
+                                      {level.label}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                className="h-6 w-6 p-0 text-red-600 hover:bg-red-50"
+                                onClick={() => {
+                                  const currentSkills =
+                                    watch("softSkills") || [];
+                                  const updatedSkills = currentSkills.filter(
+                                    (_, i) => i !== index
+                                  );
+                                  setValue("softSkills", updatedSkills);
+                                }}
+                              >
+                                ×
+                              </Button>
+                            </div>
+                          ) : (
+                            <Badge className="text-xs bg-yellow-50 text-yellow-800 border-yellow-200">
+                              {proficiencyLevels.find(
+                                (l) => l.value === skill.level
+                              )?.stars || "⭐"}
+                            </Badge>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </CardContent>
               </Card>

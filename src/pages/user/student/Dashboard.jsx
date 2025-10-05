@@ -40,6 +40,53 @@ const Dashboard = () => {
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Function to get course logo based on program
+  const getCourseLogo = (program) => {
+    if (!program) return null;
+
+    const programLower = program.toLowerCase();
+
+    if (
+      programLower.includes("information system") ||
+      programLower.includes("information technology")
+    ) {
+      return "/INFORMATION SYSTEM.png";
+    } else if (
+      programLower.includes("business") ||
+      programLower.includes("entrepreneurship") ||
+      programLower.includes("management accounting")
+    ) {
+      return "/BUSINES ADD.png";
+    } else if (
+      programLower.includes("criminology") ||
+      programLower.includes("criminal justice")
+    ) {
+      return "/CRIMINAL JUSTICE.png";
+    } else if (
+      programLower.includes("education") ||
+      programLower.includes("early childhood")
+    ) {
+      return "/EDUCATION.png";
+    } else if (
+      programLower.includes("maritime") ||
+      programLower.includes("marine")
+    ) {
+      return "/MARITIME.png";
+    } else if (
+      programLower.includes("nursing") ||
+      programLower.includes("nurse")
+    ) {
+      return "/NURSE.png";
+    } else if (
+      programLower.includes("tourism") ||
+      programLower.includes("hospitality")
+    ) {
+      return "/TOURISM.png";
+    }
+
+    return null; // Default fallback
+  };
+
   // Modal states
   const [showCertificateModal, setShowCertificateModal] = useState(false);
   const [selectedCertificate, setSelectedCertificate] = useState(null);
@@ -125,7 +172,9 @@ const Dashboard = () => {
             ? `${studentData.program} Student`
             : "Student",
           location:
-            studentData.preferredFields?.location?.[0] || "Location not set",
+            studentData.preferredFields?.location?.length > 0
+              ? studentData.preferredFields.location.join(", ")
+              : "Location not set",
           profileData: {
             ...currentUser,
             ...studentData,
@@ -142,9 +191,8 @@ const Dashboard = () => {
             program: studentData.program,
             yearLevel: studentData.yearLevel,
             studentId: studentData.studentId,
-            // Convert skills from objects to simple format for display
-            technicalSkills:
-              studentData.skills?.map((skill) => skill.name) || [],
+            // Keep skills as objects with proficiency levels for display
+            technicalSkills: studentData.skills || [],
             softSkills: studentData.softSkills || [],
             // Convert certificates and badges to simple format
             certificates:
@@ -275,6 +323,19 @@ const Dashboard = () => {
         {/* Hero Header */}
         <div className="relative overflow-hidden bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 rounded-2xl shadow-xl">
           <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:20px_20px]" />
+
+          {/* Course Logo Background */}
+          {getCourseLogo(profileData.profileData?.program) && (
+            <div className="absolute right-0 top-0 bottom-0 w-1/2 opacity-15">
+              <img
+                src={getCourseLogo(profileData.profileData?.program)}
+                alt={`${profileData.profileData?.program} Background`}
+                className="w-full h-full object-cover object-right"
+              />
+              <div className="absolute inset-0 bg-gradient-to-l from-gray-900/50 to-transparent" />
+            </div>
+          )}
+
           <div className="relative p-6 md:p-8">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
               <div className="flex items-center space-x-4 md:space-x-6">
@@ -304,15 +365,19 @@ const Dashboard = () => {
                   </p>
                 </div>
               </div>
-              <Link to="/profile">
-                <Button
-                  size="lg"
-                  className="bg-white hover:bg-gray-100 text-gray-900 px-6 py-3 shadow-lg hover:shadow-xl transition-all duration-200 font-semibold"
-                >
-                  <Edit className="h-4 w-4 mr-2" />
-                  Edit Profile
-                </Button>
-              </Link>
+
+              {/* Edit Profile Button */}
+              <div className="flex items-center">
+                <Link to="/profile">
+                  <Button
+                    size="lg"
+                    className="bg-white hover:bg-gray-100 text-gray-900 px-6 py-3 shadow-lg hover:shadow-xl transition-all duration-200 font-semibold"
+                  >
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit Profile
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -373,8 +438,8 @@ const Dashboard = () => {
             <Card className="bg-white shadow-md border-gray-200 hover:shadow-lg transition-shadow">
               <CardHeader className="pb-3 border-b border-gray-100">
                 <CardTitle className="flex items-center text-base font-semibold text-gray-900">
-                  <div className="h-8 w-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
-                    <GraduationCap className="h-4 w-4 text-purple-600" />
+                  <div className="h-8 w-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                    <GraduationCap className="h-4 w-4 text-blue-600" />
                   </div>
                   Academic Information
                 </CardTitle>
@@ -457,15 +522,15 @@ const Dashboard = () => {
                     href={profileData.profileData.resumeUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-between p-3 bg-gray-50 hover:bg-purple-50 rounded-lg transition-all border border-transparent hover:border-purple-200 group"
+                    className="flex items-center justify-between p-3 bg-gray-50 hover:bg-blue-50 rounded-lg transition-all border border-transparent hover:border-blue-200 group"
                   >
                     <div className="flex items-center space-x-3">
-                      <FileText className="h-5 w-5 text-purple-600" />
+                      <FileText className="h-5 w-5 text-blue-600" />
                       <span className="text-sm font-medium text-gray-900">
                         Resume
                       </span>
                     </div>
-                    <ExternalLink className="h-4 w-4 text-gray-400 group-hover:text-purple-600 transition-colors" />
+                    <ExternalLink className="h-4 w-4 text-gray-400 group-hover:text-blue-600 transition-colors" />
                   </a>
                 )}
                 {profileData.profileData?.portfolioUrl && (
@@ -502,41 +567,70 @@ const Dashboard = () => {
           {/* Right Column - Skills, Badges & Certificates */}
           <div className="lg:col-span-2 space-y-4">
             {/* Skills Section */}
-            <Card className="bg-white shadow-md border-gray-200 hover:shadow-lg transition-shadow">
-              <CardHeader className="pb-3 border-b border-gray-100">
-                <CardTitle className="flex items-center text-base font-semibold text-gray-900">
-                  <div className="h-8 w-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-                    <Code className="h-4 w-4 text-blue-600" />
+            <Card className="bg-white shadow-sm border-gray-200 hover:shadow-md transition-shadow">
+              <CardHeader className="pb-4 border-b border-gray-100">
+                <CardTitle className="flex items-center text-lg font-semibold text-gray-900">
+                  <div className="h-10 w-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mr-3 shadow-sm">
+                    <Code className="h-5 w-5 text-white" />
                   </div>
                   Skills & Expertise
                 </CardTitle>
               </CardHeader>
-              <CardContent className="pt-4 space-y-5">
+              <CardContent className="pt-6 space-y-6">
                 {/* Technical Skills */}
                 <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <Code className="h-4 w-4 text-blue-600" />
-                      <h4 className="text-sm font-semibold text-gray-700">
-                        Technical Skills
-                      </h4>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <Code className="h-4 w-4 text-blue-600" />
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-semibold text-gray-900">
+                          Technical Skills
+                        </h4>
+                        <p className="text-xs text-gray-500">
+                          Programming & Development
+                        </p>
+                      </div>
                     </div>
-                    <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+                    <span className="text-xs font-medium text-blue-600 bg-blue-50 px-3 py-1.5 rounded-full border border-blue-200">
                       {profileData.profileData?.technicalSkills?.length || 0}{" "}
                       skills
                     </span>
                   </div>
                   {profileData.profileData?.technicalSkills?.length > 0 ? (
-                    <div className="flex flex-wrap gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {profileData.profileData.technicalSkills.map(
                         (skill, index) => (
-                          <Badge
+                          <div
                             key={index}
-                            variant="secondary"
-                            className="bg-blue-100 hover:bg-blue-200 text-blue-800 px-3 py-1.5 text-xs font-medium transition-colors"
+                            className="flex items-center justify-between bg-gray-50 rounded-lg p-3 border border-gray-200 hover:bg-gray-100 transition-colors"
                           >
-                            {skill}
-                          </Badge>
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                              <span className="text-sm font-medium text-gray-900">
+                                {typeof skill === "string" ? skill : skill.name}
+                              </span>
+                            </div>
+                            {typeof skill === "object" && skill.level && (
+                              <Badge
+                                variant="outline"
+                                className="text-xs font-medium px-2 py-1 bg-yellow-50 text-yellow-700 border-yellow-200"
+                              >
+                                {skill.level === 1
+                                  ? "⭐"
+                                  : skill.level === 2
+                                  ? "⭐⭐"
+                                  : skill.level === 3
+                                  ? "⭐⭐⭐"
+                                  : skill.level === 4
+                                  ? "⭐⭐⭐⭐"
+                                  : skill.level === 5
+                                  ? "⭐⭐⭐⭐⭐"
+                                  : "⭐"}
+                              </Badge>
+                            )}
+                          </div>
                         )
                       )}
                     </div>
@@ -552,28 +646,37 @@ const Dashboard = () => {
 
                 {/* Soft Skills */}
                 <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <User className="h-4 w-4 text-purple-600" />
-                      <h4 className="text-sm font-semibold text-gray-700">
-                        Soft Skills
-                      </h4>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <User className="h-4 w-4 text-blue-600" />
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-semibold text-gray-900">
+                          Soft Skills
+                        </h4>
+                        <p className="text-xs text-gray-500">
+                          Personal & Interpersonal
+                        </p>
+                      </div>
                     </div>
-                    <span className="text-xs font-medium text-purple-600 bg-purple-50 px-2 py-1 rounded-full">
+                    <span className="text-xs font-medium text-blue-600 bg-blue-50 px-3 py-1.5 rounded-full border border-blue-200">
                       {profileData.profileData?.softSkills?.length || 0} skills
                     </span>
                   </div>
                   {profileData.profileData?.softSkills?.length > 0 ? (
-                    <div className="flex flex-wrap gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                       {profileData.profileData.softSkills.map(
                         (skill, index) => (
-                          <Badge
+                          <div
                             key={index}
-                            variant="secondary"
-                            className="bg-purple-100 hover:bg-purple-200 text-purple-800 px-3 py-1.5 text-xs font-medium transition-colors"
+                            className="flex items-center gap-2 bg-blue-50 rounded-lg p-2 border border-blue-200 hover:bg-blue-100 transition-colors"
                           >
-                            {skill}
-                          </Badge>
+                            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                            <span className="text-xs font-medium text-blue-800">
+                              {typeof skill === "string" ? skill : skill.name}
+                            </span>
+                          </div>
                         )
                       )}
                     </div>
@@ -676,8 +779,12 @@ const Dashboard = () => {
                         Location
                       </p>
                       <p className="text-sm font-semibold text-gray-900">
-                        {profileData.profileData.preferredFields
-                          .location?.[0] || "N/A"}
+                        {profileData.profileData.preferredFields.location
+                          ?.length > 0
+                          ? profileData.profileData.preferredFields.location.join(
+                              ", "
+                            )
+                          : "N/A"}
                       </p>
                     </div>
                   </div>

@@ -528,7 +528,7 @@ const InterestedCompanies = () => {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm flex items-center gap-2">
-                  <Briefcase className="h-4 w-4 text-purple-600" />
+                  <Briefcase className="h-4 w-4 text-blue-600" />
                   Internship Program
                 </CardTitle>
               </CardHeader>
@@ -548,13 +548,13 @@ const InterestedCompanies = () => {
                     </p>
                     <p className="text-xs text-gray-600">Duration</p>
                   </div>
-                  <div className="text-center p-3 bg-purple-50 rounded-lg">
-                    <Award className="h-6 w-6 text-purple-600 mx-auto mb-1" />
+                  <div className="text-center p-3 bg-blue-50 rounded-lg">
+                    <Award className="h-6 w-6 text-blue-600 mx-auto mb-1" />
                     <p className="text-sm font-bold">Multiple</p>
                     <p className="text-xs text-gray-600">Departments</p>
                   </div>
-                  <div className="text-center p-3 bg-orange-50 rounded-lg">
-                    <Star className="h-6 w-6 text-orange-600 mx-auto mb-1" />
+                  <div className="text-center p-3 bg-green-50 rounded-lg">
+                    <Star className="h-6 w-6 text-green-600 mx-auto mb-1" />
                     <p className="text-sm font-bold">Yes</p>
                     <p className="text-xs text-gray-600">Benefits</p>
                   </div>
