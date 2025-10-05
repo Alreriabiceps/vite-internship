@@ -186,18 +186,6 @@ const Login = () => {
               Register as Student
             </Link>
           </div>
-
-          <div className="mt-4 text-center text-sm text-gray-600">
-            <p className="mb-2">Need access to other portals?</p>
-            <div className="space-x-4">
-              <Link to="/clogin" className="text-gray-700 hover:underline">
-                Company Login
-              </Link>
-              <Link to="/alogin" className="text-gray-700 hover:underline">
-                Admin Login
-              </Link>
-            </div>
-          </div>
         </CardContent>
       </Card>
     </div>
