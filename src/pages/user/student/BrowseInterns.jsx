@@ -296,10 +296,32 @@ const BrowseInterns = () => {
                 className="group hover:shadow-lg transition-all duration-300 cursor-pointer border border-gray-200 hover:border-gray-300 rounded-lg overflow-hidden relative flex flex-col h-full"
                 onClick={() => openStudentModal(student)}
               >
-                <CardContent className="p-4 flex flex-col h-full">
+                {/* Background Course Logo - Top Right */}
+                {getCourseLogo(student.program) && (
+                  <div className="absolute top-0 right-0 w-48 h-48 opacity-10 pointer-events-none">
+                    <img
+                      src={getCourseLogo(student.program)}
+                      alt=""
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                )}
+
+                <CardContent className="p-4 flex flex-col h-full relative z-10">
                   {/* Student Header */}
-                  <div className="flex flex-col items-center text-center mb-4">
-                    <Avatar className="h-16 w-16 border-2 border-gray-200 shadow-sm mb-3">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-base text-gray-900 mb-1 line-clamp-1">
+                        {student.firstName} {student.lastName}
+                      </h3>
+                      <p className="text-xs text-gray-600 mb-2 line-clamp-2 min-h-[2rem]">
+                        {student.program}
+                      </p>
+                      <Badge className="bg-gray-100 text-gray-700 border-0 text-xs">
+                        {student.yearLevel}
+                      </Badge>
+                    </div>
+                    <Avatar className="h-16 w-16 border-2 border-gray-200 shadow-sm ml-3">
                       <AvatarImage
                         src={student.profilePicUrl || student.profilePictureUrl}
                       />
@@ -308,15 +330,6 @@ const BrowseInterns = () => {
                         {student.lastName?.[0]}
                       </AvatarFallback>
                     </Avatar>
-                    <h3 className="font-semibold text-base text-gray-900 mb-1 line-clamp-1">
-                      {student.firstName} {student.lastName}
-                    </h3>
-                    <p className="text-xs text-gray-600 mb-2 line-clamp-2 min-h-[2rem]">
-                      {student.program}
-                    </p>
-                    <Badge className="bg-gray-100 text-gray-700 border-0 text-xs">
-                      {student.yearLevel}
-                    </Badge>
                   </div>
 
                   {/* Student ID */}
@@ -483,6 +496,7 @@ const BrowseInterns = () => {
             student={selectedStudent}
             isOpen={showModal}
             onClose={closeStudentModal}
+            getCourseLogo={getCourseLogo}
           />
         )}
       </div>
@@ -491,25 +505,27 @@ const BrowseInterns = () => {
 };
 
 // Student Profile Modal Component (matching company layout)
-const StudentProfileModal = ({ student, isOpen, onClose }) => {
+const StudentProfileModal = ({ student, isOpen, onClose, getCourseLogo }) => {
   const [viewingImage, setViewingImage] = useState(null);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Student Profile">
       <div className="space-y-4">
         {/* Hero Section - Simple */}
-        <Card className="bg-gray-50 border border-gray-200">
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-4">
-              <Avatar className="h-16 w-16 border-2 border-gray-300">
-                <AvatarImage
-                  src={student.profilePicUrl || student.profilePictureUrl}
-                />
-                <AvatarFallback className="bg-gray-100 text-gray-600 text-lg">
-                  {student.firstName?.[0]}
-                  {student.lastName?.[0]}
-                </AvatarFallback>
-              </Avatar>
+        <Card className="bg-gray-50 border border-gray-200 relative overflow-hidden">
+          {/* Background Course Logo - Top Right */}
+          {getCourseLogo(student.program) && (
+            <div className="absolute top-0 right-0 w-56 h-56 opacity-10 pointer-events-none">
+              <img
+                src={getCourseLogo(student.program)}
+                alt=""
+                className="w-full h-full object-contain"
+              />
+            </div>
+          )}
+
+          <CardContent className="p-4 relative z-10">
+            <div className="flex items-center justify-between">
               <div className="flex-1">
                 <h1 className="text-xl font-semibold text-gray-900 mb-1">
                   {student.firstName} {student.middleName} {student.lastName}
@@ -519,6 +535,15 @@ const StudentProfileModal = ({ student, isOpen, onClose }) => {
                 </p>
                 <p className="text-gray-500 text-xs">{student.yearLevel}</p>
               </div>
+              <Avatar className="h-16 w-16 border-2 border-gray-300 ml-4">
+                <AvatarImage
+                  src={student.profilePicUrl || student.profilePictureUrl}
+                />
+                <AvatarFallback className="bg-gray-100 text-gray-600 text-lg">
+                  {student.firstName?.[0]}
+                  {student.lastName?.[0]}
+                </AvatarFallback>
+              </Avatar>
             </div>
           </CardContent>
         </Card>

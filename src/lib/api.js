@@ -177,6 +177,25 @@ export const usersAPI = {
 
     return uploadApi.post("/users/upload-profile-picture", formData);
   },
+  uploadFile: (formData) => {
+    // Create a custom axios instance for file uploads
+    const uploadApi = axios.create({
+      baseURL: API_BASE_URL,
+      withCredentials: true,
+      timeout: 30000,
+      headers: {
+        // Don't set Content-Type for file uploads - let browser set it with boundary
+      },
+    });
+
+    // Add auth token
+    const token = localStorage.getItem("token");
+    if (token) {
+      uploadApi.defaults.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return uploadApi.post("/users/upload-file", formData);
+  },
 };
 
 export { api };

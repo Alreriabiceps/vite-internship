@@ -728,12 +728,12 @@ const Profile = () => {
   const handleImageUpload = async (file, type, index) => {
     try {
       const formData = new FormData();
-      formData.append("profilePicture", file);
+      formData.append("file", file);
 
-      // Upload image to server using the profile picture endpoint
-      const uploadResponse = await usersAPI.uploadProfilePicture(formData);
-      // The backend returns profilePictureUrl
-      const imageUrl = uploadResponse.data.profilePictureUrl;
+      // Upload image to server using the generic file upload endpoint
+      const uploadResponse = await usersAPI.uploadFile(formData);
+      // The backend returns fileUrl
+      const imageUrl = uploadResponse.data.fileUrl;
 
       if (type === "badge") {
         const newBadges = [...(watch("badges") || [])];
