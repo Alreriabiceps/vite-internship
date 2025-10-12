@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../../contexts/AuthContext";
 import { Link } from "react-router-dom";
-import { getCourseLogoAbsolute } from "../../../lib/imageUtils";
 import {
   Card,
   CardContent,
@@ -42,7 +41,50 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
 
   // Function to get course logo based on program
-  const getCourseLogo = getCourseLogoAbsolute;
+  const getCourseLogo = (program) => {
+    if (!program) return null;
+    const programLower = program.toLowerCase();
+
+    if (
+      programLower.includes("information system") ||
+      programLower.includes("information technology")
+    ) {
+      return "/INFORMATION SYSTEM.png";
+    } else if (
+      programLower.includes("business") ||
+      programLower.includes("entrepreneurship") ||
+      programLower.includes("management accounting")
+    ) {
+      return "/BUSINES ADD.png";
+    } else if (
+      programLower.includes("criminology") ||
+      programLower.includes("criminal justice")
+    ) {
+      return "/CRIMINAL JUSTICE.png";
+    } else if (
+      programLower.includes("education") ||
+      programLower.includes("early childhood")
+    ) {
+      return "/EDUCATION.png";
+    } else if (
+      programLower.includes("maritime") ||
+      programLower.includes("marine")
+    ) {
+      return "/MARITIME.png";
+    } else if (
+      programLower.includes("nursing") ||
+      programLower.includes("nurse")
+    ) {
+      return "/NURSE.png";
+    } else if (
+      programLower.includes("tourism") ||
+      programLower.includes("hospitality")
+    ) {
+      return "/TOURISM.png";
+    }
+
+    return null;
+  };
 
   // Modal states
   const [showCertificateModal, setShowCertificateModal] = useState(false);
