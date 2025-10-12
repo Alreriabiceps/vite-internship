@@ -96,13 +96,8 @@ const BrowseInterns = () => {
         studentsData = [];
       }
 
-      // Filter out the current user from the list
-      const currentUserId = user?.id || user?._id;
-      const otherStudents = studentsData.filter(
-        (student) => student && student._id && student._id !== currentUserId
-      );
-
-      setStudents(otherStudents);
+      // Include all students (including current user)
+      setStudents(studentsData);
     } catch (error) {
       // Show more specific error message
       const errorMessage =
@@ -311,9 +306,16 @@ const BrowseInterns = () => {
                   {/* Student Header */}
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
-                      <h3 className="font-semibold text-base text-gray-900 mb-1 line-clamp-1">
-                        {student.firstName} {student.lastName}
-                      </h3>
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-semibold text-base text-gray-900 line-clamp-1">
+                          {student.firstName} {student.lastName}
+                        </h3>
+                        {(user?.id || user?._id) === student._id && (
+                          <Badge className="bg-blue-100 text-blue-700 border-0 text-xs px-2 py-0.5">
+                            You
+                          </Badge>
+                        )}
+                      </div>
                       <p className="text-xs text-gray-600 mb-2 line-clamp-2 min-h-[2rem]">
                         {student.program}
                       </p>
@@ -497,6 +499,7 @@ const BrowseInterns = () => {
             isOpen={showModal}
             onClose={closeStudentModal}
             getCourseLogo={getCourseLogo}
+            currentUser={user}
           />
         )}
       </div>
@@ -505,7 +508,13 @@ const BrowseInterns = () => {
 };
 
 // Student Profile Modal Component (matching company layout)
-const StudentProfileModal = ({ student, isOpen, onClose, getCourseLogo }) => {
+const StudentProfileModal = ({
+  student,
+  isOpen,
+  onClose,
+  getCourseLogo,
+  currentUser,
+}) => {
   const [viewingImage, setViewingImage] = useState(null);
 
   return (
@@ -527,9 +536,16 @@ const StudentProfileModal = ({ student, isOpen, onClose, getCourseLogo }) => {
           <CardContent className="p-4 relative z-10">
             <div className="flex items-center justify-between">
               <div className="flex-1">
-                <h1 className="text-xl font-semibold text-gray-900 mb-1">
-                  {student.firstName} {student.middleName} {student.lastName}
-                </h1>
+                <div className="flex items-center gap-2 mb-1">
+                  <h1 className="text-xl font-semibold text-gray-900">
+                    {student.firstName} {student.middleName} {student.lastName}
+                  </h1>
+                  {(currentUser?.id || currentUser?._id) === student._id && (
+                    <Badge className="bg-blue-100 text-blue-700 border-0 text-sm px-2 py-1">
+                      You
+                    </Badge>
+                  )}
+                </div>
                 <p className="text-gray-600 text-sm mb-0.5">
                   {student.program}
                 </p>
