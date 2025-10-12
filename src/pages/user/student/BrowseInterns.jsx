@@ -219,20 +219,20 @@ const BrowseInterns = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
             Browse Fellow Interns
           </h1>
-          <p className="text-gray-600">
+          <p className="text-sm sm:text-base text-gray-600">
             Discover and connect with other students in your field
           </p>
         </div>
 
         {/* Search and Filter */}
-        <div className="mb-6">
-          <div className="flex flex-col sm:flex-row gap-4">
+        <div className="mb-4 sm:mb-6">
+          <div className="flex flex-col gap-3 sm:gap-4">
             <div className="flex-1">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -240,15 +240,15 @@ const BrowseInterns = () => {
                   placeholder="Search by name, program, or student ID..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 text-sm sm:text-base"
                 />
               </div>
             </div>
-            <div className="sm:w-64">
+            <div className="w-full sm:w-64">
               <select
                 value={selectedCourse}
                 onChange={(e) => setSelectedCourse(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="All">All Programs</option>
                 {getUniqueCourses().map((course) => (
@@ -284,7 +284,7 @@ const BrowseInterns = () => {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
             {filteredStudents.map((student) => (
               <Card
                 key={student._id}
@@ -293,25 +293,37 @@ const BrowseInterns = () => {
               >
                 {/* Background Course Logo - Top Right */}
                 {getCourseLogo(student.program) && (
-                  <div className="absolute top-0 right-0 w-48 h-48 opacity-10 pointer-events-none">
+                  <div className="absolute top-0 right-0 w-48 h-48 opacity-20 pointer-events-none z-0">
                     <img
                       src={getCourseLogo(student.program)}
                       alt=""
                       className="w-full h-full object-contain"
+                      onLoad={() =>
+                        console.log(
+                          "🎨 Background image loaded for:",
+                          student.program
+                        )
+                      }
+                      onError={() =>
+                        console.log(
+                          "❌ Background image failed to load for:",
+                          student.program
+                        )
+                      }
                     />
                   </div>
                 )}
 
-                <CardContent className="p-4 flex flex-col h-full relative z-10">
+                <CardContent className="p-3 sm:p-4 flex flex-col h-full relative z-10">
                   {/* Student Header */}
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-semibold text-base text-gray-900 line-clamp-1">
+                  <div className="flex items-start justify-between mb-3 sm:mb-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1 sm:gap-2 mb-1">
+                        <h3 className="font-semibold text-sm sm:text-base text-gray-900 line-clamp-1 truncate">
                           {student.firstName} {student.lastName}
                         </h3>
                         {(user?.id || user?._id) === student._id && (
-                          <Badge className="bg-blue-100 text-blue-700 border-0 text-xs px-2 py-0.5">
+                          <Badge className="bg-blue-100 text-blue-700 border-0 text-xs px-1.5 sm:px-2 py-0.5 flex-shrink-0">
                             You
                           </Badge>
                         )}
@@ -323,7 +335,7 @@ const BrowseInterns = () => {
                         {student.yearLevel}
                       </Badge>
                     </div>
-                    <Avatar className="h-16 w-16 border-2 border-gray-200 shadow-sm ml-3">
+                    <Avatar className="h-12 w-12 sm:h-16 sm:w-16 border-2 border-gray-200 shadow-sm ml-2 sm:ml-3 flex-shrink-0">
                       <AvatarImage
                         src={student.profilePicUrl || student.profilePictureUrl}
                       />
@@ -407,12 +419,21 @@ const BrowseInterns = () => {
                       </div>
                       <div className="flex flex-wrap gap-1">
                         {student.skills.slice(0, 3).map((skill, index) => {
-                          const skillName =
-                            typeof skill === "string"
-                              ? skill
-                              : skill?.name || "Unknown Skill";
-                          const skillLevel =
-                            typeof skill === "object" ? skill?.level : null;
+                          // Handle different skill object structures
+                          let skillName = "Unknown Skill";
+                          let skillLevel = null;
+
+                          if (typeof skill === "string") {
+                            skillName = skill;
+                          } else if (
+                            typeof skill === "object" &&
+                            skill !== null
+                          ) {
+                            skillName =
+                              skill.name || skill.skillName || "Unknown Skill";
+                            skillLevel =
+                              skill.level || skill.skillLevel || null;
+                          }
 
                           return (
                             <Badge
@@ -448,23 +469,23 @@ const BrowseInterns = () => {
                   )}
 
                   {/* Stats */}
-                  <div className="grid grid-cols-3 gap-1.5 mb-4">
-                    <div className="text-center p-2 bg-gray-50 rounded">
-                      <Award className="h-3.5 w-3.5 text-gray-600 mx-auto mb-1" />
+                  <div className="grid grid-cols-3 gap-1 sm:gap-1.5 mb-3 sm:mb-4">
+                    <div className="text-center p-1.5 sm:p-2 bg-gray-50 rounded">
+                      <Award className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-600 mx-auto mb-1" />
                       <p className="text-xs font-semibold text-gray-900">
                         {student.certifications?.length || 0}
                       </p>
                       <p className="text-xs text-gray-600">Certs</p>
                     </div>
-                    <div className="text-center p-2 bg-gray-50 rounded">
-                      <Star className="h-3.5 w-3.5 text-gray-600 mx-auto mb-1" />
+                    <div className="text-center p-1.5 sm:p-2 bg-gray-50 rounded">
+                      <Star className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-600 mx-auto mb-1" />
                       <p className="text-xs font-semibold text-gray-900">
                         {student.badges?.length || 0}
                       </p>
                       <p className="text-xs text-gray-600">Badges</p>
                     </div>
-                    <div className="text-center p-2 bg-gray-50 rounded">
-                      <Code className="h-3.5 w-3.5 text-gray-600 mx-auto mb-1" />
+                    <div className="text-center p-1.5 sm:p-2 bg-gray-50 rounded">
+                      <Code className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-600 mx-auto mb-1" />
                       <p className="text-xs font-semibold text-gray-900">
                         {student.skills?.length || 0}
                       </p>
@@ -477,14 +498,15 @@ const BrowseInterns = () => {
 
                   {/* View Profile Button - Fixed at bottom */}
                   <Button
-                    className="w-full bg-gray-800 hover:bg-gray-900 text-white text-sm py-2"
+                    className="w-full bg-gray-800 hover:bg-gray-900 text-white text-xs sm:text-sm py-2"
                     onClick={(e) => {
                       e.stopPropagation();
                       openStudentModal(student);
                     }}
                   >
-                    <Eye className="h-4 w-4 mr-2" />
-                    View Profile
+                    <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">View Profile</span>
+                    <span className="sm:hidden">View</span>
                   </Button>
                 </CardContent>
               </Card>
@@ -524,24 +546,36 @@ const StudentProfileModal = ({
         <Card className="bg-gray-50 border border-gray-200 relative overflow-hidden">
           {/* Background Course Logo - Top Right */}
           {getCourseLogo(student.program) && (
-            <div className="absolute top-0 right-0 w-56 h-56 opacity-10 pointer-events-none">
+            <div className="absolute top-0 right-0 w-56 h-56 opacity-20 pointer-events-none z-0">
               <img
                 src={getCourseLogo(student.program)}
                 alt=""
                 className="w-full h-full object-contain"
+                onLoad={() =>
+                  console.log(
+                    "🎨 Modal background image loaded for:",
+                    student.program
+                  )
+                }
+                onError={() =>
+                  console.log(
+                    "❌ Modal background image failed to load for:",
+                    student.program
+                  )
+                }
               />
             </div>
           )}
 
-          <CardContent className="p-4 relative z-10">
+          <CardContent className="p-3 sm:p-4 relative z-10">
             <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <h1 className="text-xl font-semibold text-gray-900">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1 sm:gap-2 mb-1">
+                  <h1 className="text-lg sm:text-xl font-semibold text-gray-900 truncate">
                     {student.firstName} {student.middleName} {student.lastName}
                   </h1>
                   {(currentUser?.id || currentUser?._id) === student._id && (
-                    <Badge className="bg-blue-100 text-blue-700 border-0 text-sm px-2 py-1">
+                    <Badge className="bg-blue-100 text-blue-700 border-0 text-xs sm:text-sm px-1.5 sm:px-2 py-0.5 sm:py-1 flex-shrink-0">
                       You
                     </Badge>
                   )}
@@ -551,7 +585,7 @@ const StudentProfileModal = ({
                 </p>
                 <p className="text-gray-500 text-xs">{student.yearLevel}</p>
               </div>
-              <Avatar className="h-16 w-16 border-2 border-gray-300 ml-4">
+              <Avatar className="h-12 w-12 sm:h-16 sm:w-16 border-2 border-gray-300 ml-2 sm:ml-4 flex-shrink-0">
                 <AvatarImage
                   src={student.profilePicUrl || student.profilePictureUrl}
                 />
@@ -565,7 +599,7 @@ const StudentProfileModal = ({
         </Card>
 
         {/* Grid Layout - Compact */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-3 sm:gap-4">
           {/* Personal Information */}
           <Card>
             <CardHeader className="border-b py-2">
@@ -726,12 +760,17 @@ const StudentProfileModal = ({
             <CardContent className="pt-3">
               <div className="flex flex-wrap gap-1.5">
                 {student.skills.map((skill, index) => {
-                  const skillName =
-                    typeof skill === "string"
-                      ? skill
-                      : skill?.name || "Unknown Skill";
-                  const skillLevel =
-                    typeof skill === "object" ? skill?.level : null;
+                  // Handle different skill object structures
+                  let skillName = "Unknown Skill";
+                  let skillLevel = null;
+
+                  if (typeof skill === "string") {
+                    skillName = skill;
+                  } else if (typeof skill === "object" && skill !== null) {
+                    skillName =
+                      skill.name || skill.skillName || "Unknown Skill";
+                    skillLevel = skill.level || skill.skillLevel || null;
+                  }
 
                   return (
                     <Badge key={index} variant="secondary" className="text-xs">
@@ -773,10 +812,15 @@ const StudentProfileModal = ({
             <CardContent className="pt-3">
               <div className="flex flex-wrap gap-1.5">
                 {student.softSkills.map((skill, index) => {
-                  const skillName =
-                    typeof skill === "string"
-                      ? skill
-                      : skill?.name || "Unknown Skill";
+                  // Handle different skill object structures
+                  let skillName = "Unknown Skill";
+
+                  if (typeof skill === "string") {
+                    skillName = skill;
+                  } else if (typeof skill === "object" && skill !== null) {
+                    skillName =
+                      skill.name || skill.skillName || "Unknown Skill";
+                  }
 
                   return (
                     <Badge
@@ -805,7 +849,7 @@ const StudentProfileModal = ({
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-3">
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
                 {student.certifications.map((cert, index) => (
                   <div
                     key={index}
@@ -874,31 +918,51 @@ const StudentProfileModal = ({
                 <div className="p-1.5 bg-gray-100 rounded">
                   <Award className="h-5 w-5 text-gray-600" />
                 </div>
-                Badges & Achievements
+                Badges
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-3">
-              <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
-                {student.badges.map((badge, index) => (
-                  <div key={index} className="text-center group">
-                    <div className="relative rounded-lg overflow-hidden border-2 border-gray-200 group-hover:border-gray-400 transition-colors">
-                      {badge.iconUrl || badge.imageUrl || badge.image ? (
-                        <img
-                          src={badge.iconUrl || badge.imageUrl || badge.image}
-                          alt={badge.name || badge.badgeName}
-                          className="w-full aspect-square object-cover"
-                        />
-                      ) : (
-                        <div className="w-full aspect-square bg-gray-100 flex items-center justify-center">
-                          <Award className="h-8 w-8 text-gray-600" />
-                        </div>
-                      )}
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 sm:gap-3">
+                {student.badges.map((badge, index) => {
+                  const badgeUrl = badge.url || badge.externalUrl || badge.link;
+                  const BadgeContent = (
+                    <div className="text-center group">
+                      <div className="relative rounded-lg overflow-hidden border-2 border-gray-200 group-hover:border-gray-400 transition-colors">
+                        {badge.iconUrl || badge.imageUrl || badge.image ? (
+                          <img
+                            src={badge.iconUrl || badge.imageUrl || badge.image}
+                            alt={badge.name || badge.badgeName}
+                            className="w-full aspect-square object-cover"
+                          />
+                        ) : (
+                          <div className="w-full aspect-square bg-gray-100 flex items-center justify-center">
+                            <Award className="h-8 w-8 text-gray-600" />
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-xs font-medium text-gray-900 mt-1 truncate">
+                        {badge.name || badge.badgeName}
+                      </p>
                     </div>
-                    <p className="text-xs font-medium text-gray-900 mt-1 truncate">
-                      {badge.name || badge.badgeName}
-                    </p>
-                  </div>
-                ))}
+                  );
+
+                  return badgeUrl ? (
+                    <a
+                      key={index}
+                      href={badgeUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block hover:scale-105 transition-transform duration-200"
+                      title={`View ${
+                        badge.name || badge.badgeName
+                      } - Opens in new tab`}
+                    >
+                      {BadgeContent}
+                    </a>
+                  ) : (
+                    <div key={index}>{BadgeContent}</div>
+                  );
+                })}
               </div>
               {student.badges.length === 0 && (
                 <p className="text-sm text-gray-500 text-center py-4">

@@ -47,26 +47,32 @@ const BrowseInterns = () => {
   const [searchParams] = useSearchParams();
   const internshipId = searchParams.get("internshipId");
   const [students, setStudents] = useState([]);
-  const [filteredStudents, setFilteredStudents] = useState([]);
+  const [filteredStudents, setFilteredStudents] = useState({
+    shortlisted: [],
+    regular: [],
+    all: [],
+  });
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCourse, setSelectedCourse] = useState("All");
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [internshipTitle, setInternshipTitle] = useState("");
-  const [shortlistedStudents, setShortlistedStudents] = useState(() => {
-    // Load shortlist from localStorage
-    const saved = localStorage.getItem("shortlistedStudents");
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [shortlistedStudents, setShortlistedStudents] = useState([]);
 
   useEffect(() => {
+    // Clear localStorage to start fresh
+    localStorage.removeItem("shortlistedStudents");
     fetchStudents();
     fetchShortlistedStudents();
   }, [internshipId]);
 
   const fetchShortlistedStudents = async () => {
     try {
+      // Start with empty shortlist to avoid showing old data
+      setShortlistedStudents([]);
+      console.log("📋 Starting with empty shortlist");
+
       // Fetch the company's profile to get preferred applicants
       const response = await companiesAPI.getProfile();
       const companyData = response.data?.data || response.data;
@@ -124,7 +130,7 @@ const BrowseInterns = () => {
 
   useEffect(() => {
     filterStudents();
-  }, [searchTerm, selectedCourse, students]);
+  }, [searchTerm, selectedCourse, students, shortlistedStudents]);
 
   const fetchStudents = async () => {
     try {
@@ -164,11 +170,15 @@ const BrowseInterns = () => {
 
             const validStudents = applicantDetails.filter(Boolean);
             setStudents(validStudents);
-            setFilteredStudents(validStudents);
+            // Initial filter will be applied by filterStudents() in useEffect
           } else {
             console.log("📭 No applicants yet for this internship");
             setStudents([]);
-            setFilteredStudents([]);
+            setFilteredStudents({
+              shortlisted: [],
+              regular: [],
+              all: [],
+            });
           }
         } else {
           console.log("❌ Internship not found");
@@ -181,7 +191,7 @@ const BrowseInterns = () => {
 
         const studentsData = response.data?.students || response.data || [];
         setStudents(studentsData);
-        setFilteredStudents(studentsData);
+        // Initial filter will be applied by filterStudents() in useEffect
       }
     } catch (error) {
       console.error("Error fetching students:", error);
@@ -215,7 +225,28 @@ const BrowseInterns = () => {
       });
     }
 
-    setFilteredStudents(filtered);
+    // Separate shortlisted and non-shortlisted students
+    const shortlistedIds = shortlistedStudents.map((s) => s._id);
+    const shortlistedFiltered = filtered.filter((student) =>
+      shortlistedIds.includes(student._id)
+    );
+    const regularFiltered = filtered.filter(
+      (student) => !shortlistedIds.includes(student._id)
+    );
+
+    console.log("🔄 Filtering students:", {
+      totalStudents: students.length,
+      filteredStudents: filtered.length,
+      shortlistedCount: shortlistedFiltered.length,
+      regularCount: regularFiltered.length,
+      shortlistedIds: shortlistedIds,
+    });
+
+    setFilteredStudents({
+      shortlisted: shortlistedFiltered,
+      regular: regularFiltered,
+      all: filtered,
+    });
   };
 
   // Get unique courses/programs from students
@@ -250,9 +281,15 @@ const BrowseInterns = () => {
         );
         await companiesAPI.removePreferredApplicant(user._id, student._id);
 
-        setShortlistedStudents((prev) =>
-          prev.filter((s) => s._id !== student._id)
-        );
+        setShortlistedStudents((prev) => {
+          const updated = prev.filter((s) => s._id !== student._id);
+          console.log("🗑️ Removed from shortlist:", {
+            studentId: student._id,
+            studentName: `${student.firstName} ${student.lastName}`,
+            newShortlistCount: updated.length,
+          });
+          return updated;
+        });
         toast.success(
           `${student.firstName} ${student.lastName} removed from shortlist`
         );
@@ -264,7 +301,15 @@ const BrowseInterns = () => {
           notes: `Interested in ${student.firstName} ${student.lastName} for internship position.`,
         });
 
-        setShortlistedStudents((prev) => [...prev, student]);
+        setShortlistedStudents((prev) => {
+          const updated = [...prev, student];
+          console.log("➕ Added to shortlist:", {
+            studentId: student._id,
+            studentName: `${student.firstName} ${student.lastName}`,
+            newShortlistCount: updated.length,
+          });
+          return updated;
+        });
         toast.success(
           `${student.firstName} ${student.lastName} added to shortlist!`
         );
@@ -277,6 +322,50 @@ const BrowseInterns = () => {
 
   const isShortlisted = (studentId) => {
     return shortlistedStudents.some((s) => s._id === studentId);
+  };
+
+  const getCourseLogo = (program) => {
+    if (!program) return null;
+    const programLower = program.toLowerCase();
+    console.log("🔍 Program:", program, "Lower:", programLower);
+
+    if (programLower.includes("business")) {
+      console.log("✅ Business match - returning:", "/BUSINES ADD.png");
+      return "/BUSINES ADD.png";
+    }
+    if (programLower.includes("criminal")) {
+      console.log("✅ Criminal match - returning:", "/CRIMINAL JUSTICE.png");
+      return "/CRIMINAL JUSTICE.png";
+    }
+    if (programLower.includes("education")) {
+      console.log("✅ Education match - returning:", "/EDUCATION.png");
+      return "/EDUCATION.png";
+    }
+    if (
+      programLower.includes("information") ||
+      programLower.includes("computer")
+    ) {
+      console.log(
+        "✅ Information match - returning:",
+        "/INFORMATION SYSTEM.png"
+      );
+      return "/INFORMATION SYSTEM.png";
+    }
+    if (programLower.includes("maritime")) {
+      console.log("✅ Maritime match - returning:", "/MARITIME.png");
+      return "/MARITIME.png";
+    }
+    if (programLower.includes("nurse") || programLower.includes("nursing")) {
+      console.log("✅ Nurse match - returning:", "/NURSE.png");
+      return "/NURSE.png";
+    }
+    if (programLower.includes("tourism")) {
+      console.log("✅ Tourism match - returning:", "/TOURISM.png");
+      return "/TOURISM.png";
+    }
+
+    console.log("❌ No match found for program:", program);
+    return null;
   };
 
   if (loading) {
@@ -296,322 +385,524 @@ const BrowseInterns = () => {
   }
 
   return (
-    <div className="p-6 space-y-4">
-      {/* Header */}
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8">
+        {/* Header */}
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
             {internshipId && internshipTitle
               ? `Applicants for ${internshipTitle}`
               : "Browse Interns"}
           </h1>
-          <p className="text-gray-600 mt-1">
+          <p className="text-sm sm:text-base text-gray-600">
             {internshipId && internshipTitle
               ? `Showing ${filteredStudents.length} ${
                   filteredStudents.length === 1 ? "applicant" : "applicants"
                 } who applied to this position`
               : "Find the perfect intern for your company"}
           </p>
-        </div>
-        {shortlistedStudents.length > 0 && (
-          <div className="flex items-center gap-2 bg-pink-50 px-4 py-2 rounded-lg border-2 border-pink-200">
-            <Heart className="h-5 w-5 text-pink-600 fill-pink-600" />
-            <div>
-              <p className="text-sm font-bold text-pink-700">
-                {shortlistedStudents.length} Shortlisted
-              </p>
-              <p className="text-xs text-pink-600">
-                {shortlistedStudents.length === 1 ? "candidate" : "candidates"}
-              </p>
+          {shortlistedStudents.length > 0 && (
+            <div className="flex items-center gap-2 bg-gray-100 px-3 py-2 rounded-lg border border-gray-200 mt-3">
+              <Heart className="h-4 w-4 text-gray-600 fill-gray-600" />
+              <div>
+                <p className="text-sm font-semibold text-gray-700">
+                  {shortlistedStudents.length} Shortlisted
+                </p>
+                <p className="text-xs text-gray-600">
+                  {shortlistedStudents.length === 1
+                    ? "candidate"
+                    : "candidates"}
+                </p>
+              </div>
             </div>
+          )}
+        </div>
+
+        {/* Search and Filter */}
+        <div className="mb-4 sm:mb-6">
+          <div className="flex flex-col gap-3 sm:gap-4">
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Input
+                  placeholder="Search by name, email, program, or student ID..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 text-sm sm:text-base"
+                />
+              </div>
+            </div>
+            <div className="w-full sm:w-64">
+              <select
+                value={selectedCourse}
+                onChange={(e) => setSelectedCourse(e.target.value)}
+                className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="All">All Programs</option>
+                {uniqueCourses.map((course) => (
+                  <option key={course} value={course}>
+                    {course}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Results Count */}
+        <div className="mb-4">
+          <p className="text-sm text-gray-600">
+            Showing {filteredStudents.all.length} of {students.length} students
+            {filteredStudents.shortlisted.length > 0 && (
+              <span className="ml-2 text-blue-600 font-medium">
+                ({filteredStudents.shortlisted.length} shortlisted)
+              </span>
+            )}
+          </p>
+        </div>
+
+        {/* Students Grid */}
+        {filteredStudents.all.length === 0 ? (
+          <Card>
+            <CardContent className="py-12 text-center">
+              <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                No students found
+              </h3>
+              <p className="text-gray-600">
+                {searchTerm
+                  ? "Try adjusting your search terms"
+                  : "No students are currently available"}
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="space-y-8">
+            {/* Shortlisted Students Section */}
+            {filteredStudents.shortlisted.length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <Heart className="h-5 w-5 text-red-500 fill-red-500" />
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    Shortlisted Students ({filteredStudents.shortlisted.length})
+                  </h2>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
+                  {filteredStudents.shortlisted.map((student) => (
+                    <StudentCard
+                      key={student._id}
+                      student={student}
+                      shortlistedStudents={shortlistedStudents}
+                      setShortlistedStudents={setShortlistedStudents}
+                      onViewProfile={viewStudentProfile}
+                      onRefreshShortlist={fetchShortlistedStudents}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Regular Students Section */}
+            {filteredStudents.regular.length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <Users className="h-5 w-5 text-gray-600" />
+                  <h2 className="text-lg font-semibold text-gray-900">
+                    All Students ({filteredStudents.regular.length})
+                  </h2>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
+                  {filteredStudents.regular.map((student) => (
+                    <StudentCard
+                      key={student._id}
+                      student={student}
+                      shortlistedStudents={shortlistedStudents}
+                      setShortlistedStudents={setShortlistedStudents}
+                      onViewProfile={viewStudentProfile}
+                      onRefreshShortlist={fetchShortlistedStudents}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
-      </div>
 
-      {/* Search Bar & Filters - Compact */}
-      <Card>
-        <CardContent className="p-4 space-y-3">
-          {/* Search Bar */}
-          <div className="relative">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
-            <Input
-              type="text"
-              placeholder="Search by name, email, program, or student ID..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 h-9 text-sm"
+        {/* Student Profile Modal */}
+        {selectedStudent && (
+          <StudentProfileModal
+            student={selectedStudent}
+            isOpen={showModal}
+            onClose={closeModal}
+          />
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Student Card Component
+const StudentCard = ({
+  student,
+  shortlistedStudents,
+  setShortlistedStudents,
+  onViewProfile,
+  onRefreshShortlist,
+}) => {
+  const { user } = useAuth();
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+
+  const isShortlisted = (studentId) => {
+    return shortlistedStudents.some((s) => s._id === studentId);
+  };
+
+  const toggleShortlist = async (student, e) => {
+    e.stopPropagation(); // Prevent card click event
+
+    const isShortlisted = shortlistedStudents.some(
+      (s) => s._id === student._id
+    );
+
+    console.log("🔄 Toggle shortlist:", {
+      studentId: student._id,
+      studentName: `${student.firstName} ${student.lastName}`,
+      isShortlisted,
+      companyId: user._id,
+    });
+
+    try {
+      if (isShortlisted) {
+        // Remove from shortlist
+        console.log(
+          "🗑️ Removing student from preferred applicants:",
+          student._id
+        );
+        await companiesAPI.removePreferredApplicant(user._id, student._id);
+
+        setShortlistedStudents((prev) =>
+          prev.filter((s) => s._id !== student._id)
+        );
+        toast.success(
+          `${student.firstName} ${student.lastName} removed from shortlist`
+        );
+      } else {
+        // Add to shortlist
+        console.log("➕ Adding student to preferred applicants:", {
+          companyId: user._id,
+          studentId: student._id,
+          studentName: `${student.firstName} ${student.lastName}`,
+        });
+
+        const response = await companiesAPI.addPreferredApplicant(user._id, {
+          studentId: student._id,
+          notes: `Interested in ${student.firstName} ${student.lastName} for internship position.`,
+        });
+
+        console.log("✅ API Response:", response.data);
+        setShortlistedStudents((prev) => [...prev, student]);
+        toast.success(
+          `${student.firstName} ${student.lastName} added to shortlist!`
+        );
+      }
+    } catch (error) {
+      console.error("❌ Error updating shortlist:", error);
+
+      // Handle specific error cases
+      if (error.response?.status === 400) {
+        const errorMessage = error.response?.data?.message || "Bad request";
+        if (errorMessage.includes("already in preferred applicants")) {
+          toast.error("This student is already in your shortlist");
+          // Refresh the shortlist to sync with database
+          onRefreshShortlist();
+        } else {
+          toast.error(`Error: ${errorMessage}`);
+        }
+      } else {
+        toast.error("Failed to update shortlist. Please try again.");
+      }
+    }
+  };
+
+  const viewStudentProfile = (student) => {
+    setSelectedStudent(student);
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedStudent(null);
+  };
+
+  const getCourseLogo = (program) => {
+    if (!program) return null;
+
+    // Debug logging
+    console.log("🎨 Getting course logo for program:", program);
+
+    const logoMap = {
+      "Business Administration": "/BUSINES ADD.png",
+      "Bachelor of Science in Business Administration": "/BUSINES ADD.png",
+      "Criminal Justice": "/CRIMINAL JUSTICE.png",
+      "Bachelor of Science in Criminal Justice": "/CRIMINAL JUSTICE.png",
+      Education: "/EDUCATION.png",
+      "Bachelor of Science in Education": "/EDUCATION.png",
+      "Information System": "/INFORMATION SYSTEM.png",
+      "Bachelor of Science in Information System": "/INFORMATION SYSTEM.png",
+      Maritime: "/MARITIME.png",
+      "Bachelor of Science in Maritime": "/MARITIME.png",
+      Nursing: "/NURSE.png",
+      "Bachelor of Science in Nursing": "/NURSE.png",
+      Tourism: "/TOURISM.png",
+      "Bachelor of Science in Tourism": "/TOURISM.png",
+    };
+
+    const logoPath = logoMap[program] || null;
+    console.log("🎨 Logo path:", logoPath);
+    return logoPath;
+  };
+
+  return (
+    <>
+      <Card
+        className="group hover:shadow-lg transition-all duration-300 cursor-pointer border border-gray-200 hover:border-gray-300 rounded-lg overflow-hidden relative flex flex-col h-full"
+        onClick={() => onViewProfile(student)}
+      >
+        {/* Background Course Logo - Top Right */}
+        {getCourseLogo(student.program) && (
+          <div className="absolute top-0 right-0 w-48 h-48 opacity-20 pointer-events-none z-0">
+            <img
+              src={getCourseLogo(student.program)}
+              alt=""
+              className="w-full h-full object-contain"
+              onLoad={() =>
+                console.log("🎨 Background image loaded for:", student.program)
+              }
+              onError={() =>
+                console.log(
+                  "❌ Background image failed to load for:",
+                  student.program
+                )
+              }
             />
           </div>
+        )}
+        <CardContent className="p-3 sm:p-4 flex flex-col h-full relative z-10">
+          {/* Student Header */}
+          <div className="flex items-start justify-between mb-3 sm:mb-4">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1 sm:gap-2 mb-1">
+                <h3 className="font-semibold text-sm sm:text-base text-gray-900 line-clamp-1 truncate">
+                  {student.firstName} {student.lastName}
+                </h3>
+              </div>
+              <p className="text-xs text-gray-600 mb-2 line-clamp-2 min-h-[2rem]">
+                {student.program}
+              </p>
+              <Badge className="bg-gray-100 text-gray-700 border-0 text-xs">
+                {student.yearLevel}
+              </Badge>
+            </div>
+            <Avatar className="h-12 w-12 sm:h-16 sm:w-16 border-2 border-gray-200 shadow-sm ml-2 sm:ml-3 flex-shrink-0">
+              <AvatarImage
+                src={student.profilePicUrl || student.profilePictureUrl}
+              />
+              <AvatarFallback className="bg-gray-100 text-gray-600 text-lg">
+                {student.firstName?.[0]}
+                {student.lastName?.[0]}
+              </AvatarFallback>
+            </Avatar>
+          </div>
 
-          {/* Course Filter Tabs */}
-          <div>
-            <div className="flex items-center gap-1.5 mb-2">
-              <GraduationCap className="h-3.5 w-3.5 text-gray-600" />
-              <span className="text-xs font-semibold text-gray-700">
-                Filter by Program
+          {/* Student ID */}
+          {student.studentId && (
+            <div className="flex items-center justify-center gap-1.5 mb-3 px-2 py-1.5 bg-gray-50 rounded">
+              <FileText className="h-3 w-3 text-gray-500" />
+              <span className="text-xs font-medium text-gray-600">
+                ID: {student.studentId}
               </span>
             </div>
-            <div className="flex flex-wrap gap-1.5">
-              {uniqueCourses.map((course) => (
-                <button
-                  key={course}
-                  onClick={() => setSelectedCourse(course)}
-                  className={`px-3 py-1 rounded-md text-xs font-medium transition-all duration-200 ${
-                    selectedCourse === course
-                      ? "bg-blue-600 text-white shadow-sm"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  }`}
-                >
-                  {course}
-                  {course !== "All" && (
-                    <span className="ml-1.5 text-xs opacity-75">
-                      ({students.filter((s) => s.program === course).length})
-                    </span>
-                  )}
-                </button>
-              ))}
+          )}
+
+          {/* Contact Info */}
+          <div className="space-y-1.5 mb-3 pb-3 border-b border-gray-100">
+            <div className="flex items-center gap-2 text-xs text-gray-600 p-1.5 bg-gray-50 rounded">
+              <Mail className="h-3 w-3 text-gray-500" />
+              <span className="truncate">{student.email}</span>
             </div>
+            {student.phone && (
+              <div className="flex items-center gap-2 text-xs text-gray-600 p-1.5 bg-gray-50 rounded">
+                <Phone className="h-3 w-3 text-gray-500" />
+                <span>{student.phone}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Internship Preferences */}
+          {student.preferredFields && (
+            <div className="mb-3">
+              <div className="flex items-center gap-1.5 mb-1.5">
+                <Briefcase className="h-3.5 w-3.5 text-gray-500" />
+                <p className="text-xs font-medium text-gray-700">Preferences</p>
+              </div>
+              <div className="flex flex-wrap gap-1">
+                {student.preferredFields.workType && (
+                  <Badge
+                    variant="outline"
+                    className="text-xs border-gray-300 text-gray-700 bg-gray-50"
+                  >
+                    {student.preferredFields.workType}
+                  </Badge>
+                )}
+                {student.preferredFields.schedule && (
+                  <Badge
+                    variant="outline"
+                    className="text-xs border-gray-300 text-gray-700 bg-gray-50"
+                  >
+                    {student.preferredFields.schedule}
+                  </Badge>
+                )}
+                {student.preferredFields.durationHours && (
+                  <Badge
+                    variant="outline"
+                    className="text-xs border-gray-300 text-gray-700 bg-gray-50"
+                  >
+                    {student.preferredFields.durationHours}h
+                  </Badge>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Skills Preview */}
+          {student.skills && student.skills.length > 0 && (
+            <div className="mb-3">
+              <div className="flex items-center gap-1.5 mb-1.5">
+                <Code className="h-3.5 w-3.5 text-gray-500" />
+                <p className="text-xs font-medium text-gray-700">Top Skills</p>
+              </div>
+              <div className="flex flex-wrap gap-1">
+                {student.skills.slice(0, 3).map((skill, index) => {
+                  // Handle different skill object structures
+                  let skillName = "Unknown Skill";
+                  let skillLevel = null;
+
+                  if (typeof skill === "string") {
+                    skillName = skill;
+                  } else if (typeof skill === "object" && skill !== null) {
+                    skillName =
+                      skill.name || skill.skillName || "Unknown Skill";
+                    skillLevel = skill.level || skill.skillLevel || null;
+                  }
+
+                  return (
+                    <Badge
+                      key={index}
+                      className="text-xs bg-gray-100 text-gray-700 border-0"
+                    >
+                      {skillName}
+                      {skillLevel && (
+                        <span className="ml-1 text-yellow-600">
+                          {skillLevel === 1
+                            ? "★"
+                            : skillLevel === 2
+                            ? "★★"
+                            : skillLevel === 3
+                            ? "★★★"
+                            : skillLevel === 4
+                            ? "★★★★"
+                            : skillLevel === 5
+                            ? "★★★★★"
+                            : "★"}
+                        </span>
+                      )}
+                    </Badge>
+                  );
+                })}
+                {student.skills.length > 3 && (
+                  <Badge className="text-xs bg-gray-200 text-gray-600 border-0">
+                    +{student.skills.length - 3}
+                  </Badge>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Stats */}
+          <div className="grid grid-cols-3 gap-1 sm:gap-1.5 mb-3 sm:mb-4">
+            <div className="text-center p-1.5 sm:p-2 bg-gray-50 rounded">
+              <Award className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-600 mx-auto mb-1" />
+              <p className="text-xs font-semibold text-gray-900">
+                {student.certifications?.length || 0}
+              </p>
+              <p className="text-xs text-gray-600">Certs</p>
+            </div>
+            <div className="text-center p-1.5 sm:p-2 bg-gray-50 rounded">
+              <Star className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-600 mx-auto mb-1" />
+              <p className="text-xs font-semibold text-gray-900">
+                {student.badges?.length || 0}
+              </p>
+              <p className="text-xs text-gray-600">Badges</p>
+            </div>
+            <div className="text-center p-1.5 sm:p-2 bg-gray-50 rounded">
+              <Code className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-600 mx-auto mb-1" />
+              <p className="text-xs font-semibold text-gray-900">
+                {student.skills?.length || 0}
+              </p>
+              <p className="text-xs text-gray-600">Skills</p>
+            </div>
+          </div>
+
+          {/* Spacer to push buttons to bottom */}
+          <div className="flex-1"></div>
+
+          {/* Bottom Buttons - Fixed at bottom */}
+          <div className="flex gap-1.5">
+            {/* Shortlist Button */}
+            <Button
+              className={`flex-1 text-xs py-1.5 px-2 border ${
+                isShortlisted(student._id)
+                  ? "bg-gray-100 border-gray-300 text-gray-700 hover:bg-gray-200"
+                  : "bg-white border-gray-300 text-gray-600 hover:bg-gray-50"
+              }`}
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleShortlist(student, e);
+              }}
+              title={
+                isShortlisted(student._id)
+                  ? "Remove from shortlist"
+                  : "Add to shortlist"
+              }
+            >
+              <Heart
+                className={`h-3 w-3 mr-1 ${
+                  isShortlisted(student._id) ? "fill-gray-600" : ""
+                }`}
+              />
+              <span className="hidden md:inline">
+                {isShortlisted(student._id) ? "Shortlisted" : "Shortlist"}
+              </span>
+              <span className="md:hidden">
+                {isShortlisted(student._id) ? "✓" : "+"}
+              </span>
+            </Button>
+
+            {/* View Profile Button */}
+            <Button
+              className="flex-1 text-xs py-1.5 px-2 bg-gray-800 hover:bg-gray-900 text-white"
+              onClick={(e) => {
+                e.stopPropagation();
+                onViewProfile(student);
+              }}
+            >
+              <Eye className="h-3 w-3 mr-1" />
+              <span className="hidden md:inline">View Profile</span>
+              <span className="md:hidden">View</span>
+            </Button>
           </div>
         </CardContent>
       </Card>
-
-      {/* Results Count */}
-      <div className="flex items-center justify-between py-2">
-        <p className="text-xs text-gray-600">
-          Showing{" "}
-          <span className="font-semibold">{filteredStudents.length}</span> of{" "}
-          {students.length} students
-          {selectedCourse !== "All" && (
-            <span className="ml-2 text-blue-600 font-semibold">
-              in {selectedCourse}
-            </span>
-          )}
-        </p>
-        {(searchTerm || selectedCourse !== "All") && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setSearchTerm("");
-              setSelectedCourse("All");
-            }}
-            className="text-gray-600 hover:text-gray-900 h-7 text-xs"
-          >
-            <X className="h-3 w-3 mr-1" />
-            Clear Filters
-          </Button>
-        )}
-      </div>
-
-      {/* Students Grid */}
-      {filteredStudents.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              No students found
-            </h3>
-            <p className="text-gray-600">
-              {searchTerm
-                ? "Try adjusting your search terms"
-                : "No students are currently available"}
-            </p>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-5">
-          {filteredStudents.map((student) => (
-            <Card
-              key={student._id}
-              className="group hover:shadow-xl transition-all duration-300 cursor-pointer border-2 border-gray-100 hover:border-blue-400 rounded-xl overflow-hidden relative"
-              onClick={() => viewStudentProfile(student)}
-            >
-              {/* Shortlist Button */}
-              <button
-                onClick={(e) => toggleShortlist(student, e)}
-                className={`absolute top-3 right-3 z-10 p-2 rounded-full transition-all duration-300 ${
-                  isShortlisted(student._id)
-                    ? "bg-pink-100 hover:bg-pink-200"
-                    : "bg-white/80 hover:bg-white shadow-md"
-                }`}
-                title={
-                  isShortlisted(student._id)
-                    ? "Remove from shortlist"
-                    : "Add to shortlist"
-                }
-              >
-                <Heart
-                  className={`h-5 w-5 transition-all duration-300 ${
-                    isShortlisted(student._id)
-                      ? "text-pink-600 fill-pink-600"
-                      : "text-gray-600 hover:text-pink-600"
-                  }`}
-                />
-              </button>
-
-              <CardContent className="p-6">
-                {/* Student Header */}
-                <div className="flex flex-col items-center text-center mb-5">
-                  <Avatar className="h-20 w-20 border-3 border-white shadow-lg ring-2 ring-blue-100 mb-3">
-                    <AvatarImage
-                      src={student.profilePicUrl || student.profilePictureUrl}
-                    />
-                    <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-xl">
-                      {student.firstName?.[0]}
-                      {student.lastName?.[0]}
-                    </AvatarFallback>
-                  </Avatar>
-                  <h3 className="font-bold text-lg text-gray-900 mb-1 group-hover:text-blue-600 transition-colors line-clamp-1">
-                    {student.firstName} {student.lastName}
-                  </h3>
-                  <p className="text-xs text-gray-600 mb-2 line-clamp-2 min-h-[2rem]">
-                    {student.program}
-                  </p>
-                  <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-200 border-0">
-                    {student.yearLevel}
-                  </Badge>
-                </div>
-
-                {/* Student ID */}
-                {student.studentId && (
-                  <div className="flex items-center justify-center gap-1.5 mb-4 px-3 py-2 bg-gray-50 rounded-lg">
-                    <FileText className="h-3.5 w-3.5 text-purple-600" />
-                    <span className="text-xs font-medium text-gray-700">
-                      ID: {student.studentId}
-                    </span>
-                  </div>
-                )}
-
-                {/* Contact Info */}
-                <div className="space-y-2 mb-4 pb-4 border-b border-gray-100">
-                  <div className="flex items-center gap-2 text-xs text-gray-700 p-2 bg-blue-50 rounded-lg">
-                    <div className="h-7 w-7 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
-                      <Mail className="h-3.5 w-3.5 text-white" />
-                    </div>
-                    <span className="truncate font-medium">
-                      {student.email}
-                    </span>
-                  </div>
-                  {student.phone && (
-                    <div className="flex items-center gap-2 text-xs text-gray-700 p-2 bg-green-50 rounded-lg">
-                      <div className="h-7 w-7 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                        <Phone className="h-3.5 w-3.5 text-white" />
-                      </div>
-                      <span className="font-medium">{student.phone}</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Internship Preferences */}
-                {student.preferredFields && (
-                  <div className="mb-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="h-6 w-6 bg-purple-100 rounded-full flex items-center justify-center">
-                        <Briefcase className="h-3.5 w-3.5 text-purple-600" />
-                      </div>
-                      <p className="text-xs font-semibold text-gray-800">
-                        Preferences
-                      </p>
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {student.preferredFields.workType && (
-                        <Badge
-                          variant="outline"
-                          className="text-xs border-purple-300 text-purple-700 bg-purple-50"
-                        >
-                          {student.preferredFields.workType}
-                        </Badge>
-                      )}
-                      {student.preferredFields.schedule && (
-                        <Badge
-                          variant="outline"
-                          className="text-xs border-orange-300 text-orange-700 bg-orange-50"
-                        >
-                          {student.preferredFields.schedule}
-                        </Badge>
-                      )}
-                      {student.preferredFields.durationHours && (
-                        <Badge
-                          variant="outline"
-                          className="text-xs border-blue-300 text-blue-700 bg-blue-50"
-                        >
-                          {student.preferredFields.durationHours}h
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Skills Preview */}
-                {student.skills && student.skills.length > 0 && (
-                  <div className="mb-5">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="h-6 w-6 bg-indigo-100 rounded-full flex items-center justify-center">
-                        <Code className="h-3.5 w-3.5 text-indigo-600" />
-                      </div>
-                      <p className="text-xs font-semibold text-gray-800">
-                        Top Skills
-                      </p>
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {student.skills.slice(0, 3).map((skill, index) => (
-                        <Badge
-                          key={index}
-                          className="text-xs bg-indigo-100 text-indigo-700 hover:bg-indigo-200 border-0"
-                        >
-                          {skill.name || skill}
-                        </Badge>
-                      ))}
-                      {student.skills.length > 3 && (
-                        <Badge className="text-xs bg-gray-200 text-gray-700 border-0">
-                          +{student.skills.length - 3}
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Stats */}
-                <div className="grid grid-cols-3 gap-2 mb-4">
-                  <div className="text-center p-2 bg-yellow-50 rounded-lg">
-                    <Award className="h-4 w-4 text-yellow-600 mx-auto mb-1" />
-                    <p className="text-sm font-bold text-gray-900">
-                      {student.certifications?.length || 0}
-                    </p>
-                    <p className="text-xs text-gray-600">Certs</p>
-                  </div>
-                  <div className="text-center p-2 bg-teal-50 rounded-lg">
-                    <Award className="h-4 w-4 text-teal-600 mx-auto mb-1" />
-                    <p className="text-sm font-bold text-gray-900">
-                      {student.badges?.length || 0}
-                    </p>
-                    <p className="text-xs text-gray-600">Badges</p>
-                  </div>
-                  <div className="text-center p-2 bg-blue-50 rounded-lg">
-                    <Code className="h-4 w-4 text-blue-600 mx-auto mb-1" />
-                    <p className="text-sm font-bold text-gray-900">
-                      {student.skills?.length || 0}
-                    </p>
-                    <p className="text-xs text-gray-600">Skills</p>
-                  </div>
-                </div>
-
-                {/* View Profile Button */}
-                <Button
-                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md hover:shadow-lg transition-all"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    viewStudentProfile(student);
-                  }}
-                >
-                  <Eye className="h-4 w-4 mr-2" />
-                  View Profile
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
 
       {/* Student Profile Modal */}
       {selectedStudent && (
@@ -621,7 +912,7 @@ const BrowseInterns = () => {
           onClose={closeModal}
         />
       )}
-    </div>
+    </>
   );
 };
 
@@ -819,11 +1110,40 @@ const StudentProfileModal = ({ student, isOpen, onClose }) => {
             </CardHeader>
             <CardContent className="pt-3">
               <div className="flex flex-wrap gap-1.5">
-                {student.skills.map((skill, index) => (
-                  <Badge key={index} variant="secondary" className="text-xs">
-                    {skill.name || skill}
-                  </Badge>
-                ))}
+                {student.skills.map((skill, index) => {
+                  // Handle different skill object structures
+                  let skillName = "Unknown Skill";
+                  let skillLevel = null;
+
+                  if (typeof skill === "string") {
+                    skillName = skill;
+                  } else if (typeof skill === "object" && skill !== null) {
+                    skillName =
+                      skill.name || skill.skillName || "Unknown Skill";
+                    skillLevel = skill.level || skill.skillLevel || null;
+                  }
+
+                  return (
+                    <Badge key={index} variant="secondary" className="text-xs">
+                      {skillName}
+                      {skillLevel && (
+                        <span className="ml-1 text-yellow-600">
+                          {skillLevel === 1
+                            ? "★"
+                            : skillLevel === 2
+                            ? "★★"
+                            : skillLevel === 3
+                            ? "★★★"
+                            : skillLevel === 4
+                            ? "★★★★"
+                            : skillLevel === 5
+                            ? "★★★★★"
+                            : "★"}
+                        </span>
+                      )}
+                    </Badge>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
@@ -842,15 +1162,27 @@ const StudentProfileModal = ({ student, isOpen, onClose }) => {
             </CardHeader>
             <CardContent className="pt-3">
               <div className="flex flex-wrap gap-1.5">
-                {student.softSkills.map((skill, index) => (
-                  <Badge
-                    key={index}
-                    variant="outline"
-                    className="text-xs border-pink-300 text-pink-700"
-                  >
-                    {skill}
-                  </Badge>
-                ))}
+                {student.softSkills.map((skill, index) => {
+                  // Handle different skill object structures
+                  let skillName = "Unknown Skill";
+
+                  if (typeof skill === "string") {
+                    skillName = skill;
+                  } else if (typeof skill === "object" && skill !== null) {
+                    skillName =
+                      skill.name || skill.skillName || "Unknown Skill";
+                  }
+
+                  return (
+                    <Badge
+                      key={index}
+                      variant="outline"
+                      className="text-xs border-pink-300 text-pink-700"
+                    >
+                      {skillName}
+                    </Badge>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
@@ -937,31 +1269,56 @@ const StudentProfileModal = ({ student, isOpen, onClose }) => {
                 <div className="p-1.5 bg-teal-100 rounded-lg">
                   <Award className="h-5 w-5 text-teal-600" />
                 </div>
-                Badges & Achievements
+                Badges
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-3">
               <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
-                {student.badges.map((badge, index) => (
-                  <div key={index} className="text-center group">
-                    <div className="relative rounded-lg overflow-hidden border-2 border-gray-200 group-hover:border-teal-500 transition-colors">
-                      {badge.iconUrl || badge.imageUrl || badge.image ? (
-                        <img
-                          src={badge.iconUrl || badge.imageUrl || badge.image}
-                          alt={badge.name || badge.badgeName}
-                          className="w-full aspect-square object-cover"
-                        />
-                      ) : (
-                        <div className="w-full aspect-square bg-gradient-to-br from-teal-100 to-teal-200 flex items-center justify-center">
-                          <Award className="h-8 w-8 text-teal-600" />
-                        </div>
-                      )}
+                {student.badges.map((badge, index) => {
+                  const badgeUrl = badge.url || badge.externalUrl || badge.link;
+                  const BadgeContent = (
+                    <div className="text-center group">
+                      <div className="relative rounded-lg overflow-hidden border-2 border-gray-200 group-hover:border-teal-500 transition-colors">
+                        {badge.iconUrl || badge.imageUrl || badge.image ? (
+                          <img
+                            src={badge.iconUrl || badge.imageUrl || badge.image}
+                            alt={badge.name || badge.badgeName}
+                            className="w-full aspect-square object-cover"
+                          />
+                        ) : (
+                          <div className="w-full aspect-square bg-gradient-to-br from-teal-100 to-teal-200 flex items-center justify-center">
+                            <Award className="h-8 w-8 text-teal-600" />
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-xs font-medium text-gray-900 mt-1 truncate">
+                        {badge.name || badge.badgeName}
+                      </p>
                     </div>
-                    <p className="text-xs font-medium text-gray-900 mt-1 truncate">
-                      {badge.name || badge.badgeName}
-                    </p>
-                  </div>
-                ))}
+                  );
+
+                  return badgeUrl ? (
+                    <a
+                      key={index}
+                      href={badgeUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block hover:scale-105 transition-transform duration-200"
+                      title={`View ${
+                        badge.name || badge.badgeName
+                      } - Opens in new tab`}
+                    >
+                      {BadgeContent}
+                    </a>
+                  ) : (
+                    <div
+                      key={index}
+                      className="hover:scale-105 transition-transform duration-200"
+                    >
+                      {BadgeContent}
+                    </div>
+                  );
+                })}
               </div>
               {student.badges.length === 0 && (
                 <p className="text-sm text-gray-500 text-center py-4">

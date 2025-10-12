@@ -19,19 +19,24 @@ const StudentSidebar = ({ sidebarOpen, onCloseMobile }) => {
     { name: "Dashboard", href: "/student/dashboard", icon: LayoutDashboard },
     { name: "My Profile", href: "/student/profile", icon: User },
     {
-      name: "Browse Internships",
-      href: "/student/browse-internships",
+      name: "Find Internships",
+      href: "/student/find-internships",
       icon: Briefcase,
+    },
+    {
+      name: "Explore Companies",
+      href: "/student/explore-companies",
+      icon: Building2,
+    },
+    {
+      name: "My Matches",
+      href: "/student/my-matches",
+      icon: Heart,
     },
     {
       name: "Browse Interns",
       href: "/student/browse-interns",
       icon: Users,
-    },
-    {
-      name: "Interested Companies",
-      href: "/student/interested-companies",
-      icon: Heart,
     },
   ];
 

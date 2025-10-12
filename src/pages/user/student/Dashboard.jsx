@@ -318,7 +318,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-6">
+      <div className="max-w-7xl mx-auto p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
         {/* Hero Header */}
         <div className="relative overflow-hidden bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 rounded-2xl shadow-xl">
           <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:20px_20px]" />
@@ -335,10 +335,10 @@ const Dashboard = () => {
             </div>
           )}
 
-          <div className="relative p-6 md:p-8">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-              <div className="flex items-center space-x-4 md:space-x-6">
-                <Avatar className="h-16 w-16 md:h-20 md:w-20 ring-4 ring-white/20 shadow-xl">
+          <div className="relative p-4 sm:p-6 md:p-8">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6">
+              <div className="flex items-center space-x-3 sm:space-x-4 md:space-x-6">
+                <Avatar className="h-14 w-14 sm:h-16 sm:w-16 md:h-20 md:w-20 ring-4 ring-white/20 shadow-xl">
                   <AvatarImage
                     src={
                       profileData.profileData?.profilePicUrl ||
@@ -382,7 +382,7 @@ const Dashboard = () => {
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
           {/* Left Column - Personal & Academic Info */}
           <div className="lg:col-span-1 space-y-4">
             {/* Personal Information */}
@@ -396,7 +396,7 @@ const Dashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-4 space-y-3">
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="bg-gray-50 rounded-lg p-3">
                     <p className="text-xs font-medium text-gray-500 mb-1">
                       Age
@@ -452,7 +452,7 @@ const Dashboard = () => {
                     {profileData.profileData?.program || "N/A"}
                   </p>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="bg-gray-50 rounded-lg p-3">
                     <p className="text-xs font-medium text-gray-500 mb-1">
                       Year Level
@@ -598,7 +598,7 @@ const Dashboard = () => {
                     </span>
                   </div>
                   {profileData.profileData?.technicalSkills?.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                       {profileData.profileData.technicalSkills.map(
                         (skill, index) => (
                           <div
@@ -608,7 +608,9 @@ const Dashboard = () => {
                             <div className="flex items-center gap-2">
                               <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                               <span className="text-sm font-medium text-gray-900">
-                                {typeof skill === "string" ? skill : skill.name}
+                                {typeof skill === "string"
+                                  ? skill
+                                  : skill?.name || "Unknown Skill"}
                               </span>
                             </div>
                             {typeof skill === "object" && skill.level && (
@@ -664,7 +666,7 @@ const Dashboard = () => {
                     </span>
                   </div>
                   {profileData.profileData?.softSkills?.length > 0 ? (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                       {profileData.profileData.softSkills.map(
                         (skill, index) => (
                           <div
@@ -673,7 +675,9 @@ const Dashboard = () => {
                           >
                             <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
                             <span className="text-xs font-medium text-blue-800">
-                              {typeof skill === "string" ? skill : skill.name}
+                              {typeof skill === "string"
+                                ? skill
+                                : skill?.name || "Unknown Skill"}
                             </span>
                           </div>
                         )
@@ -699,7 +703,7 @@ const Dashboard = () => {
                     <div className="h-8 w-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
                       <Star className="h-4 w-4 text-green-600" />
                     </div>
-                    Badges & Achievements
+                    Badges
                   </CardTitle>
                   <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">
                     {profileData.profileData?.badges?.length || 0} badges
@@ -708,34 +712,51 @@ const Dashboard = () => {
               </CardHeader>
               <CardContent className="pt-4">
                 {profileData.profileData?.badges?.length > 0 ? (
-                  <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-4">
-                    {profileData.profileData.badges.map((badge, index) => (
-                      <div
-                        key={index}
-                        className="group relative flex flex-col items-center"
-                        title={badge.name}
-                      >
-                        {badge.imageUrl ? (
-                          <div className="flex items-center justify-center w-14 h-14 rounded-full overflow-hidden shadow-md hover:shadow-xl hover:scale-110 transition-all duration-200 border-2 border-gray-100">
-                            <img
-                              src={badge.imageUrl}
-                              alt={badge.name}
-                              className="w-full h-full object-cover"
-                            />
+                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3 sm:gap-4">
+                    {profileData.profileData.badges.map((badge, index) => {
+                      const badgeUrl =
+                        badge.url || badge.externalUrl || badge.link;
+                      const BadgeContent = (
+                        <div className="group relative flex flex-col items-center">
+                          {badge.imageUrl ? (
+                            <div className="flex items-center justify-center w-14 h-14 rounded-full overflow-hidden shadow-md hover:shadow-xl hover:scale-110 transition-all duration-200 border-2 border-gray-100">
+                              <img
+                                src={badge.imageUrl}
+                                alt={badge.name}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          ) : (
+                            <div className="flex items-center justify-center w-14 h-14 bg-gradient-to-br from-green-100 to-green-200 text-green-700 rounded-full shadow-md hover:shadow-xl hover:scale-110 transition-all duration-200">
+                              <Star className="h-7 w-7" />
+                            </div>
+                          )}
+                          <p className="text-xs text-gray-600 mt-2 text-center truncate w-full font-medium">
+                            {badge.name}
+                          </p>
+                          <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10 shadow-lg">
+                            {badge.name}
                           </div>
-                        ) : (
-                          <div className="flex items-center justify-center w-14 h-14 bg-gradient-to-br from-green-100 to-green-200 text-green-700 rounded-full shadow-md hover:shadow-xl hover:scale-110 transition-all duration-200">
-                            <Star className="h-7 w-7" />
-                          </div>
-                        )}
-                        <p className="text-xs text-gray-600 mt-2 text-center truncate w-full font-medium">
-                          {badge.name}
-                        </p>
-                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10 shadow-lg">
-                          {badge.name}
                         </div>
-                      </div>
-                    ))}
+                      );
+
+                      return badgeUrl ? (
+                        <a
+                          key={index}
+                          href={badgeUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block"
+                          title={`View ${badge.name} - Opens in new tab`}
+                        >
+                          {BadgeContent}
+                        </a>
+                      ) : (
+                        <div key={index} title={badge.name}>
+                          {BadgeContent}
+                        </div>
+                      );
+                    })}
                   </div>
                 ) : (
                   <div className="text-center py-8 bg-gray-50 rounded-lg">
@@ -763,7 +784,7 @@ const Dashboard = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-4 space-y-3">
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="bg-gray-50 rounded-lg p-3">
                       <p className="text-xs font-medium text-gray-500 mb-1">
                         Work Type

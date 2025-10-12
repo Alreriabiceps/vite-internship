@@ -85,6 +85,7 @@ export const studentsAPI = {
     api.post(`/students/interested-companies/${companyId}/accept`),
   declineCompanyInterest: (companyId) =>
     api.post(`/students/interested-companies/${companyId}/decline`),
+  getApplications: () => api.get("/students/applications"),
 };
 
 // Companies API

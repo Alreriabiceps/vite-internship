@@ -1289,7 +1289,7 @@ const Profile = () => {
         )}
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-2">
+        <div className="grid grid-cols-1 xl:grid-cols-4 gap-3 sm:gap-4">
           {/* Left Column - Profile Photo & Personal Info */}
           <div className="lg:col-span-1 space-y-2">
             {/* Profile Photo Section */}
@@ -1404,7 +1404,7 @@ const Profile = () => {
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 gap-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
                   <div className="space-y-0.5">
                     <Label htmlFor="age" className="text-xs">
                       Age
@@ -1494,7 +1494,7 @@ const Profile = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-0 space-y-1">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
                   <div className="space-y-0.5">
                     <Label htmlFor="course" className="text-xs">
                       Course/Program
@@ -1686,7 +1686,7 @@ const Profile = () => {
             </Card>
 
             {/* Skills Section - Side by Side */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
               {/* Technical Skills */}
               <Card>
                 <CardHeader className="pb-1">
@@ -1912,7 +1912,7 @@ const Profile = () => {
             </div>
 
             {/* Certificates & Badges Section - Side by Side */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
               {/* Certificates */}
               <Card>
                 <CardHeader className="pb-1">
@@ -2251,7 +2251,7 @@ const Profile = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-0 space-y-1">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
                   <div className="space-y-0.5">
                     <Label htmlFor="resumeUrl" className="text-xs">
                       Resume URL

@@ -16,9 +16,11 @@ import {
   StudentRegister as Register,
   StudentDashboard as Dashboard,
   StudentProfile as Profile,
-  InterestedCompanies,
-  BrowseInternships,
+  FindInternships,
+  ExploreCompanies,
+  MyMatches,
   BrowseInterns as StudentBrowseInterns,
+  CompanyProfile,
 } from "./pages/user/student";
 
 // Company Pages
@@ -83,25 +85,36 @@ function App() {
                 </Route>
 
                 <Route
-                  path="/student/interested-companies"
+                  path="/student/find-internships"
                   element={
                     <ProtectedRoute allowedRoles={["student"]}>
                       <Layout />
                     </ProtectedRoute>
                   }
                 >
-                  <Route index element={<InterestedCompanies />} />
+                  <Route index element={<FindInternships />} />
                 </Route>
 
                 <Route
-                  path="/student/browse-internships"
+                  path="/student/explore-companies"
                   element={
                     <ProtectedRoute allowedRoles={["student"]}>
                       <Layout />
                     </ProtectedRoute>
                   }
                 >
-                  <Route index element={<BrowseInternships />} />
+                  <Route index element={<ExploreCompanies />} />
+                </Route>
+
+                <Route
+                  path="/student/my-matches"
+                  element={
+                    <ProtectedRoute allowedRoles={["student"]}>
+                      <Layout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<MyMatches />} />
                 </Route>
 
                 <Route
@@ -113,6 +126,17 @@ function App() {
                   }
                 >
                   <Route index element={<StudentBrowseInterns />} />
+                </Route>
+
+                <Route
+                  path="/student/company/:companyId"
+                  element={
+                    <ProtectedRoute allowedRoles={["student"]}>
+                      <Layout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<CompanyProfile />} />
                 </Route>
 
                 {/* COMPANY ROUTES */}

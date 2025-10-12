@@ -122,7 +122,7 @@ const Internships = () => {
       };
 
       await companiesAPI.updateSlot(editModal.internship._id, updateData);
-      toast.success("Internship updated successfully! 🎉");
+      toast.success("Internship updated successfully!");
       setEditModal({ isOpen: false, internship: null });
       fetchInternships();
     } catch (error) {
@@ -156,7 +156,7 @@ const Internships = () => {
     const statusConfig = {
       open: {
         label: "Open",
-        className: "bg-green-100 text-green-800 border-green-200",
+        className: "bg-gray-100 text-gray-800 border-gray-200",
       },
       closed: {
         label: "Closed",
@@ -164,7 +164,7 @@ const Internships = () => {
       },
       filled: {
         label: "Filled",
-        className: "bg-blue-100 text-blue-800 border-blue-200",
+        className: "bg-gray-100 text-gray-800 border-gray-200",
       },
     };
     const config = statusConfig[status] || statusConfig.open;
@@ -188,63 +188,66 @@ const Internships = () => {
   }
 
   return (
-    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div>
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
-            Internship Positions
-          </h1>
-          <p className="text-sm sm:text-base text-gray-600 mt-1">
-            Manage your internship postings
-          </p>
-        </div>
-        <Button
-          onClick={() => navigate("/company/post-internship")}
-          className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Post New Internship
-        </Button>
-      </div>
-
-      {/* Internships List */}
-      {internships.length === 0 ? (
-        <Card>
-          <CardContent className="py-16 text-center">
-            <Briefcase className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              No Internships Posted Yet
-            </h3>
-            <p className="text-gray-600 mb-6">
-              Start attracting talented students by posting your first
-              internship position
-            </p>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-8">
+        {/* Header */}
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+                Internship Positions
+              </h1>
+              <p className="text-sm sm:text-base text-gray-600">
+                Manage your internship postings
+              </p>
+            </div>
             <Button
               onClick={() => navigate("/company/post-internship")}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto"
             >
               <Plus className="h-4 w-4 mr-2" />
-              Post Your First Internship
+              Post New Internship
             </Button>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid grid-cols-1 gap-4">
-          {internships.map((internship) => (
-            <Card
-              key={internship._id}
-              className="hover:shadow-md transition-shadow border border-gray-200"
-            >
-              <CardContent className="p-4">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="h-10 w-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <Briefcase className="h-5 w-5 text-blue-600" />
+          </div>
+        </div>
+
+        {/* Internships List */}
+        {internships.length === 0 ? (
+          <Card>
+            <CardContent className="py-16 text-center">
+              <Briefcase className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                No Internships Posted Yet
+              </h3>
+              <p className="text-gray-600 mb-6">
+                Start attracting talented students by posting your first
+                internship position
+              </p>
+              <Button
+                onClick={() => navigate("/company/post-internship")}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Post Your First Internship
+              </Button>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+            {internships.map((internship) => (
+              <Card
+                key={internship._id}
+                className="hover:shadow-md transition-shadow border border-gray-200"
+              >
+                <CardContent className="p-4">
+                  {/* Header Section */}
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <div className="h-12 w-12 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <Briefcase className="h-6 w-6 text-gray-600" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-lg font-bold text-gray-900 truncate">
+                        <h3 className="text-lg font-bold text-gray-900 truncate mb-1">
                           {internship.title || "Internship Position"}
                         </h3>
                         <p className="text-sm text-gray-600 flex items-center gap-1">
@@ -252,63 +255,63 @@ const Internships = () => {
                           {internship.department || "General"}
                         </p>
                       </div>
-                      {getStatusBadge(internship.status)}
                     </div>
-
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-                      <div className="flex items-center gap-2 text-gray-700">
-                        <MapPin className="h-4 w-4 text-purple-600" />
-                        <span className="truncate">
-                          {internship.location || "Not specified"}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 text-gray-700">
-                        <Clock className="h-4 w-4 text-green-600" />
-                        <span>
-                          {internship.duration
-                            ? `${internship.duration} months`
-                            : "Flexible"}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 text-gray-700">
-                        <Users className="h-4 w-4 text-orange-600" />
-                        <span>{internship.positions || 1} positions</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-gray-700">
-                        <span className="text-teal-600 font-semibold">₱</span>
-                        <span>
-                          {internship.allowance
-                            ? `₱${internship.allowance.toLocaleString()}`
-                            : "Negotiable"}
-                        </span>
-                      </div>
+                    <div className="flex items-center gap-2">
+                      {getStatusBadge(internship.status)}
+                      <Button
+                        onClick={() =>
+                          navigate(
+                            `/company/browse-interns?internshipId=${internship._id}`
+                          )
+                        }
+                        className="relative bg-gray-800 hover:bg-gray-900 text-white p-2"
+                        size="sm"
+                      >
+                        <Users className="h-4 w-4" />
+                        {internship.applicants?.length > 0 && (
+                          <span className="absolute -top-1 -right-1 bg-gray-600 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                            {internship.applicants.length}
+                          </span>
+                        )}
+                      </Button>
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap gap-2 items-center w-full sm:w-auto">
-                    <Button
-                      onClick={() =>
-                        navigate(
-                          `/company/browse-interns?internshipId=${internship._id}`
-                        )
-                      }
-                      className="relative bg-blue-600 hover:bg-blue-700 text-white flex-1 sm:flex-initial"
-                      size="sm"
-                    >
-                      <Users className="h-4 w-4 mr-1" />
-                      <span className="hidden xs:inline">Applicants</span>
-                      <span className="xs:hidden">Apply</span>
-                      {internship.applicants?.length > 0 && (
-                        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center border-2 border-white">
-                          {internship.applicants.length}
+                  {/* Important Info Section */}
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div className="text-center">
+                      <div className="flex items-center justify-center gap-1 mb-1">
+                        <MapPin className="h-4 w-4 text-gray-600" />
+                        <span className="text-xs text-gray-600 font-medium">
+                          Location
                         </span>
-                      )}
-                    </Button>
+                      </div>
+                      <p className="text-sm font-semibold text-gray-900 truncate">
+                        {internship.location || "Not specified"}
+                      </p>
+                    </div>
+                    <div className="text-center">
+                      <div className="flex items-center justify-center gap-1 mb-1">
+                        <Clock className="h-4 w-4 text-gray-600" />
+                        <span className="text-xs text-gray-600 font-medium">
+                          Duration
+                        </span>
+                      </div>
+                      <p className="text-sm font-semibold text-gray-900">
+                        {internship.duration
+                          ? `${internship.duration} months`
+                          : "Flexible"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex justify-end gap-2">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => handleView(internship)}
-                      className="hover:bg-blue-50"
+                      className="p-2"
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
@@ -316,7 +319,7 @@ const Internships = () => {
                       variant="outline"
                       size="sm"
                       onClick={() => handleEdit(internship)}
-                      className="hover:bg-green-50"
+                      className="p-2"
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
@@ -324,17 +327,17 @@ const Internships = () => {
                       variant="outline"
                       size="sm"
                       onClick={() => handleDelete(internship._id)}
-                      className="hover:bg-red-50 text-red-600 border-red-200"
+                      className="p-2 text-gray-600 hover:text-gray-700 hover:bg-gray-50"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* View Modal - Beautiful Design */}
       <Modal
@@ -342,8 +345,8 @@ const Internships = () => {
         onClose={() => setViewModal({ isOpen: false, internship: null })}
         title={
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-              <Briefcase className="h-5 w-5 text-white" />
+            <div className="h-10 w-10 bg-gray-100 rounded-lg flex items-center justify-center">
+              <Briefcase className="h-5 w-5 text-gray-600" />
             </div>
             <div>
               <h3 className="text-lg font-bold text-gray-900">
@@ -359,7 +362,7 @@ const Internships = () => {
         {viewModal.internship && (
           <div className="space-y-5 max-h-[75vh] overflow-y-auto pr-2">
             {/* Hero Section */}
-            <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 p-5 rounded-xl border border-blue-100">
+            <div className="bg-gray-50 p-5 rounded-xl border border-gray-200">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <h3 className="font-bold text-xl text-gray-900 mb-2">
@@ -380,14 +383,14 @@ const Internships = () => {
             </div>
 
             {/* Key Information Cards */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-purple-50 p-4 rounded-lg border border-purple-100 hover:shadow-md transition-shadow">
+            <div className="grid grid-cols-1 gap-3">
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                    <MapPin className="h-5 w-5 text-purple-600" />
+                  <div className="h-10 w-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <MapPin className="h-5 w-5 text-gray-600" />
                   </div>
                   <div>
-                    <p className="text-xs text-purple-600 font-medium uppercase tracking-wide mb-1">
+                    <p className="text-xs text-gray-600 font-medium uppercase tracking-wide mb-1">
                       Location
                     </p>
                     <p className="font-semibold text-gray-900">
@@ -397,13 +400,13 @@ const Internships = () => {
                 </div>
               </div>
 
-              <div className="bg-green-50 p-4 rounded-lg border border-green-100 hover:shadow-md transition-shadow">
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 bg-green-100 rounded-lg flex items-center justify-center">
-                    <Clock className="h-5 w-5 text-green-600" />
+                  <div className="h-10 w-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <Clock className="h-5 w-5 text-gray-600" />
                   </div>
                   <div>
-                    <p className="text-xs text-green-600 font-medium uppercase tracking-wide mb-1">
+                    <p className="text-xs text-gray-600 font-medium uppercase tracking-wide mb-1">
                       Duration
                     </p>
                     <p className="font-semibold text-gray-900">
@@ -413,36 +416,18 @@ const Internships = () => {
                 </div>
               </div>
 
-              <div className="bg-orange-50 p-4 rounded-lg border border-orange-100 hover:shadow-md transition-shadow">
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                    <Users className="h-5 w-5 text-orange-600" />
+                  <div className="h-10 w-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <Users className="h-5 w-5 text-gray-600" />
                   </div>
                   <div>
-                    <p className="text-xs text-orange-600 font-medium uppercase tracking-wide mb-1">
+                    <p className="text-xs text-gray-600 font-medium uppercase tracking-wide mb-1">
                       Positions
                     </p>
                     <p className="font-semibold text-gray-900">
                       {viewModal.internship.positions}{" "}
                       {viewModal.internship.positions > 1 ? "slots" : "slot"}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-teal-50 p-4 rounded-lg border border-teal-100 hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 bg-teal-100 rounded-lg flex items-center justify-center">
-                    <span className="text-lg font-bold text-teal-600">₱</span>
-                  </div>
-                  <div>
-                    <p className="text-xs text-teal-600 font-medium uppercase tracking-wide mb-1">
-                      Allowance
-                    </p>
-                    <p className="font-semibold text-gray-900">
-                      ₱
-                      {viewModal.internship.allowance?.toLocaleString() ||
-                        "Negotiable"}
                     </p>
                   </div>
                 </div>
@@ -453,8 +438,8 @@ const Internships = () => {
             {viewModal.internship.description && (
               <div className="bg-white border border-gray-200 rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="h-8 w-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <FileText className="h-4 w-4 text-blue-600" />
+                  <div className="h-8 w-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <FileText className="h-4 w-4 text-gray-600" />
                   </div>
                   <h4 className="font-semibold text-gray-900">
                     About This Position
@@ -495,8 +480,8 @@ const Internships = () => {
             {viewModal.internship.qualifications?.length > 0 && (
               <div className="bg-white border border-gray-200 rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="h-8 w-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                    <Target className="h-4 w-4 text-purple-600" />
+                  <div className="h-8 w-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <Target className="h-4 w-4 text-gray-600" />
                   </div>
                   <h4 className="font-semibold text-gray-900">
                     Requirements & Qualifications
@@ -518,10 +503,10 @@ const Internships = () => {
 
             {/* Benefits */}
             {viewModal.internship.benefits?.length > 0 && (
-              <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-lg p-4">
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="h-8 w-8 bg-green-100 rounded-lg flex items-center justify-center">
-                    <Gift className="h-4 w-4 text-green-600" />
+                  <div className="h-8 w-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <Gift className="h-4 w-4 text-gray-600" />
                   </div>
                   <h4 className="font-semibold text-gray-900">What We Offer</h4>
                 </div>
@@ -547,8 +532,8 @@ const Internships = () => {
               </h4>
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <span className="text-xs font-bold text-blue-600">
+                  <div className="h-10 w-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <span className="text-xs font-bold text-gray-600">
                       START
                     </span>
                   </div>
@@ -596,8 +581,8 @@ const Internships = () => {
         onClose={() => setEditModal({ isOpen: false, internship: null })}
         title={
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
-              <Edit className="h-5 w-5 text-white" />
+            <div className="h-10 w-10 bg-gray-100 rounded-lg flex items-center justify-center">
+              <Edit className="h-5 w-5 text-gray-600" />
             </div>
             <div>
               <h3 className="text-lg font-bold text-gray-900">
@@ -610,9 +595,9 @@ const Internships = () => {
       >
         <div className="space-y-5 max-h-[75vh] overflow-y-auto pr-2">
           {/* Basic Information */}
-          <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
             <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-              <Briefcase className="h-4 w-4 text-blue-600" />
+              <Briefcase className="h-4 w-4 text-gray-600" />
               Basic Information
             </h4>
             <div className="space-y-3">
@@ -673,9 +658,9 @@ const Internships = () => {
           </div>
 
           {/* Position Details */}
-          <div className="bg-purple-50 p-4 rounded-lg border border-purple-100">
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
             <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-              <Clock className="h-4 w-4 text-purple-600" />
+              <Clock className="h-4 w-4 text-gray-600" />
               Position Details
             </h4>
             <div className="grid grid-cols-2 gap-3">
@@ -758,9 +743,9 @@ const Internships = () => {
           </div>
 
           {/* Dates */}
-          <div className="bg-orange-50 p-4 rounded-lg border border-orange-100">
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
             <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-orange-600" />
+              <Calendar className="h-4 w-4 text-gray-600" />
               Important Dates
             </h4>
             <div className="grid grid-cols-2 gap-3">
@@ -897,7 +882,7 @@ const Internships = () => {
             <Button
               onClick={handleSaveEdit}
               disabled={saving}
-              className="flex-1 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white"
+              className="flex-1 bg-gray-800 hover:bg-gray-900 text-white"
             >
               <Save className="h-4 w-4 mr-2" />
               {saving ? "Saving Changes..." : "Save Changes"}
