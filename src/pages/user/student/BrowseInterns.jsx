@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { studentsAPI } from "../../../lib/api";
 import { useAuth } from "../../../contexts/AuthContext";
+import { getCourseLogoAbsolute } from "../../../lib/imageUtils";
 import {
   Card,
   CardContent,
@@ -137,30 +138,7 @@ const BrowseInterns = () => {
     setFilteredStudents(filtered);
   };
 
-  const getCourseLogo = (program) => {
-    if (!program) return null;
-    const programLower = program.toLowerCase();
-
-    if (programLower.includes("business"))
-      return `${import.meta.env.BASE_URL}BUSINES ADD.png`;
-    if (programLower.includes("criminal"))
-      return `${import.meta.env.BASE_URL}CRIMINAL JUSTICE.png`;
-    if (programLower.includes("education"))
-      return `${import.meta.env.BASE_URL}EDUCATION.png`;
-    if (
-      programLower.includes("information") ||
-      programLower.includes("computer")
-    )
-      return `${import.meta.env.BASE_URL}INFORMATION SYSTEM.png`;
-    if (programLower.includes("maritime"))
-      return `${import.meta.env.BASE_URL}MARITIME.png`;
-    if (programLower.includes("nurse") || programLower.includes("nursing"))
-      return `${import.meta.env.BASE_URL}NURSE.png`;
-    if (programLower.includes("tourism"))
-      return `${import.meta.env.BASE_URL}TOURISM.png`;
-
-    return null;
-  };
+  const getCourseLogo = getCourseLogoAbsolute;
 
   const getUniqueCourses = () => {
     const courses = [...new Set(students.map((student) => student.program))];
