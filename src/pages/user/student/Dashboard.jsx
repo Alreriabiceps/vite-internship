@@ -618,16 +618,16 @@ const Dashboard = () => {
                                 className="text-xs font-medium px-2 py-1 bg-yellow-50 text-yellow-700 border-yellow-200"
                               >
                                 {skill.level === 1
-                                  ? "⭐"
+                                  ? "★"
                                   : skill.level === 2
-                                  ? "⭐⭐"
+                                  ? "★★"
                                   : skill.level === 3
-                                  ? "⭐⭐⭐"
+                                  ? "★★★"
                                   : skill.level === 4
-                                  ? "⭐⭐⭐⭐"
+                                  ? "★★★★"
                                   : skill.level === 5
-                                  ? "⭐⭐⭐⭐⭐"
-                                  : "⭐"}
+                                  ? "★★★★★"
+                                  : "★"}
                               </Badge>
                             )}
                           </div>

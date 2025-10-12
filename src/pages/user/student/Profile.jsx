@@ -548,11 +548,11 @@ const Profile = () => {
   ];
 
   const proficiencyLevels = [
-    { value: 1, label: "1 Star", stars: "⭐" },
-    { value: 2, label: "2 Stars", stars: "⭐⭐" },
-    { value: 3, label: "3 Stars", stars: "⭐⭐⭐" },
-    { value: 4, label: "4 Stars", stars: "⭐⭐⭐⭐" },
-    { value: 5, label: "5 Stars", stars: "⭐⭐⭐⭐⭐" },
+    { value: 1, label: "1 Star", stars: "★" },
+    { value: 2, label: "2 Stars", stars: "★★" },
+    { value: 3, label: "3 Stars", stars: "★★★" },
+    { value: 4, label: "4 Stars", stars: "★★★★" },
+    { value: 5, label: "5 Stars", stars: "★★★★★" },
   ];
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -1732,7 +1732,7 @@ const Profile = () => {
                                 watch("technicalSkills") || [];
                               setValue("technicalSkills", [
                                 ...currentSkills,
-                                { name: skillName, level: "Beginner" },
+                                { name: skillName, level: 1 },
                               ]);
                               input.value = "";
                             }
@@ -1805,7 +1805,7 @@ const Profile = () => {
                             <Badge className="text-xs bg-yellow-50 text-yellow-800 border-yellow-200">
                               {proficiencyLevels.find(
                                 (l) => l.value === skill.level
-                              )?.stars || "⭐"}
+                              )?.stars || "★"}
                             </Badge>
                           )}
                         </div>
