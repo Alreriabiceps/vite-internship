@@ -50,38 +50,38 @@ const Dashboard = () => {
       programLower.includes("information system") ||
       programLower.includes("information technology")
     ) {
-      return "/INFORMATION SYSTEM.png";
+      return `${import.meta.env.BASE_URL}INFORMATION SYSTEM.png`;
     } else if (
       programLower.includes("business") ||
       programLower.includes("entrepreneurship") ||
       programLower.includes("management accounting")
     ) {
-      return "/BUSINES ADD.png";
+      return `${import.meta.env.BASE_URL}BUSINES ADD.png`;
     } else if (
       programLower.includes("criminology") ||
       programLower.includes("criminal justice")
     ) {
-      return "/CRIMINAL JUSTICE.png";
+      return `${import.meta.env.BASE_URL}CRIMINAL JUSTICE.png`;
     } else if (
       programLower.includes("education") ||
       programLower.includes("early childhood")
     ) {
-      return "/EDUCATION.png";
+      return `${import.meta.env.BASE_URL}EDUCATION.png`;
     } else if (
       programLower.includes("maritime") ||
       programLower.includes("marine")
     ) {
-      return "/MARITIME.png";
+      return `${import.meta.env.BASE_URL}MARITIME.png`;
     } else if (
       programLower.includes("nursing") ||
       programLower.includes("nurse")
     ) {
-      return "/NURSE.png";
+      return `${import.meta.env.BASE_URL}NURSE.png`;
     } else if (
       programLower.includes("tourism") ||
       programLower.includes("hospitality")
     ) {
-      return "/TOURISM.png";
+      return `${import.meta.env.BASE_URL}TOURISM.png`;
     }
 
     return null; // Default fallback

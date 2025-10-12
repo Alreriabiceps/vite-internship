@@ -141,18 +141,23 @@ const BrowseInterns = () => {
     if (!program) return null;
     const programLower = program.toLowerCase();
 
-    if (programLower.includes("business")) return "/BUSINES ADD.png";
-    if (programLower.includes("criminal")) return "/CRIMINAL JUSTICE.png";
-    if (programLower.includes("education")) return "/EDUCATION.png";
+    if (programLower.includes("business"))
+      return `${import.meta.env.BASE_URL}BUSINES ADD.png`;
+    if (programLower.includes("criminal"))
+      return `${import.meta.env.BASE_URL}CRIMINAL JUSTICE.png`;
+    if (programLower.includes("education"))
+      return `${import.meta.env.BASE_URL}EDUCATION.png`;
     if (
       programLower.includes("information") ||
       programLower.includes("computer")
     )
-      return "/INFORMATION SYSTEM.png";
-    if (programLower.includes("maritime")) return "/MARITIME.png";
+      return `${import.meta.env.BASE_URL}INFORMATION SYSTEM.png`;
+    if (programLower.includes("maritime"))
+      return `${import.meta.env.BASE_URL}MARITIME.png`;
     if (programLower.includes("nurse") || programLower.includes("nursing"))
-      return "/NURSE.png";
-    if (programLower.includes("tourism")) return "/TOURISM.png";
+      return `${import.meta.env.BASE_URL}NURSE.png`;
+    if (programLower.includes("tourism"))
+      return `${import.meta.env.BASE_URL}TOURISM.png`;
 
     return null;
   };
