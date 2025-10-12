@@ -140,22 +140,44 @@ const BrowseInterns = () => {
   const getCourseLogo = (program) => {
     if (!program) return null;
     const programLower = program.toLowerCase();
+    console.log("🔍 Program:", program, "Lower:", programLower);
 
-    if (programLower.includes("business")) return "/BUSINES ADD.png";
-    if (programLower.includes("criminal")) return "/CRIMINAL JUSTICE.png";
-    if (programLower.includes("education")) return "/EDUCATION.png";
+    if (programLower.includes("business")) {
+      console.log("✅ Business match - returning:", "/BUSINES ADD.png");
+      return "/BUSINES ADD.png";
+    }
+    if (programLower.includes("criminal")) {
+      console.log("✅ Criminal match - returning:", "/CRIMINAL JUSTICE.png");
+      return "/CRIMINAL JUSTICE.png";
+    }
+    if (programLower.includes("education")) {
+      console.log("✅ Education match - returning:", "/EDUCATION.png");
+      return "/EDUCATION.png";
+    }
     if (
       programLower.includes("information") ||
       programLower.includes("computer")
     ) {
+      console.log(
+        "✅ Information match - returning:",
+        "/INFORMATION SYSTEM.png"
+      );
       return "/INFORMATION SYSTEM.png";
     }
-    if (programLower.includes("maritime")) return "/MARITIME.png";
+    if (programLower.includes("maritime")) {
+      console.log("✅ Maritime match - returning:", "/MARITIME.png");
+      return "/MARITIME.png";
+    }
     if (programLower.includes("nurse") || programLower.includes("nursing")) {
+      console.log("✅ Nurse match - returning:", "/NURSE.png");
       return "/NURSE.png";
     }
-    if (programLower.includes("tourism")) return "/TOURISM.png";
+    if (programLower.includes("tourism")) {
+      console.log("✅ Tourism match - returning:", "/TOURISM.png");
+      return "/TOURISM.png";
+    }
 
+    console.log("❌ No match found for program:", program);
     return null;
   };
 
