@@ -18,6 +18,7 @@ import {
   StudentProfile as Profile,
   InterestedCompanies,
   BrowseInternships,
+  BrowseInterns as StudentBrowseInterns,
 } from "./pages/user/student";
 
 // Company Pages
@@ -101,6 +102,17 @@ function App() {
                   }
                 >
                   <Route index element={<BrowseInternships />} />
+                </Route>
+
+                <Route
+                  path="/student/browse-interns"
+                  element={
+                    <ProtectedRoute allowedRoles={["student"]}>
+                      <Layout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<StudentBrowseInterns />} />
                 </Route>
 
                 {/* COMPANY ROUTES */}

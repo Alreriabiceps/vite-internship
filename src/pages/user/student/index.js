@@ -5,3 +5,4 @@ export { default as StudentLogin } from "./Login";
 export { default as StudentRegister } from "./Register";
 export { default as InterestedCompanies } from "./InterestedCompanies";
 export { default as BrowseInternships } from "./BrowseInternships";
+export { default as BrowseInterns } from "./BrowseInterns";

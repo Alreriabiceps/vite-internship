@@ -10,6 +10,7 @@ import {
   MessagesSquare,
   Heart,
   X,
+  Users,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 
@@ -21,6 +22,11 @@ const StudentSidebar = ({ sidebarOpen, onCloseMobile }) => {
       name: "Browse Internships",
       href: "/student/browse-internships",
       icon: Briefcase,
+    },
+    {
+      name: "Browse Interns",
+      href: "/student/browse-interns",
+      icon: Users,
     },
     {
       name: "Interested Companies",
