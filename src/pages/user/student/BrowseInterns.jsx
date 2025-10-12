@@ -274,396 +274,655 @@ const BrowseInterns = () => {
         </div>
 
         {/* Students Grid */}
-        {filteredStudents.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredStudents.length === 0 ? (
+          <Card>
+            <CardContent className="py-12 text-center">
+              <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                No students found
+              </h3>
+              <p className="text-gray-600">
+                {searchTerm
+                  ? "Try adjusting your search terms"
+                  : "No students are currently available"}
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-5">
             {filteredStudents.map((student) => (
               <Card
                 key={student._id}
-                className="bg-white shadow-md border-gray-200 hover:shadow-lg transition-shadow cursor-pointer"
+                className="group hover:shadow-lg transition-all duration-300 cursor-pointer border border-gray-200 hover:border-gray-300 rounded-lg overflow-hidden relative flex flex-col h-full"
                 onClick={() => openStudentModal(student)}
               >
-                <CardHeader className="pb-3">
-                  <div className="flex items-center space-x-4">
-                    <Avatar className="h-12 w-12">
+                <CardContent className="p-4 flex flex-col h-full">
+                  {/* Student Header */}
+                  <div className="flex flex-col items-center text-center mb-4">
+                    <Avatar className="h-16 w-16 border-2 border-gray-200 shadow-sm mb-3">
                       <AvatarImage
-                        src={student.profilePicUrl}
-                        alt={`${student.firstName} ${student.lastName}`}
+                        src={student.profilePicUrl || student.profilePictureUrl}
                       />
-                      <AvatarFallback className="bg-blue-100 text-blue-600">
+                      <AvatarFallback className="bg-gray-100 text-gray-600 text-lg">
                         {student.firstName?.[0]}
                         {student.lastName?.[0]}
                       </AvatarFallback>
                     </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-semibold text-gray-900 truncate">
-                        {student.firstName} {student.lastName}
-                      </h3>
-                      <p className="text-sm text-gray-600 truncate">
-                        {student.program}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {student.yearLevel} • {student.studentId}
-                      </p>
-                    </div>
+                    <h3 className="font-semibold text-base text-gray-900 mb-1 line-clamp-1">
+                      {student.firstName} {student.lastName}
+                    </h3>
+                    <p className="text-xs text-gray-600 mb-2 line-clamp-2 min-h-[2rem]">
+                      {student.program}
+                    </p>
+                    <Badge className="bg-gray-100 text-gray-700 border-0 text-xs">
+                      {student.yearLevel}
+                    </Badge>
                   </div>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  {/* Skills Preview */}
-                  {student.skills && student.skills.length > 0 && (
+
+                  {/* Student ID */}
+                  {student.studentId && (
+                    <div className="flex items-center justify-center gap-1.5 mb-3 px-2 py-1.5 bg-gray-50 rounded">
+                      <FileText className="h-3 w-3 text-gray-500" />
+                      <span className="text-xs font-medium text-gray-600">
+                        ID: {student.studentId}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Contact Info */}
+                  <div className="space-y-1.5 mb-3 pb-3 border-b border-gray-100">
+                    <div className="flex items-center gap-2 text-xs text-gray-600 p-1.5 bg-gray-50 rounded">
+                      <Mail className="h-3 w-3 text-gray-500" />
+                      <span className="truncate">{student.email}</span>
+                    </div>
+                    {student.phone && (
+                      <div className="flex items-center gap-2 text-xs text-gray-600 p-1.5 bg-gray-50 rounded">
+                        <Phone className="h-3 w-3 text-gray-500" />
+                        <span>{student.phone}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Internship Preferences */}
+                  {student.preferredFields && (
                     <div className="mb-3">
+                      <div className="flex items-center gap-1.5 mb-1.5">
+                        <Briefcase className="h-3.5 w-3.5 text-gray-500" />
+                        <p className="text-xs font-medium text-gray-700">
+                          Preferences
+                        </p>
+                      </div>
                       <div className="flex flex-wrap gap-1">
-                        {student.skills.slice(0, 3).map((skill, index) => (
+                        {student.preferredFields.workType && (
                           <Badge
-                            key={index}
                             variant="outline"
-                            className="text-xs bg-blue-50 text-blue-700 border-blue-200"
+                            className="text-xs border-gray-300 text-gray-700 bg-gray-50"
                           >
-                            {typeof skill === "string" ? skill : skill.name}
-                            {typeof skill === "object" && skill.level && (
-                              <span className="ml-1">
-                                {skill.level === 1
-                                  ? "★"
-                                  : skill.level === 2
-                                  ? "★★"
-                                  : skill.level === 3
-                                  ? "★★★"
-                                  : skill.level === 4
-                                  ? "★★★★"
-                                  : skill.level === 5
-                                  ? "★★★★★"
-                                  : "★"}
-                              </span>
-                            )}
+                            {student.preferredFields.workType}
                           </Badge>
-                        ))}
-                        {student.skills.length > 3 && (
-                          <Badge variant="outline" className="text-xs">
-                            +{student.skills.length - 3} more
+                        )}
+                        {student.preferredFields.schedule && (
+                          <Badge
+                            variant="outline"
+                            className="text-xs border-gray-300 text-gray-700 bg-gray-50"
+                          >
+                            {student.preferredFields.schedule}
+                          </Badge>
+                        )}
+                        {student.preferredFields.durationHours && (
+                          <Badge
+                            variant="outline"
+                            className="text-xs border-gray-300 text-gray-700 bg-gray-50"
+                          >
+                            {student.preferredFields.durationHours}h
                           </Badge>
                         )}
                       </div>
                     </div>
                   )}
 
-                  {/* Course Logo */}
-                  {getCourseLogo(student.program) && (
+                  {/* Skills Preview */}
+                  {student.skills && student.skills.length > 0 && (
                     <div className="mb-3">
-                      <img
-                        src={getCourseLogo(student.program)}
-                        alt={student.program}
-                        className="h-8 w-auto"
-                      />
+                      <div className="flex items-center gap-1.5 mb-1.5">
+                        <Code className="h-3.5 w-3.5 text-gray-500" />
+                        <p className="text-xs font-medium text-gray-700">
+                          Top Skills
+                        </p>
+                      </div>
+                      <div className="flex flex-wrap gap-1">
+                        {student.skills.slice(0, 3).map((skill, index) => {
+                          const skillName =
+                            typeof skill === "string"
+                              ? skill
+                              : skill?.name || "Unknown Skill";
+                          const skillLevel =
+                            typeof skill === "object" ? skill?.level : null;
+
+                          return (
+                            <Badge
+                              key={index}
+                              className="text-xs bg-gray-100 text-gray-700 border-0"
+                            >
+                              {skillName}
+                              {skillLevel && (
+                                <span className="ml-1 text-yellow-600">
+                                  {skillLevel === 1
+                                    ? "★"
+                                    : skillLevel === 2
+                                    ? "★★"
+                                    : skillLevel === 3
+                                    ? "★★★"
+                                    : skillLevel === 4
+                                    ? "★★★★"
+                                    : skillLevel === 5
+                                    ? "★★★★★"
+                                    : "★"}
+                                </span>
+                              )}
+                            </Badge>
+                          );
+                        })}
+                        {student.skills.length > 3 && (
+                          <Badge className="text-xs bg-gray-200 text-gray-600 border-0">
+                            +{student.skills.length - 3}
+                          </Badge>
+                        )}
+                      </div>
                     </div>
                   )}
 
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center text-sm text-gray-500">
-                      <MapPin className="h-4 w-4 mr-1" />
-                      <span className="truncate">
-                        {student.preferredFields?.location?.[0] ||
-                          "Not specified"}
-                      </span>
+                  {/* Stats */}
+                  <div className="grid grid-cols-3 gap-1.5 mb-4">
+                    <div className="text-center p-2 bg-gray-50 rounded">
+                      <Award className="h-3.5 w-3.5 text-gray-600 mx-auto mb-1" />
+                      <p className="text-xs font-semibold text-gray-900">
+                        {student.certifications?.length || 0}
+                      </p>
+                      <p className="text-xs text-gray-600">Certs</p>
                     </div>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="text-blue-600 border-blue-200 hover:bg-blue-50"
-                    >
-                      <Eye className="h-4 w-4 mr-1" />
-                      View Profile
-                    </Button>
+                    <div className="text-center p-2 bg-gray-50 rounded">
+                      <Star className="h-3.5 w-3.5 text-gray-600 mx-auto mb-1" />
+                      <p className="text-xs font-semibold text-gray-900">
+                        {student.badges?.length || 0}
+                      </p>
+                      <p className="text-xs text-gray-600">Badges</p>
+                    </div>
+                    <div className="text-center p-2 bg-gray-50 rounded">
+                      <Code className="h-3.5 w-3.5 text-gray-600 mx-auto mb-1" />
+                      <p className="text-xs font-semibold text-gray-900">
+                        {student.skills?.length || 0}
+                      </p>
+                      <p className="text-xs text-gray-600">Skills</p>
+                    </div>
                   </div>
+
+                  {/* Spacer to push button to bottom */}
+                  <div className="flex-1"></div>
+
+                  {/* View Profile Button - Fixed at bottom */}
+                  <Button
+                    className="w-full bg-gray-800 hover:bg-gray-900 text-white text-sm py-2"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openStudentModal(student);
+                    }}
+                  >
+                    <Eye className="h-4 w-4 mr-2" />
+                    View Profile
+                  </Button>
                 </CardContent>
               </Card>
             ))}
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No students found
-            </h3>
-            <p className="text-gray-600">
-              Try adjusting your search criteria or filters
-            </p>
           </div>
         )}
 
         {/* Student Detail Modal */}
         {selectedStudent && (
-          <Modal
+          <StudentProfileModal
+            student={selectedStudent}
             isOpen={showModal}
             onClose={closeStudentModal}
-            title={`${selectedStudent.firstName} ${selectedStudent.lastName}`}
-            size="lg"
-          >
-            <div className="space-y-6">
-              {/* Profile Header */}
-              <div className="flex items-center space-x-4 pb-4 border-b border-gray-200">
-                <Avatar className="h-16 w-16">
-                  <AvatarImage
-                    src={selectedStudent.profilePicUrl}
-                    alt={`${selectedStudent.firstName} ${selectedStudent.lastName}`}
-                  />
-                  <AvatarFallback className="bg-blue-100 text-blue-600 text-lg">
-                    {selectedStudent.firstName?.[0]}
-                    {selectedStudent.lastName?.[0]}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <h2 className="text-xl font-semibold text-gray-900">
-                    {selectedStudent.firstName} {selectedStudent.lastName}
-                  </h2>
-                  <p className="text-gray-600">{selectedStudent.program}</p>
-                  <p className="text-sm text-gray-500">
-                    {selectedStudent.yearLevel} • {selectedStudent.studentId}
-                  </p>
-                </div>
-                {getCourseLogo(selectedStudent.program) && (
-                  <img
-                    src={getCourseLogo(selectedStudent.program)}
-                    alt={selectedStudent.program}
-                    className="h-12 w-auto"
-                  />
-                )}
-              </div>
-
-              {/* Contact Information */}
-              <div>
-                <h3 className="text-lg font-medium text-gray-900 mb-3 flex items-center">
-                  <User className="h-5 w-5 mr-2" />
-                  Contact Information
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {selectedStudent.email && (
-                    <div className="flex items-center text-sm">
-                      <Mail className="h-4 w-4 text-gray-400 mr-2" />
-                      <span className="text-gray-600">
-                        {selectedStudent.email}
-                      </span>
-                    </div>
-                  )}
-                  {selectedStudent.phone && (
-                    <div className="flex items-center text-sm">
-                      <Phone className="h-4 w-4 text-gray-400 mr-2" />
-                      <span className="text-gray-600">
-                        {selectedStudent.phone}
-                      </span>
-                    </div>
-                  )}
-                  {selectedStudent.preferredFields?.location?.[0] && (
-                    <div className="flex items-center text-sm">
-                      <MapPin className="h-4 w-4 text-gray-400 mr-2" />
-                      <span className="text-gray-600">
-                        {selectedStudent.preferredFields.location[0]}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Technical Skills */}
-              {selectedStudent.skills && selectedStudent.skills.length > 0 && (
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-3 flex items-center">
-                    <Code className="h-5 w-5 mr-2" />
-                    Technical Skills
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedStudent.skills.map((skill, index) => (
-                      <Badge
-                        key={index}
-                        variant="outline"
-                        className="bg-blue-50 text-blue-700 border-blue-200"
-                      >
-                        {typeof skill === "string" ? skill : skill.name}
-                        {typeof skill === "object" && skill.level && (
-                          <span className="ml-1">
-                            {skill.level === 1
-                              ? "★"
-                              : skill.level === 2
-                              ? "★★"
-                              : skill.level === 3
-                              ? "★★★"
-                              : skill.level === 4
-                              ? "★★★★"
-                              : skill.level === 5
-                              ? "★★★★★"
-                              : "★"}
-                          </span>
-                        )}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Soft Skills */}
-              {selectedStudent.softSkills &&
-                selectedStudent.softSkills.length > 0 && (
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-3 flex items-center">
-                      <Users className="h-5 w-5 mr-2" />
-                      Soft Skills
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedStudent.softSkills.map((skill, index) => (
-                        <Badge
-                          key={index}
-                          variant="outline"
-                          className="bg-green-50 text-green-700 border-green-200"
-                        >
-                          {skill}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-              {/* Certifications */}
-              {selectedStudent.certifications &&
-                selectedStudent.certifications.length > 0 && (
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-3 flex items-center">
-                      <Award className="h-5 w-5 mr-2" />
-                      Certifications
-                    </h3>
-                    <div className="space-y-2">
-                      {selectedStudent.certifications.map((cert, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center justify-between p-2 bg-gray-50 rounded-lg"
-                        >
-                          <span className="text-sm font-medium">
-                            {cert.name}
-                          </span>
-                          {cert.certificateUrl && (
-                            <a
-                              href={cert.certificateUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-600 hover:text-blue-800"
-                            >
-                              <ExternalLink className="h-4 w-4" />
-                            </a>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-              {/* Online Presence */}
-              <div>
-                <h3 className="text-lg font-medium text-gray-900 mb-3 flex items-center">
-                  <Globe className="h-5 w-5 mr-2" />
-                  Online Presence
-                </h3>
-                <div className="space-y-2">
-                  {selectedStudent.linkedinUrl && (
-                    <a
-                      href={selectedStudent.linkedinUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center p-2 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
-                    >
-                      <Linkedin className="h-4 w-4 text-blue-600 mr-2" />
-                      <span className="text-sm text-blue-600">
-                        LinkedIn Profile
-                      </span>
-                      <ExternalLink className="h-3 w-3 text-blue-600 ml-auto" />
-                    </a>
-                  )}
-                  {selectedStudent.githubUrl && (
-                    <a
-                      href={selectedStudent.githubUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center p-2 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
-                    >
-                      <Github className="h-4 w-4 text-gray-600 mr-2" />
-                      <span className="text-sm text-gray-600">
-                        GitHub Profile
-                      </span>
-                      <ExternalLink className="h-3 w-3 text-gray-600 ml-auto" />
-                    </a>
-                  )}
-                  {selectedStudent.resumeUrl && (
-                    <a
-                      href={selectedStudent.resumeUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center p-2 bg-green-50 hover:bg-green-100 rounded-lg transition-colors"
-                    >
-                      <FileText className="h-4 w-4 text-green-600 mr-2" />
-                      <span className="text-sm text-green-600">Resume</span>
-                      <ExternalLink className="h-3 w-3 text-green-600 ml-auto" />
-                    </a>
-                  )}
-                  {selectedStudent.portfolioUrl && (
-                    <a
-                      href={selectedStudent.portfolioUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center p-2 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors"
-                    >
-                      <Globe className="h-4 w-4 text-purple-600 mr-2" />
-                      <span className="text-sm text-purple-600">Portfolio</span>
-                      <ExternalLink className="h-3 w-3 text-purple-600 ml-auto" />
-                    </a>
-                  )}
-                </div>
-              </div>
-
-              {/* Work Preferences */}
-              {selectedStudent.preferredFields && (
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-3 flex items-center">
-                    <Briefcase className="h-5 w-5 mr-2" />
-                    Work Preferences
-                  </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                    {selectedStudent.preferredFields.workType && (
-                      <div>
-                        <span className="font-medium text-gray-700">
-                          Work Type:
-                        </span>
-                        <span className="ml-2 text-gray-600">
-                          {selectedStudent.preferredFields.workType}
-                        </span>
-                      </div>
-                    )}
-                    {selectedStudent.preferredFields.schedule && (
-                      <div>
-                        <span className="font-medium text-gray-700">
-                          Schedule:
-                        </span>
-                        <span className="ml-2 text-gray-600">
-                          {selectedStudent.preferredFields.schedule}
-                        </span>
-                      </div>
-                    )}
-                    {selectedStudent.preferredFields.durationHours && (
-                      <div>
-                        <span className="font-medium text-gray-700">
-                          Duration:
-                        </span>
-                        <span className="ml-2 text-gray-600">
-                          {Math.round(
-                            selectedStudent.preferredFields.durationHours / 40
-                          )}{" "}
-                          weeks
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-          </Modal>
+          />
         )}
       </div>
     </div>
+  );
+};
+
+// Student Profile Modal Component (matching company layout)
+const StudentProfileModal = ({ student, isOpen, onClose }) => {
+  const [viewingImage, setViewingImage] = useState(null);
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} title="Student Profile">
+      <div className="space-y-4">
+        {/* Hero Section - Simple */}
+        <Card className="bg-gray-50 border border-gray-200">
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-4">
+              <Avatar className="h-16 w-16 border-2 border-gray-300">
+                <AvatarImage
+                  src={student.profilePicUrl || student.profilePictureUrl}
+                />
+                <AvatarFallback className="bg-gray-100 text-gray-600 text-lg">
+                  {student.firstName?.[0]}
+                  {student.lastName?.[0]}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1">
+                <h1 className="text-xl font-semibold text-gray-900 mb-1">
+                  {student.firstName} {student.middleName} {student.lastName}
+                </h1>
+                <p className="text-gray-600 text-sm mb-0.5">
+                  {student.program}
+                </p>
+                <p className="text-gray-500 text-xs">{student.yearLevel}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Grid Layout - Compact */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Personal Information */}
+          <Card>
+            <CardHeader className="border-b py-2">
+              <CardTitle className="flex items-center gap-2 text-sm">
+                <div className="p-1.5 bg-gray-100 rounded">
+                  <User className="h-4 w-4 text-gray-600" />
+                </div>
+                Personal Information
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-3 space-y-2">
+              <InfoRow icon={Mail} label="Email" value={student.email} />
+              <InfoRow icon={Phone} label="Phone" value={student.phone} />
+              <InfoRow
+                icon={User}
+                label="Gender"
+                value={student.sex || "Not specified"}
+              />
+              <InfoRow
+                icon={Calendar}
+                label="Age"
+                value={student.age || "Not specified"}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Academic Information */}
+          <Card>
+            <CardHeader className="border-b py-2">
+              <CardTitle className="flex items-center gap-2 text-sm">
+                <div className="p-1.5 bg-gray-100 rounded">
+                  <GraduationCap className="h-4 w-4 text-gray-600" />
+                </div>
+                Academic Information
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-3 space-y-2">
+              <InfoRow
+                icon={FileText}
+                label="Student ID"
+                value={student.studentId}
+              />
+              <InfoRow
+                icon={GraduationCap}
+                label="Program"
+                value={student.program}
+              />
+              <InfoRow
+                icon={Calendar}
+                label="Year Level"
+                value={student.yearLevel}
+              />
+            </CardContent>
+          </Card>
+
+          {/* Online Presence */}
+          {(student.portfolioUrl ||
+            student.linkedinUrl ||
+            student.githubUrl ||
+            student.resumeUrl) && (
+            <Card>
+              <CardHeader className="border-b py-2">
+                <CardTitle className="flex items-center gap-2 text-sm">
+                  <div className="p-1.5 bg-gray-100 rounded">
+                    <Globe className="h-4 w-4 text-gray-600" />
+                  </div>
+                  Online Presence
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-3 space-y-2">
+                {student.portfolioUrl && (
+                  <LinkRow
+                    icon={Globe}
+                    label="Portfolio"
+                    url={student.portfolioUrl}
+                  />
+                )}
+                {student.linkedinUrl && (
+                  <LinkRow
+                    icon={Linkedin}
+                    label="LinkedIn"
+                    url={student.linkedinUrl}
+                  />
+                )}
+                {student.githubUrl && (
+                  <LinkRow
+                    icon={Github}
+                    label="GitHub"
+                    url={student.githubUrl}
+                  />
+                )}
+                {student.resumeUrl && (
+                  <LinkRow
+                    icon={FileText}
+                    label="Resume"
+                    url={student.resumeUrl}
+                  />
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Internship Preferences */}
+          {student.preferredFields && (
+            <Card>
+              <CardHeader className="border-b">
+                <CardTitle className="flex items-center gap-2">
+                  <div className="p-2 bg-gray-100 rounded">
+                    <Briefcase className="h-4 w-4 text-gray-600" />
+                  </div>
+                  Internship Preferences
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-3 space-y-2">
+                <InfoRow
+                  icon={Briefcase}
+                  label="Work Type"
+                  value={student.preferredFields.workType}
+                />
+                {student.preferredFields.schedule && (
+                  <InfoRow
+                    icon={Calendar}
+                    label="Schedule"
+                    value={student.preferredFields.schedule}
+                  />
+                )}
+                {student.preferredFields.durationHours && (
+                  <InfoRow
+                    icon={Clock}
+                    label="Duration"
+                    value={`${student.preferredFields.durationHours} hours`}
+                  />
+                )}
+                {student.preferredFields.location &&
+                  student.preferredFields.location.length > 0 && (
+                    <InfoRow
+                      icon={MapPin}
+                      label="Preferred Locations"
+                      value={student.preferredFields.location.join(", ")}
+                    />
+                  )}
+              </CardContent>
+            </Card>
+          )}
+        </div>
+
+        {/* Skills Section - Full Width */}
+        {student.skills && student.skills.length > 0 && (
+          <Card>
+            <CardHeader className="border-b py-2">
+              <CardTitle className="flex items-center gap-2 text-sm">
+                <div className="p-1.5 bg-gray-100 rounded">
+                  <Code className="h-5 w-5 text-gray-600" />
+                </div>
+                Technical Skills
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-3">
+              <div className="flex flex-wrap gap-1.5">
+                {student.skills.map((skill, index) => {
+                  const skillName =
+                    typeof skill === "string"
+                      ? skill
+                      : skill?.name || "Unknown Skill";
+                  const skillLevel =
+                    typeof skill === "object" ? skill?.level : null;
+
+                  return (
+                    <Badge key={index} variant="secondary" className="text-xs">
+                      {skillName}
+                      {skillLevel && (
+                        <span className="ml-1 text-yellow-500">
+                          {skillLevel === 1
+                            ? "★"
+                            : skillLevel === 2
+                            ? "★★"
+                            : skillLevel === 3
+                            ? "★★★"
+                            : skillLevel === 4
+                            ? "★★★★"
+                            : skillLevel === 5
+                            ? "★★★★★"
+                            : "★"}
+                        </span>
+                      )}
+                    </Badge>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Soft Skills */}
+        {student.softSkills && student.softSkills.length > 0 && (
+          <Card>
+            <CardHeader className="border-b py-2">
+              <CardTitle className="flex items-center gap-2 text-sm">
+                <div className="p-1.5 bg-gray-100 rounded">
+                  <Users className="h-5 w-5 text-gray-600" />
+                </div>
+                Soft Skills
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-3">
+              <div className="flex flex-wrap gap-1.5">
+                {student.softSkills.map((skill, index) => {
+                  const skillName =
+                    typeof skill === "string"
+                      ? skill
+                      : skill?.name || "Unknown Skill";
+
+                  return (
+                    <Badge
+                      key={index}
+                      variant="outline"
+                      className="text-xs border-pink-300 text-pink-700"
+                    >
+                      {skillName}
+                    </Badge>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Certificates */}
+        {student.certifications && student.certifications.length > 0 && (
+          <Card>
+            <CardHeader className="border-b py-2">
+              <CardTitle className="flex items-center gap-2 text-sm">
+                <div className="p-1.5 bg-gray-100 rounded">
+                  <Award className="h-5 w-5 text-gray-600" />
+                </div>
+                Certificates
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-3">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {student.certifications.map((cert, index) => (
+                  <div
+                    key={index}
+                    className="relative group rounded-lg overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow"
+                  >
+                    {cert.imageUrl ? (
+                      <img
+                        src={cert.imageUrl}
+                        alt={cert.name}
+                        className="w-full h-32 object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-32 bg-gray-100 flex items-center justify-center">
+                        <Award className="h-12 w-12 text-gray-600" />
+                      </div>
+                    )}
+                    <div className="p-2 bg-white">
+                      <p className="font-medium text-xs text-gray-900 truncate">
+                        {cert.name}
+                      </p>
+                      <p className="text-xs text-gray-600 truncate">
+                        {cert.issuer}
+                      </p>
+                    </div>
+                    <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      {cert.imageUrl && (
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          className="h-7 w-7 p-0 bg-white hover:bg-gray-100"
+                          onClick={() => setViewingImage(cert.imageUrl)}
+                          title="View Certificate"
+                        >
+                          <Eye className="h-3 w-3" />
+                        </Button>
+                      )}
+                      {(cert.verificationUrl || cert.certificateUrl) && (
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          className="h-7 w-7 p-0 bg-white hover:bg-gray-100"
+                          onClick={() =>
+                            window.open(
+                              cert.verificationUrl || cert.certificateUrl,
+                              "_blank"
+                            )
+                          }
+                          title="Open Link"
+                        >
+                          <ExternalLink className="h-3 w-3" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Badges */}
+        {student.badges && student.badges.length > 0 && (
+          <Card>
+            <CardHeader className="border-b py-2">
+              <CardTitle className="flex items-center gap-2 text-sm">
+                <div className="p-1.5 bg-gray-100 rounded">
+                  <Award className="h-5 w-5 text-gray-600" />
+                </div>
+                Badges & Achievements
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-3">
+              <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
+                {student.badges.map((badge, index) => (
+                  <div key={index} className="text-center group">
+                    <div className="relative rounded-lg overflow-hidden border-2 border-gray-200 group-hover:border-gray-400 transition-colors">
+                      {badge.iconUrl || badge.imageUrl || badge.image ? (
+                        <img
+                          src={badge.iconUrl || badge.imageUrl || badge.image}
+                          alt={badge.name || badge.badgeName}
+                          className="w-full aspect-square object-cover"
+                        />
+                      ) : (
+                        <div className="w-full aspect-square bg-gray-100 flex items-center justify-center">
+                          <Award className="h-8 w-8 text-gray-600" />
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-xs font-medium text-gray-900 mt-1 truncate">
+                      {badge.name || badge.badgeName}
+                    </p>
+                  </div>
+                ))}
+              </div>
+              {student.badges.length === 0 && (
+                <p className="text-sm text-gray-500 text-center py-4">
+                  No badges available
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        )}
+      </div>
+
+      {/* Certificate Image Viewer */}
+      {viewingImage && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-90 z-[9999] flex items-center justify-center p-4"
+          onClick={() => setViewingImage(null)}
+        >
+          <div className="relative max-w-5xl max-h-[90vh] w-full">
+            <button
+              onClick={() => setViewingImage(null)}
+              className="absolute -top-10 right-0 text-white hover:text-gray-300 transition-colors"
+            >
+              <X className="h-8 w-8" />
+            </button>
+            <img
+              src={viewingImage}
+              alt="Certificate"
+              className="w-full h-auto max-h-[85vh] object-contain rounded-lg"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        </div>
+      )}
+    </Modal>
+  );
+};
+
+// Helper Components
+const InfoRow = ({ icon: Icon, label, value }) => {
+  if (!value) return null;
+  return (
+    <div className="flex items-center justify-between p-1.5 bg-gray-50 rounded">
+      <div className="flex items-center gap-1.5 text-gray-700">
+        <Icon className="h-3.5 w-3.5 text-gray-400" />
+        <span className="text-xs font-medium">{label}</span>
+      </div>
+      <span className="text-xs text-gray-900 truncate ml-2">{value}</span>
+    </div>
+  );
+};
+
+const LinkRow = ({ icon: Icon, label, url }) => {
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center justify-between p-1.5 bg-gray-50 rounded hover:bg-gray-100 transition-colors"
+    >
+      <div className="flex items-center gap-1.5 text-gray-700">
+        <Icon className="h-3.5 w-3.5 text-gray-400" />
+        <span className="text-xs font-medium">{label}</span>
+      </div>
+      <ExternalLink className="h-3.5 w-3.5 text-gray-400" />
+    </a>
   );
 };
 
