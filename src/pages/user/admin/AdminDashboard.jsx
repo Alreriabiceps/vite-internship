@@ -38,6 +38,7 @@ import {
   Activity,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { adminAPI } from "../../../lib/api";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -76,37 +77,42 @@ const AdminDashboard = () => {
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      // Fetch dashboard stats from dedicated endpoint
-      const dashboardResponse = await fetch("/api/admin/dashboard", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-
-      if (!dashboardResponse.ok) {
-        throw new Error("Failed to fetch dashboard data");
-      }
-
-      const dashboardStats = await dashboardResponse.json();
+      // Use the adminAPI which handles environment variables correctly
+      const dashboardStats = await adminAPI.getDashboardStats();
 
       // Fetch recent students and companies for display
       const [recentStudentsResponse, recentCompaniesResponse, pendingResponse] =
         await Promise.all([
-          fetch("/api/admin/students?page=1&limit=5", {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }),
-          fetch("/api/admin/companies?page=1&limit=5", {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }),
-          fetch("/api/admin/internship-postings/pending", {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }),
+          fetch(
+            `${
+              import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+            }/admin/students?page=1&limit=5`,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          ),
+          fetch(
+            `${
+              import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+            }/admin/companies?page=1&limit=5`,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          ),
+          fetch(
+            `${
+              import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+            }/admin/internship-postings/pending`,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          ),
         ]);
 
       const recentStudentsData = await recentStudentsResponse.json();
@@ -115,12 +121,12 @@ const AdminDashboard = () => {
 
       // Calculate additional metrics
       const totalInternships =
-        dashboardStats.totalStudents + dashboardStats.totalCompanies; // Approximation
-      const activeUsers = Math.floor(dashboardStats.totalUsers * 0.8); // 80% active users
+        dashboardStats.data.totalStudents + dashboardStats.data.totalCompanies; // Approximation
+      const activeUsers = Math.floor(dashboardStats.data.totalUsers * 0.8); // 80% active users
 
       setDashboardData({
-        totalStudents: dashboardStats.totalStudents || 0,
-        totalCompanies: dashboardStats.totalCompanies || 0,
+        totalStudents: dashboardStats.data.totalStudents || 0,
+        totalCompanies: dashboardStats.data.totalCompanies || 0,
         totalInternships: totalInternships,
         pendingApprovals: Array.isArray(pendingData.data?.postings)
           ? pendingData.data.postings.length
@@ -129,8 +135,8 @@ const AdminDashboard = () => {
           : Array.isArray(pendingData)
           ? pendingData.length
           : 0,
-        activeInternships: dashboardStats.verifiedCompanies || 0, // Use verified companies as active internships
-        completedInternships: dashboardStats.pendingVerifications || 0, // Use pending as completed
+        activeInternships: dashboardStats.data.verifiedCompanies || 0, // Use verified companies as active internships
+        completedInternships: dashboardStats.data.pendingVerifications || 0, // Use pending as completed
         recentStudents: recentStudentsData.students?.slice(0, 5) || [],
         recentCompanies: recentCompaniesData.companies?.slice(0, 5) || [],
         pendingPostings: Array.isArray(pendingData.data?.postings)
@@ -143,18 +149,18 @@ const AdminDashboard = () => {
         systemStats: {
           uptime: "99.9%",
           lastBackup: "2 hours ago",
-          totalUsers: dashboardStats.totalUsers || 0,
+          totalUsers: dashboardStats.data.totalUsers || 0,
           activeUsers: activeUsers,
         },
         // Additional real data
-        verifiedCompanies: dashboardStats.verifiedCompanies || 0,
-        pendingVerifications: dashboardStats.pendingVerifications || 0,
-        recentUsers: dashboardStats.recentUsers || 0,
-        recentStudentsCount: dashboardStats.recentStudents || 0,
-        recentCompaniesCount: dashboardStats.recentCompanies || 0,
-        usersByRole: dashboardStats.usersByRole || [],
-        studentsByProgram: dashboardStats.studentsByProgram || [],
-        companiesByIndustry: dashboardStats.companiesByIndustry || [],
+        verifiedCompanies: dashboardStats.data.verifiedCompanies || 0,
+        pendingVerifications: dashboardStats.data.pendingVerifications || 0,
+        recentUsers: dashboardStats.data.recentUsers || 0,
+        recentStudentsCount: dashboardStats.data.recentStudents || 0,
+        recentCompaniesCount: dashboardStats.data.recentCompanies || 0,
+        usersByRole: dashboardStats.data.usersByRole || [],
+        studentsByProgram: dashboardStats.data.studentsByProgram || [],
+        companiesByIndustry: dashboardStats.data.companiesByIndustry || [],
       });
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
