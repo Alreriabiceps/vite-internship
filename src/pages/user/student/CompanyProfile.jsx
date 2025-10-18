@@ -36,6 +36,7 @@ import {
   FileText,
   TrendingUp,
   X,
+  ShieldCheck,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -277,9 +278,9 @@ const CompanyProfile = () => {
                       <Badge className="bg-gray-100 text-gray-800 border-gray-200">
                         {company.companySize} employees
                       </Badge>
-                      {company.verified && (
-                        <Badge className="bg-gray-100 text-gray-800 border-gray-200">
-                          <CheckCircle className="h-3 w-3 mr-1" />
+                      {company.isVerified && (
+                        <Badge className="bg-blue-100 text-blue-800 border-blue-200">
+                          <ShieldCheck className="h-3 w-3 mr-1" />
                           Verified
                         </Badge>
                       )}

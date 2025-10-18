@@ -39,6 +39,7 @@ import {
   Clock,
   Heart,
   Star,
+  CheckCircle,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -324,50 +325,6 @@ const BrowseInterns = () => {
     return shortlistedStudents.some((s) => s._id === studentId);
   };
 
-  const getCourseLogo = (program) => {
-    if (!program) return null;
-    const programLower = program.toLowerCase();
-    console.log("🔍 Program:", program, "Lower:", programLower);
-
-    if (programLower.includes("business")) {
-      console.log("✅ Business match - returning:", "/BUSINES ADD.png");
-      return "/BUSINES ADD.png";
-    }
-    if (programLower.includes("criminal")) {
-      console.log("✅ Criminal match - returning:", "/CRIMINAL JUSTICE.png");
-      return "/CRIMINAL JUSTICE.png";
-    }
-    if (programLower.includes("education")) {
-      console.log("✅ Education match - returning:", "/EDUCATION.png");
-      return "/EDUCATION.png";
-    }
-    if (
-      programLower.includes("information") ||
-      programLower.includes("computer")
-    ) {
-      console.log(
-        "✅ Information match - returning:",
-        "/INFORMATION SYSTEM.png"
-      );
-      return "/INFORMATION SYSTEM.png";
-    }
-    if (programLower.includes("maritime")) {
-      console.log("✅ Maritime match - returning:", "/MARITIME.png");
-      return "/MARITIME.png";
-    }
-    if (programLower.includes("nurse") || programLower.includes("nursing")) {
-      console.log("✅ Nurse match - returning:", "/NURSE.png");
-      return "/NURSE.png";
-    }
-    if (programLower.includes("tourism")) {
-      console.log("✅ Tourism match - returning:", "/TOURISM.png");
-      return "/TOURISM.png";
-    }
-
-    console.log("❌ No match found for program:", program);
-    return null;
-  };
-
   if (loading) {
     return (
       <div className="p-6">
@@ -641,23 +598,76 @@ const StudentCard = ({
     console.log("🎨 Getting course logo for program:", program);
 
     const logoMap = {
+      // Business Administration variations
       "Business Administration": "/BUSINES ADD.png",
       "Bachelor of Science in Business Administration": "/BUSINES ADD.png",
+      Business: "/BUSINES ADD.png",
+      BSBA: "/BUSINES ADD.png",
+
+      // Criminal Justice variations
       "Criminal Justice": "/CRIMINAL JUSTICE.png",
       "Bachelor of Science in Criminal Justice": "/CRIMINAL JUSTICE.png",
+      Criminal: "/CRIMINAL JUSTICE.png",
+      BSCJ: "/CRIMINAL JUSTICE.png",
+
+      // Education variations
       Education: "/EDUCATION.png",
       "Bachelor of Science in Education": "/EDUCATION.png",
+      BSE: "/EDUCATION.png",
+
+      // Information System variations
       "Information System": "/INFORMATION SYSTEM.png",
       "Bachelor of Science in Information System": "/INFORMATION SYSTEM.png",
+      "Information Systems": "/INFORMATION SYSTEM.png",
+      "Computer Science": "/INFORMATION SYSTEM.png",
+      IT: "/INFORMATION SYSTEM.png",
+      BSIS: "/INFORMATION SYSTEM.png",
+
+      // Maritime variations
       Maritime: "/MARITIME.png",
       "Bachelor of Science in Maritime": "/MARITIME.png",
+      "Maritime Engineering": "/MARITIME.png",
+      BSM: "/MARITIME.png",
+
+      // Nursing variations
       Nursing: "/NURSE.png",
       "Bachelor of Science in Nursing": "/NURSE.png",
+      BSN: "/NURSE.png",
+
+      // Tourism variations
       Tourism: "/TOURISM.png",
       "Bachelor of Science in Tourism": "/TOURISM.png",
+      "Tourism Management": "/TOURISM.png",
+      BST: "/TOURISM.png",
     };
 
     const logoPath = logoMap[program] || null;
+
+    // If no exact match, try case-insensitive matching
+    if (!logoPath) {
+      const programLower = program.toLowerCase();
+      for (const [key, value] of Object.entries(logoMap)) {
+        if (key.toLowerCase() === programLower) {
+          console.log("🎨 Case-insensitive match found:", key, "->", value);
+          return value;
+        }
+      }
+    }
+
+    // If still no match, try partial matching
+    if (!logoPath) {
+      const programLower = program.toLowerCase();
+      for (const [key, value] of Object.entries(logoMap)) {
+        if (
+          programLower.includes(key.toLowerCase()) ||
+          key.toLowerCase().includes(programLower)
+        ) {
+          console.log("🎨 Partial match found:", key, "->", value);
+          return value;
+        }
+      }
+    }
+
     console.log("🎨 Logo path:", logoPath);
     return logoPath;
   };
@@ -699,9 +709,17 @@ const StudentCard = ({
               <p className="text-xs text-gray-600 mb-2 line-clamp-2 min-h-[2rem]">
                 {student.program}
               </p>
-              <Badge className="bg-gray-100 text-gray-700 border-0 text-xs">
-                {student.yearLevel}
-              </Badge>
+              <div className="flex items-center gap-1 mb-1">
+                <Badge className="bg-gray-100 text-gray-700 border-0 text-xs">
+                  {student.yearLevel}
+                </Badge>
+                {student.isInternshipReady && (
+                  <Badge className="bg-green-100 text-green-800 border-green-200 text-xs">
+                    <CheckCircle className="h-3 w-3 mr-1" />
+                    Ready
+                  </Badge>
+                )}
+              </div>
             </div>
             <Avatar className="h-12 w-12 sm:h-16 sm:w-16 border-2 border-gray-200 shadow-sm ml-2 sm:ml-3 flex-shrink-0">
               <AvatarImage
@@ -943,7 +961,15 @@ const StudentProfileModal = ({ student, isOpen, onClose }) => {
                 <p className="text-blue-100 text-sm mb-0.5">
                   {student.program}
                 </p>
-                <p className="text-blue-200 text-xs">{student.yearLevel}</p>
+                <div className="flex items-center gap-2 mb-1">
+                  <p className="text-blue-200 text-xs">{student.yearLevel}</p>
+                  {student.isInternshipReady && (
+                    <Badge className="bg-green-100 text-green-800 border-green-200 text-xs">
+                      <CheckCircle className="h-3 w-3 mr-1" />
+                      Internship Ready
+                    </Badge>
+                  )}
+                </div>
               </div>
             </div>
           </CardContent>

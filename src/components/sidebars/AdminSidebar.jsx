@@ -8,12 +8,28 @@ import {
   Settings,
   Users,
   X,
+  FileText,
+  Briefcase,
+  UserCheck,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 
 const AdminSidebar = ({ sidebarOpen, onCloseMobile }) => {
   const navigationItems = [
     { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
+    { name: "All Interns", href: "/admin/interns", icon: Users },
+    { name: "All Companies", href: "/admin/companies", icon: Building2 },
+    {
+      name: "Internship Postings",
+      href: "/admin/internship-postings",
+      icon: Briefcase,
+    },
+    {
+      name: "Whitelisted Students",
+      href: "/admin/preferred-applicants",
+      icon: UserCheck,
+    },
+    { name: "Reports & Analytics", href: "/admin/reports", icon: FileText },
   ];
 
   return (

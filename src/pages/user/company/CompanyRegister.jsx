@@ -294,7 +294,10 @@ const CompanyRegister = () => {
                       <SelectItem value="11-50">11-50 employees</SelectItem>
                       <SelectItem value="51-200">51-200 employees</SelectItem>
                       <SelectItem value="201-500">201-500 employees</SelectItem>
-                      <SelectItem value="500+">500+ employees</SelectItem>
+                      <SelectItem value="501-1000">
+                        501-1000 employees
+                      </SelectItem>
+                      <SelectItem value="1000+">1000+ employees</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

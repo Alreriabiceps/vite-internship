@@ -38,6 +38,7 @@ import {
   Clock,
   Star,
   Filter,
+  CheckCircle,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -331,9 +332,17 @@ const BrowseInterns = () => {
                       <p className="text-xs text-gray-600 mb-2 line-clamp-2 min-h-[2rem]">
                         {student.program}
                       </p>
-                      <Badge className="bg-gray-100 text-gray-700 border-0 text-xs">
-                        {student.yearLevel}
-                      </Badge>
+                      <div className="flex items-center gap-1 mb-1">
+                        <Badge className="bg-gray-100 text-gray-700 border-0 text-xs">
+                          {student.yearLevel}
+                        </Badge>
+                        {student.isInternshipReady && (
+                          <Badge className="bg-green-100 text-green-800 border-green-200 text-xs">
+                            <CheckCircle className="h-3 w-3 mr-1" />
+                            Ready
+                          </Badge>
+                        )}
+                      </div>
                     </div>
                     <Avatar className="h-12 w-12 sm:h-16 sm:w-16 border-2 border-gray-200 shadow-sm ml-2 sm:ml-3 flex-shrink-0">
                       <AvatarImage
@@ -583,7 +592,15 @@ const StudentProfileModal = ({
                 <p className="text-gray-600 text-sm mb-0.5">
                   {student.program}
                 </p>
-                <p className="text-gray-500 text-xs">{student.yearLevel}</p>
+                <div className="flex items-center gap-2 mb-1">
+                  <p className="text-gray-500 text-xs">{student.yearLevel}</p>
+                  {student.isInternshipReady && (
+                    <Badge className="bg-green-100 text-green-800 border-green-200 text-xs">
+                      <CheckCircle className="h-3 w-3 mr-1" />
+                      Internship Ready
+                    </Badge>
+                  )}
+                </div>
               </div>
               <Avatar className="h-12 w-12 sm:h-16 sm:w-16 border-2 border-gray-300 ml-2 sm:ml-4 flex-shrink-0">
                 <AvatarImage

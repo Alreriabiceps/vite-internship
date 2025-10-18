@@ -27,6 +27,7 @@ import {
   CheckCircle,
   Clock,
   Heart,
+  ShieldCheck,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -430,6 +431,12 @@ const MyMatches = () => {
                           </p>
                           <div className="flex flex-wrap gap-1">
                             {getStatusBadge(company.status)}
+                            {company.isVerified && (
+                              <Badge className="bg-blue-100 text-blue-800 border-blue-200 text-xs">
+                                <ShieldCheck className="h-3 w-3 mr-1" />
+                                Verified
+                              </Badge>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -550,6 +557,12 @@ const MyMatches = () => {
                         </p>
                         <div className="flex flex-wrap gap-1">
                           {getStatusBadge(company.status)}
+                          {company.isVerified && (
+                            <Badge className="bg-blue-100 text-blue-800 border-blue-200 text-xs">
+                              <ShieldCheck className="h-3 w-3 mr-1" />
+                              Verified
+                            </Badge>
+                          )}
                         </div>
                       </div>
                     </div>

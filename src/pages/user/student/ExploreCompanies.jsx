@@ -29,6 +29,8 @@ import {
   Phone,
   Filter,
   Eye,
+  Shield,
+  ShieldCheck,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -238,9 +240,9 @@ const ExploreCompanies = () => {
                           {company.industry}
                         </p>
                         <div className="flex flex-wrap gap-1">
-                          {company.verified && (
-                            <Badge className="bg-gray-100 text-gray-800 border-gray-200 text-xs">
-                              <CheckCircle className="h-3 w-3 mr-1" />
+                          {company.isVerified && (
+                            <Badge className="bg-blue-100 text-blue-800 border-blue-200 text-xs">
+                              <ShieldCheck className="h-3 w-3 mr-1" />
                               Verified
                             </Badge>
                           )}

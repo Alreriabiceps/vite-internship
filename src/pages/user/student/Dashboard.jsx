@@ -31,6 +31,7 @@ import {
   Github,
   Linkedin,
   Eye,
+  CheckCircle,
 } from "lucide-react";
 import { studentsAPI } from "../../../lib/api";
 import toast from "react-hot-toast";
@@ -362,6 +363,14 @@ const Dashboard = () => {
                   <p className="text-sm text-gray-400">
                     {profileData.profileData?.studentId || "Student ID not set"}
                   </p>
+                  {profileData.profileData?.isInternshipReady && (
+                    <div className="mt-2">
+                      <Badge className="bg-green-100 text-green-800 border-green-200">
+                        <CheckCircle className="h-3 w-3 mr-1" />
+                        Internship Ready
+                      </Badge>
+                    </div>
+                  )}
                 </div>
               </div>
 

@@ -24,6 +24,8 @@ import {
   FileText,
   Target,
   Gift,
+  CheckCircle,
+  X,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -171,6 +173,33 @@ const Internships = () => {
     return <Badge className={config.className}>{config.label}</Badge>;
   };
 
+  const getApprovalStatusBadge = (approvalStatus) => {
+    const approvalConfig = {
+      pending: {
+        label: "Pending Review",
+        className: "bg-yellow-100 text-yellow-800 border-yellow-200",
+        icon: <Clock className="h-3 w-3" />,
+      },
+      approved: {
+        label: "Approved",
+        className: "bg-green-100 text-green-800 border-green-200",
+        icon: <CheckCircle className="h-3 w-3" />,
+      },
+      rejected: {
+        label: "Rejected",
+        className: "bg-red-100 text-red-800 border-red-200",
+        icon: <X className="h-3 w-3" />,
+      },
+    };
+    const config = approvalConfig[approvalStatus] || approvalConfig.pending;
+    return (
+      <Badge className={config.className}>
+        <span className="mr-1">{config.icon}</span>
+        {config.label}
+      </Badge>
+    );
+  };
+
   if (loading) {
     return (
       <div className="p-6">
@@ -258,6 +287,7 @@ const Internships = () => {
                     </div>
                     <div className="flex items-center gap-2">
                       {getStatusBadge(internship.status)}
+                      {getApprovalStatusBadge(internship.approvalStatus)}
                       <Button
                         onClick={() =>
                           navigate(
@@ -374,10 +404,22 @@ const Internships = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     {getStatusBadge(viewModal.internship.status)}
+                    {getApprovalStatusBadge(
+                      viewModal.internship.approvalStatus
+                    )}
                     <Badge variant="outline" className="bg-white">
                       {viewModal.internship.workType}
                     </Badge>
                   </div>
+                  {viewModal.internship.approvalStatus === "rejected" &&
+                    viewModal.internship.rejectionReason && (
+                      <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                        <p className="text-sm text-red-800">
+                          <strong>Rejection Reason:</strong>{" "}
+                          {viewModal.internship.rejectionReason}
+                        </p>
+                      </div>
+                    )}
                 </div>
               </div>
             </div>

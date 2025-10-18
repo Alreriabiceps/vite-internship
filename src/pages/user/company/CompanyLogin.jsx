@@ -191,18 +191,6 @@ const CompanyLogin = () => {
               Register as Company
             </Link>
           </div>
-
-          <div className="mt-4 text-center text-sm text-gray-600">
-            <p className="mb-2">Need access to other portals?</p>
-            <div className="space-x-4">
-              <Link to="/" className="text-gray-700 hover:underline">
-                Student Login
-              </Link>
-              <Link to="/alogin" className="text-gray-700 hover:underline">
-                Admin Login
-              </Link>
-            </div>
-          </div>
         </CardContent>
       </Card>
     </div>

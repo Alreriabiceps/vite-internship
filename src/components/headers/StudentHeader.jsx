@@ -96,7 +96,10 @@ const StudentHeader = () => {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-gray-200" />
-              <DropdownMenuItem className="text-gray-700 hover:bg-gray-100">
+              <DropdownMenuItem
+                className="text-gray-700 hover:bg-gray-100 cursor-pointer"
+                onClick={() => navigate("/student/settings")}
+              >
                 <Settings className="mr-2 h-4 w-4" />
                 <span>Settings</span>
               </DropdownMenuItem>

@@ -16,6 +16,7 @@ import {
   StudentRegister as Register,
   StudentDashboard as Dashboard,
   StudentProfile as Profile,
+  StudentSettings as Settings,
   FindInternships,
   ExploreCompanies,
   MyMatches,
@@ -35,7 +36,18 @@ import {
 } from "./pages/user/company";
 
 // Admin Pages
-import { AdminLogin, AdminDashboard } from "./pages/user/admin";
+import {
+  AdminLogin,
+  AdminDashboard,
+  AdminProfile,
+  AdminSystemSettings,
+  AdminInterns,
+  AdminCompanies,
+  AdminCompanyView,
+} from "./pages/user/admin";
+import Reports from "./pages/user/admin/Reports";
+import AdminInternshipPostings from "./pages/user/admin/AdminInternshipPostings";
+import AdminPreferredApplicants from "./pages/user/admin/AdminPreferredApplicants";
 
 // Shared Pages
 import ConditionalDashboard from "./pages/ConditionalDashboard";
@@ -82,6 +94,17 @@ function App() {
                   }
                 >
                   <Route index element={<Profile />} />
+                </Route>
+
+                <Route
+                  path="/student/settings"
+                  element={
+                    <ProtectedRoute allowedRoles={["student"]}>
+                      <Layout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<Settings />} />
                 </Route>
 
                 <Route
@@ -216,6 +239,84 @@ function App() {
                   }
                 >
                   <Route index element={<AdminDashboard />} />
+                </Route>
+
+                <Route
+                  path="/admin/profile"
+                  element={
+                    <ProtectedRoute allowedRoles={["admin"]}>
+                      <Layout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<AdminProfile />} />
+                </Route>
+
+                <Route
+                  path="/admin/settings"
+                  element={
+                    <ProtectedRoute allowedRoles={["admin"]}>
+                      <Layout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<AdminSystemSettings />} />
+                </Route>
+
+                <Route
+                  path="/admin/interns"
+                  element={
+                    <ProtectedRoute allowedRoles={["admin"]}>
+                      <Layout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<AdminInterns />} />
+                </Route>
+
+                <Route
+                  path="/admin/companies"
+                  element={
+                    <ProtectedRoute allowedRoles={["admin"]}>
+                      <Layout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<AdminCompanies />} />
+                  <Route path=":companyId" element={<AdminCompanyView />} />
+                </Route>
+
+                <Route
+                  path="/admin/internship-postings"
+                  element={
+                    <ProtectedRoute allowedRoles={["admin"]}>
+                      <Layout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<AdminInternshipPostings />} />
+                </Route>
+
+                <Route
+                  path="/admin/preferred-applicants"
+                  element={
+                    <ProtectedRoute allowedRoles={["admin"]}>
+                      <Layout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<AdminPreferredApplicants />} />
+                </Route>
+
+                <Route
+                  path="/admin/reports"
+                  element={
+                    <ProtectedRoute allowedRoles={["admin"]}>
+                      <Layout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<Reports />} />
                 </Route>
 
                 {/* Catch all route */}
