@@ -46,6 +46,7 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { adminAPI } from "../../../lib/api";
 
 const AdminInternshipPostings = () => {
   const [loading, setLoading] = useState(false);
@@ -73,11 +74,16 @@ const AdminInternshipPostings = () => {
       if (statusFilter && statusFilter !== "all")
         params.append("status", statusFilter);
 
-      const response = await fetch(`/api/admin/internship-postings?${params}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+        }/admin/internship-postings?${params}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to fetch internship postings");
@@ -101,7 +107,9 @@ const AdminInternshipPostings = () => {
   const handleToggleVisibility = async (companyId, slotIndex) => {
     try {
       const response = await fetch(
-        `/api/admin/internship-postings/${companyId}/${slotIndex}/toggle-visibility`,
+        `${
+          import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+        }/admin/internship-postings/${companyId}/${slotIndex}/toggle-visibility`,
         {
           method: "PUT",
           headers: {
@@ -132,7 +140,9 @@ const AdminInternshipPostings = () => {
   const handleApprove = async (companyId, slotIndex) => {
     try {
       const response = await fetch(
-        `/api/admin/internship-postings/${companyId}/${slotIndex}/approve`,
+        `${
+          import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+        }/admin/internship-postings/${companyId}/${slotIndex}/approve`,
         {
           method: "PUT",
           headers: {
@@ -163,7 +173,11 @@ const AdminInternshipPostings = () => {
 
     try {
       const response = await fetch(
-        `/api/admin/internship-postings/${selectedPosting.companyId}/${selectedPosting.slotIndex}/reject`,
+        `${
+          import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+        }/admin/internship-postings/${selectedPosting.companyId}/${
+          selectedPosting.slotIndex
+        }/reject`,
         {
           method: "PUT",
           headers: {
@@ -192,7 +206,11 @@ const AdminInternshipPostings = () => {
   const handleConfirmApprove = async () => {
     try {
       const response = await fetch(
-        `/api/admin/internship-postings/${selectedPosting.companyId}/${selectedPosting.slotIndex}/approve`,
+        `${
+          import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+        }/admin/internship-postings/${selectedPosting.companyId}/${
+          selectedPosting.slotIndex
+        }/approve`,
         {
           method: "PUT",
           headers: {
@@ -219,7 +237,11 @@ const AdminInternshipPostings = () => {
   const handleUndoApproval = async () => {
     try {
       const response = await fetch(
-        `/api/admin/internship-postings/${selectedPosting.companyId}/${selectedPosting.slotIndex}/undo`,
+        `${
+          import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+        }/admin/internship-postings/${selectedPosting.companyId}/${
+          selectedPosting.slotIndex
+        }/undo`,
         {
           method: "PUT",
           headers: {

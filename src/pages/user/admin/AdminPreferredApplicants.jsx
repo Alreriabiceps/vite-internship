@@ -41,6 +41,7 @@ import {
   Star,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { adminAPI } from "../../../lib/api";
 
 const AdminPreferredApplicants = () => {
   const navigate = useNavigate();
@@ -65,7 +66,9 @@ const AdminPreferredApplicants = () => {
       if (searchTerm) params.append("search", searchTerm);
 
       const response = await fetch(
-        `/api/admin/companies/preferred-applicants?${params}`,
+        `${
+          import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+        }/admin/companies/preferred-applicants?${params}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -103,11 +106,16 @@ const AdminPreferredApplicants = () => {
 
   const handleViewStudent = async (studentId) => {
     try {
-      const response = await fetch(`/api/admin/students/${studentId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+        }/admin/students/${studentId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to fetch student details");

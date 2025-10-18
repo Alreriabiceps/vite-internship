@@ -22,6 +22,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { adminAPI } from "../../../lib/api";
 
 const AdminSystemSettings = () => {
   const { user } = useAuth();
@@ -51,17 +52,22 @@ const AdminSystemSettings = () => {
   const handleEmailChange = async (data) => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/auth/change-email", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({
-          newEmail: data.newEmail,
-          currentPassword: data.currentPassword,
-        }),
-      });
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+        }/auth/change-email`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({
+            newEmail: data.newEmail,
+            currentPassword: data.currentPassword,
+          }),
+        }
+      );
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -98,17 +104,22 @@ const AdminSystemSettings = () => {
 
     setIsLoading(true);
     try {
-      const response = await fetch("/api/auth/change-password", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({
-          currentPassword: data.currentPassword,
-          newPassword: data.newPassword,
-        }),
-      });
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+        }/auth/change-password`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({
+            currentPassword: data.currentPassword,
+            newPassword: data.newPassword,
+          }),
+        }
+      );
 
       if (!response.ok) {
         const errorText = await response.text();

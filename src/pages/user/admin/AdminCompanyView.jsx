@@ -39,6 +39,7 @@ import {
   Trash2,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { adminAPI } from "../../../lib/api";
 
 const AdminCompanyView = () => {
   const { companyId } = useParams();
@@ -57,11 +58,16 @@ const AdminCompanyView = () => {
       setLoading(true);
       console.log("🎯 Fetching company profile:", companyId);
 
-      const response = await fetch(`/api/companies/${companyId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+        }/companies/${companyId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to fetch company");

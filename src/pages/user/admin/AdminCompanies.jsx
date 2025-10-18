@@ -49,6 +49,7 @@ import {
   ShieldX,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { adminAPI } from "../../../lib/api";
 
 const AdminCompanies = () => {
   const navigate = useNavigate();
@@ -97,7 +98,9 @@ const AdminCompanies = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `/api/admin/companies?page=${page}&limit=${companiesPerPage}`,
+        `${
+          import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+        }/admin/companies?page=${page}&limit=${companiesPerPage}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -169,7 +172,9 @@ const AdminCompanies = () => {
   const handleToggleProfileVisibility = async (companyId) => {
     try {
       const response = await fetch(
-        `/api/admin/companies/${companyId}/toggle-visibility`,
+        `${
+          import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+        }/admin/companies/${companyId}/toggle-visibility`,
         {
           method: "PUT",
           headers: {
@@ -227,7 +232,9 @@ const AdminCompanies = () => {
 
     try {
       const response = await fetch(
-        `/api/admin/companies/${selectedCompanyForPassword._id}/reset-password`,
+        `${
+          import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+        }/admin/companies/${selectedCompanyForPassword._id}/reset-password`,
         {
           method: "PUT",
           headers: {
@@ -263,7 +270,9 @@ const AdminCompanies = () => {
   const handleVerification = async () => {
     try {
       const response = await fetch(
-        `/api/companies/${selectedCompanyForVerification._id}/verify`,
+        `${
+          import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+        }/companies/${selectedCompanyForVerification._id}/verify`,
         {
           method: "PUT",
           headers: {

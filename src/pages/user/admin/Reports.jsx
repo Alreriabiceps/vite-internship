@@ -53,6 +53,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { adminAPI } from "../../../lib/api";
 
 const COLORS = [
   "#0088FE",
@@ -121,11 +122,16 @@ const Reports = () => {
       if (dateRange.startDate) params.append("startDate", dateRange.startDate);
       if (dateRange.endDate) params.append("endDate", dateRange.endDate);
 
-      const response = await fetch(`/api/admin/reports?${params}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+        }/admin/reports?${params}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to fetch report data");

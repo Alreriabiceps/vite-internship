@@ -63,6 +63,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { adminAPI } from "../../../lib/api";
 
 const AdminInterns = () => {
   const { user } = useAuth();
@@ -159,7 +160,9 @@ const AdminInterns = () => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `/api/admin/students?page=${page}&limit=${studentsPerPage}`,
+        `${
+          import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+        }/admin/students?page=${page}&limit=${studentsPerPage}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -186,11 +189,16 @@ const AdminInterns = () => {
 
   const handleViewStudent = async (studentId) => {
     try {
-      const response = await fetch(`/api/admin/students/${studentId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+        }/admin/students/${studentId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to fetch student details");
@@ -208,7 +216,9 @@ const AdminInterns = () => {
   const handleToggleProfileVisibility = async (studentId) => {
     try {
       const response = await fetch(
-        `/api/admin/students/${studentId}/toggle-visibility`,
+        `${
+          import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+        }/admin/students/${studentId}/toggle-visibility`,
         {
           method: "PUT",
           headers: {
@@ -250,7 +260,9 @@ const AdminInterns = () => {
   const handleToggleInternshipReadiness = async (studentId) => {
     try {
       const response = await fetch(
-        `/api/admin/students/${studentId}/toggle-readiness`,
+        `${
+          import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+        }/admin/students/${studentId}/toggle-readiness`,
         {
           method: "PUT",
           headers: {
@@ -303,7 +315,9 @@ const AdminInterns = () => {
     setIsResettingPassword(true);
     try {
       const response = await fetch(
-        `/api/admin/students/${studentToReset._id}/reset-password`,
+        `${
+          import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+        }/admin/students/${studentToReset._id}/reset-password`,
         {
           method: "PUT",
           headers: {
