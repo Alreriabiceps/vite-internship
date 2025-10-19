@@ -95,9 +95,7 @@ const BrowseInterns = () => {
 
         try {
           const studentResponses = await Promise.all(studentPromises);
-          const studentData = studentResponses.map(
-            (res) => res.data?.data || res.data
-          );
+          const studentData = studentResponses.map((res) => res.data);
 
           setShortlistedStudents(studentData);
           console.log(
@@ -161,7 +159,7 @@ const BrowseInterns = () => {
                   const studentResponse = await studentsAPI.getById(
                     applicant.studentId
                   );
-                  return studentResponse.data?.data || studentResponse.data;
+                  return studentResponse.data;
                 } catch (error) {
                   console.error("⚠️ Error fetching applicant:", error);
                   return null;
@@ -186,11 +184,11 @@ const BrowseInterns = () => {
           toast.error("Internship not found");
         }
       } else {
-        // Fetch all students (normal browse mode)
-        const response = await studentsAPI.getAll();
+        // Fetch all students (normal browse mode) - using high limit to get all students
+        const response = await studentsAPI.getAll({ limit: 1000 });
         console.log("📚 Students fetched:", response.data);
 
-        const studentsData = response.data?.students || response.data || [];
+        const studentsData = response.data?.students || [];
         setStudents(studentsData);
         // Initial filter will be applied by filterStudents() in useEffect
       }

@@ -3,6 +3,7 @@ import { useAuth } from "../../../contexts/AuthContext";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
+import { Checkbox } from "../../../components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -85,6 +86,10 @@ const AdminInterns = () => {
   const [showResetPasswordModal, setShowResetPasswordModal] = useState(false);
   const [studentToReset, setStudentToReset] = useState(null);
   const [newPassword, setNewPassword] = useState("");
+
+  // Readiness checklist modal state
+  const [showReadinessModal, setShowReadinessModal] = useState(false);
+  const [studentForReadiness, setStudentForReadiness] = useState(null);
   const [isResettingPassword, setIsResettingPassword] = useState(false);
 
   // Pagination state
@@ -351,6 +356,72 @@ const AdminInterns = () => {
     setStudentToReset(student);
     setNewPassword("");
     setShowResetPasswordModal(true);
+  };
+
+  const handleChecklistUpdate = async (studentId, field, value) => {
+    try {
+      const API_URL =
+        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(
+        `${API_URL}/admin/students/${studentId}/admin-readiness-checklist`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ [field]: value }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(
+          `Failed to update checklist: ${response.status} ${errorText}`
+        );
+      }
+
+      const data = await response.json();
+
+      // Update the student for readiness modal
+      setStudentForReadiness((prev) => ({
+        ...prev,
+        adminReadinessChecklist: data.adminReadinessChecklist,
+        isInternshipReady: data.isInternshipReady,
+      }));
+
+      // Update in the main list
+      setStudents((prevStudents) =>
+        prevStudents.map((student) =>
+          student._id === studentId
+            ? {
+                ...student,
+                adminReadinessChecklist: data.adminReadinessChecklist,
+                isInternshipReady: data.isInternshipReady,
+              }
+            : student
+        )
+      );
+
+      setFilteredStudents((prevFiltered) =>
+        prevFiltered.map((student) =>
+          student._id === studentId
+            ? {
+                ...student,
+                adminReadinessChecklist: data.adminReadinessChecklist,
+                isInternshipReady: data.isInternshipReady,
+              }
+            : student
+        )
+      );
+
+      toast.success(data.message);
+    } catch (error) {
+      console.error("Error updating checklist:", error);
+      toast.error("Failed to update checklist");
+    }
   };
 
   const clearFilters = () => {
@@ -648,14 +719,11 @@ const AdminInterns = () => {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() =>
-                              handleToggleInternshipReadiness(student._id)
-                            }
-                            title={
-                              student.isInternshipReady
-                                ? "Mark as Not Ready"
-                                : "Mark as Internship Ready"
-                            }
+                            onClick={() => {
+                              setStudentForReadiness(student);
+                              setShowReadinessModal(true);
+                            }}
+                            title="Manage Internship Readiness"
                             className={
                               student.isInternshipReady
                                 ? "text-green-600 hover:text-green-700"
@@ -803,6 +871,242 @@ const AdminInterns = () => {
                 className="bg-orange-600 hover:bg-orange-700"
               >
                 {isResettingPassword ? "Resetting..." : "Reset Password"}
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {/* Readiness Checklist Modal */}
+      {showReadinessModal && studentForReadiness && (
+        <Modal
+          isOpen={showReadinessModal}
+          onClose={() => {
+            setShowReadinessModal(false);
+            setStudentForReadiness(null);
+          }}
+          title={
+            <div className="flex items-center gap-2">
+              <CheckCircle className="h-5 w-5 text-blue-600" />
+              <span>Internship Readiness Checklist</span>
+            </div>
+          }
+        >
+          <div className="space-y-4">
+            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border">
+              <Avatar className="h-12 w-12">
+                <AvatarImage
+                  src={studentForReadiness.profilePicUrl}
+                  alt={studentForReadiness.firstName}
+                />
+                <AvatarFallback className="bg-blue-100 text-blue-800">
+                  {studentForReadiness.firstName?.[0]}
+                  {studentForReadiness.lastName?.[0]}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <h3 className="font-semibold text-gray-900">
+                  {studentForReadiness.firstName} {studentForReadiness.lastName}
+                </h3>
+                <p className="text-sm text-gray-600">
+                  {studentForReadiness.studentId} •{" "}
+                  {studentForReadiness.program}
+                </p>
+              </div>
+              {studentForReadiness.isInternshipReady && (
+                <Badge className="ml-auto bg-green-600 text-white">
+                  Ready for Deployment
+                </Badge>
+              )}
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-start gap-3 p-3 bg-white rounded-lg border-2 hover:border-blue-300 transition-colors">
+                <Checkbox
+                  id="profileCompleted"
+                  checked={
+                    studentForReadiness.adminReadinessChecklist
+                      ?.profileCompleted || false
+                  }
+                  onCheckedChange={async (checked) => {
+                    await handleChecklistUpdate(
+                      studentForReadiness._id,
+                      "profileCompleted",
+                      checked
+                    );
+                  }}
+                  className="mt-0.5"
+                />
+                <div className="flex-1">
+                  <label
+                    htmlFor="profileCompleted"
+                    className="text-sm font-semibold text-gray-900 cursor-pointer block"
+                  >
+                    Profile Completed
+                  </label>
+                  <p className="text-xs text-gray-600 mt-1">
+                    Student profile completion status:
+                  </p>
+
+                  {/* Profile Completion Status */}
+                  <div className="mt-2 space-y-1">
+                    {/* Completed Items */}
+                    <div className="text-xs">
+                      <span className="text-green-600 font-medium">
+                        ✓ Completed:
+                      </span>
+                      <ul className="ml-4 mt-1 space-y-0.5">
+                        {studentForReadiness.firstName &&
+                          studentForReadiness.lastName && (
+                            <li className="text-green-600">
+                              • Personal information
+                            </li>
+                          )}
+                        {studentForReadiness.skills &&
+                          studentForReadiness.skills.length > 0 && (
+                            <li className="text-green-600">
+                              • Skills ({studentForReadiness.skills.length}{" "}
+                              skills)
+                            </li>
+                          )}
+                        {studentForReadiness.profilePicUrl && (
+                          <li className="text-green-600">• Profile picture</li>
+                        )}
+                        {(studentForReadiness.resumeUrl ||
+                          studentForReadiness.linkedinUrl ||
+                          studentForReadiness.githubUrl) && (
+                          <li className="text-green-600">• Portfolio links</li>
+                        )}
+                        {studentForReadiness.preferredFields && (
+                          <li className="text-green-600">• Work preferences</li>
+                        )}
+                      </ul>
+                    </div>
+
+                    {/* Missing Items - Only show if there are missing items */}
+                    {(!studentForReadiness.firstName ||
+                      !studentForReadiness.lastName ||
+                      !studentForReadiness.skills ||
+                      studentForReadiness.skills.length === 0 ||
+                      !studentForReadiness.profilePicUrl ||
+                      (!studentForReadiness.resumeUrl &&
+                        !studentForReadiness.linkedinUrl &&
+                        !studentForReadiness.githubUrl) ||
+                      !studentForReadiness.preferredFields) && (
+                      <div className="text-xs">
+                        <span className="text-red-600 font-medium">
+                          ⚠ Missing:
+                        </span>
+                        <ul className="ml-4 mt-1 space-y-0.5">
+                          {!studentForReadiness.firstName ||
+                          !studentForReadiness.lastName ? (
+                            <li className="text-red-600">
+                              • Personal information incomplete
+                            </li>
+                          ) : null}
+                          {!studentForReadiness.skills ||
+                          studentForReadiness.skills.length === 0 ? (
+                            <li className="text-red-600">• No skills added</li>
+                          ) : null}
+                          {!studentForReadiness.profilePicUrl ? (
+                            <li className="text-red-600">
+                              • No profile picture
+                            </li>
+                          ) : null}
+                          {!studentForReadiness.resumeUrl &&
+                          !studentForReadiness.linkedinUrl &&
+                          !studentForReadiness.githubUrl ? (
+                            <li className="text-red-600">
+                              • No portfolio links
+                            </li>
+                          ) : null}
+                          {!studentForReadiness.preferredFields ? (
+                            <li className="text-red-600">
+                              • Work preferences not set
+                            </li>
+                          ) : null}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 p-3 bg-white rounded-lg border-2 hover:border-blue-300 transition-colors">
+                <Checkbox
+                  id="documentsCompleted"
+                  checked={
+                    studentForReadiness.adminReadinessChecklist
+                      ?.documentsCompleted || false
+                  }
+                  onCheckedChange={async (checked) => {
+                    await handleChecklistUpdate(
+                      studentForReadiness._id,
+                      "documentsCompleted",
+                      checked
+                    );
+                  }}
+                  className="mt-0.5"
+                />
+                <div className="flex-1">
+                  <label
+                    htmlFor="documentsCompleted"
+                    className="text-sm font-semibold text-gray-900 cursor-pointer block"
+                  >
+                    Complete Internship Documents
+                  </label>
+                  <p className="text-xs text-gray-600 mt-1">
+                    All required internship documents are submitted and verified
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 p-3 bg-white rounded-lg border-2 hover:border-blue-300 transition-colors">
+                <Checkbox
+                  id="readyForDeployment"
+                  checked={
+                    studentForReadiness.adminReadinessChecklist
+                      ?.readyForDeployment || false
+                  }
+                  onCheckedChange={async (checked) => {
+                    await handleChecklistUpdate(
+                      studentForReadiness._id,
+                      "readyForDeployment",
+                      checked
+                    );
+                  }}
+                  className="mt-0.5"
+                />
+                <div className="flex-1">
+                  <label
+                    htmlFor="readyForDeployment"
+                    className="text-sm font-semibold text-gray-900 cursor-pointer block"
+                  >
+                    Ready for Internship Deployment
+                  </label>
+                  <p className="text-xs text-gray-600 mt-1">
+                    Student is approved and ready to be deployed to companies
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+              <p className="text-xs text-blue-900">
+                <strong>Note:</strong> When all three items are checked, the
+                student will automatically be marked as "Internship Ready" and
+                visible to companies.
+              </p>
+            </div>
+
+            <div className="flex justify-end">
+              <Button
+                onClick={() => {
+                  setShowReadinessModal(false);
+                  setStudentForReadiness(null);
+                }}
+              >
+                Done
               </Button>
             </div>
           </div>

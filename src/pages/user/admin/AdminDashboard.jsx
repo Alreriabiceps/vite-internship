@@ -423,7 +423,7 @@ const AdminDashboard = () => {
                       <div className="h-8 w-8 bg-orange-100 rounded-full flex items-center justify-center">
                         <Briefcase className="h-4 w-4 text-orange-600" />
                       </div>
-                      <div>
+      <div>
                         <p className="text-sm font-medium">
                           {posting.posting.title}
                         </p>
