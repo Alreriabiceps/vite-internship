@@ -40,7 +40,16 @@ import {
   Heart,
   Star,
   CheckCircle,
+  Filter,
+  ChevronDown,
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../../components/ui/select";
 import toast from "react-hot-toast";
 
 const BrowseInterns = () => {
@@ -60,6 +69,14 @@ const BrowseInterns = () => {
   const [showModal, setShowModal] = useState(false);
   const [internshipTitle, setInternshipTitle] = useState("");
   const [shortlistedStudents, setShortlistedStudents] = useState([]);
+
+  // Additional filter states
+  const [selectedYearLevel, setSelectedYearLevel] = useState("All");
+  const [selectedSkills, setSelectedSkills] = useState([]);
+  const [selectedProfileCompleteness, setSelectedProfileCompleteness] =
+    useState("All");
+  const [selectedReadiness, setSelectedReadiness] = useState("All");
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     // Clear localStorage to start fresh
@@ -129,7 +146,16 @@ const BrowseInterns = () => {
 
   useEffect(() => {
     filterStudents();
-  }, [searchTerm, selectedCourse, students, shortlistedStudents]);
+  }, [
+    searchTerm,
+    selectedCourse,
+    selectedYearLevel,
+    selectedSkills,
+    selectedProfileCompleteness,
+    selectedReadiness,
+    students,
+    shortlistedStudents,
+  ]);
 
   const fetchStudents = async () => {
     try {
@@ -203,13 +229,6 @@ const BrowseInterns = () => {
   const filterStudents = () => {
     let filtered = students;
 
-    // Filter by course/program
-    if (selectedCourse !== "All") {
-      filtered = filtered.filter(
-        (student) => student.program === selectedCourse
-      );
-    }
-
     // Filter by search term
     if (searchTerm.trim()) {
       const searchLower = searchTerm.toLowerCase();
@@ -221,6 +240,77 @@ const BrowseInterns = () => {
           student.program?.toLowerCase().includes(searchLower) ||
           student.studentId?.toLowerCase().includes(searchLower)
         );
+      });
+    }
+
+    // Filter by course/program
+    if (selectedCourse !== "All") {
+      filtered = filtered.filter(
+        (student) => student.program === selectedCourse
+      );
+    }
+
+    // Filter by year level
+    if (selectedYearLevel !== "All") {
+      filtered = filtered.filter(
+        (student) => student.yearLevel === selectedYearLevel
+      );
+    }
+
+    // Filter by skills
+    if (selectedSkills.length > 0) {
+      filtered = filtered.filter((student) => {
+        if (!student.skills || student.skills.length === 0) return false;
+        return selectedSkills.some((selectedSkill) =>
+          student.skills.some((skill) => {
+            const skillName =
+              typeof skill === "string" ? skill : skill.name || skill.skill;
+            return (
+              skillName &&
+              skillName.toLowerCase().includes(selectedSkill.toLowerCase())
+            );
+          })
+        );
+      });
+    }
+
+    // Filter by profile completeness
+    if (selectedProfileCompleteness !== "All") {
+      filtered = filtered.filter((student) => {
+        const hasBasicInfo =
+          student.firstName && student.lastName && student.email;
+        const hasSkills = student.skills && student.skills.length > 0;
+        const hasProfilePic = student.profilePicUrl;
+        const hasPortfolio =
+          student.resumeUrl || student.linkedinUrl || student.githubUrl;
+        const hasPreferences = student.preferredFields;
+
+        const completenessScore = [
+          hasBasicInfo,
+          hasSkills,
+          hasProfilePic,
+          hasPortfolio,
+          hasPreferences,
+        ].filter(Boolean).length;
+
+        if (selectedProfileCompleteness === "Complete")
+          return completenessScore >= 4;
+        if (selectedProfileCompleteness === "Partial")
+          return completenessScore >= 2 && completenessScore < 4;
+        if (selectedProfileCompleteness === "Basic")
+          return completenessScore < 2;
+        return true;
+      });
+    }
+
+    // Filter by internship readiness
+    if (selectedReadiness !== "All") {
+      filtered = filtered.filter((student) => {
+        if (selectedReadiness === "Ready")
+          return student.isInternshipReady === true;
+        if (selectedReadiness === "Not Ready")
+          return student.isInternshipReady === false;
+        return true;
       });
     }
 
@@ -253,6 +343,33 @@ const BrowseInterns = () => {
     "All",
     ...new Set(students.map((s) => s.program).filter(Boolean)),
   ];
+
+  const getUniqueYearLevels = () => {
+    const yearLevels = [
+      ...new Set(students.map((student) => student.yearLevel)),
+    ];
+    return yearLevels.filter((level) => level && level.trim() !== "");
+  };
+
+  const getUniqueSkills = () => {
+    const allSkills = students.flatMap((student) => student.skills || []);
+    const skillNames = allSkills
+      .map((skill) => {
+        if (typeof skill === "string") return skill;
+        return skill.name || skill.skill || skill;
+      })
+      .filter(Boolean);
+    return [...new Set(skillNames)].sort();
+  };
+
+  const clearFilters = () => {
+    setSearchTerm("");
+    setSelectedCourse("All");
+    setSelectedYearLevel("All");
+    setSelectedSkills([]);
+    setSelectedProfileCompleteness("All");
+    setSelectedReadiness("All");
+  };
 
   const viewStudentProfile = (student) => {
     setSelectedStudent(student);
@@ -376,6 +493,7 @@ const BrowseInterns = () => {
         {/* Search and Filter */}
         <div className="mb-4 sm:mb-6">
           <div className="flex flex-col gap-3 sm:gap-4">
+            {/* Search Bar */}
             <div className="flex-1">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -387,20 +505,146 @@ const BrowseInterns = () => {
                 />
               </div>
             </div>
-            <div className="w-full sm:w-64">
-              <select
-                value={selectedCourse}
-                onChange={(e) => setSelectedCourse(e.target.value)}
-                className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+
+            {/* Filter Controls */}
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+              {/* Program Filter */}
+              <div className="w-full sm:w-48">
+                <Select
+                  value={selectedCourse}
+                  onValueChange={setSelectedCourse}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="All Programs" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {uniqueCourses.map((course) => (
+                      <SelectItem key={course} value={course}>
+                        {course}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Year Level Filter */}
+              <div className="w-full sm:w-32">
+                <Select
+                  value={selectedYearLevel}
+                  onValueChange={setSelectedYearLevel}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="All Years" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="All">All Years</SelectItem>
+                    {getUniqueYearLevels().map((level) => (
+                      <SelectItem key={level} value={level}>
+                        {level}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Profile Completeness Filter */}
+              <div className="w-full sm:w-40">
+                <Select
+                  value={selectedProfileCompleteness}
+                  onValueChange={setSelectedProfileCompleteness}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Profile Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="All">All Profiles</SelectItem>
+                    <SelectItem value="Complete">Complete</SelectItem>
+                    <SelectItem value="Partial">Partial</SelectItem>
+                    <SelectItem value="Basic">Basic</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Readiness Filter */}
+              <div className="w-full sm:w-36">
+                <Select
+                  value={selectedReadiness}
+                  onValueChange={setSelectedReadiness}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Readiness" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="All">All</SelectItem>
+                    <SelectItem value="Ready">Ready</SelectItem>
+                    <SelectItem value="Not Ready">Not Ready</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Advanced Filters Button */}
+              <Button
+                variant="outline"
+                onClick={() => setShowFilters(!showFilters)}
+                className="w-full sm:w-auto flex items-center gap-2"
               >
-                <option value="All">All Programs</option>
-                {uniqueCourses.map((course) => (
-                  <option key={course} value={course}>
-                    {course}
-                  </option>
-                ))}
-              </select>
+                <Filter className="h-4 w-4" />
+                Advanced
+                <ChevronDown
+                  className={`h-4 w-4 transition-transform ${
+                    showFilters ? "rotate-180" : ""
+                  }`}
+                />
+              </Button>
+
+              {/* Clear Filters Button */}
+              <Button
+                variant="outline"
+                onClick={clearFilters}
+                className="w-full sm:w-auto"
+              >
+                Clear All
+              </Button>
             </div>
+
+            {/* Advanced Filters Panel */}
+            {showFilters && (
+              <div className="bg-gray-50 p-4 rounded-lg border">
+                <h3 className="text-sm font-medium text-gray-900 mb-3">
+                  Skills Filter
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {getUniqueSkills().map((skill) => (
+                    <Button
+                      key={skill}
+                      variant={
+                        selectedSkills.includes(skill) ? "default" : "outline"
+                      }
+                      size="sm"
+                      onClick={() => {
+                        if (selectedSkills.includes(skill)) {
+                          setSelectedSkills(
+                            selectedSkills.filter((s) => s !== skill)
+                          );
+                        } else {
+                          setSelectedSkills([...selectedSkills, skill]);
+                        }
+                      }}
+                      className="text-xs"
+                    >
+                      {skill}
+                    </Button>
+                  ))}
+                </div>
+                {selectedSkills.length > 0 && (
+                  <div className="mt-3">
+                    <p className="text-xs text-gray-600">
+                      Selected: {selectedSkills.join(", ")}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
