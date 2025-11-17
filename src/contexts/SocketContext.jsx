@@ -43,18 +43,16 @@ export const SocketProvider = ({ children }) => {
           `⚠️ Socket connection error (attempt ${connectionAttempts}):`,
           error.message
         );
-        // Only show error after 3 failed attempts to avoid spamming on initial load
-        if (connectionAttempts >= 3) {
-          toast.error(
-            "Cannot connect to real-time server. Some features may be limited."
-          );
-        }
       });
       newSocket.on("new_message", (data) => {
-        toast.success(`New message from ${data.message.fromUser.firstName}`);
+        // Don't show toast for messages - let the chat components handle this
+        console.log(`New message from ${data.message.fromUser.firstName}`);
       });
       newSocket.on("new_notification", (data) => {
-        toast.success(data.message);
+        // Only show toast for non-message notifications to avoid spam
+        if (data.type !== "new_message") {
+          toast.success(data.message);
+        }
         setUnreadCount((prev) => prev + 1);
       });
 

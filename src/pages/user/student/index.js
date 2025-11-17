@@ -9,3 +9,4 @@ export { default as ExploreCompanies } from "./ExploreCompanies";
 export { default as MyMatches } from "./MyMatches";
 export { default as BrowseInterns } from "./BrowseInterns";
 export { default as CompanyProfile } from "./CompanyProfile";
+export { default as StudentChat } from "./StudentChat";

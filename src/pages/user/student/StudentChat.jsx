@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useSocket } from "../../../contexts/SocketContext";
 import { useSearchParams } from "react-router-dom";
-import { chatAPI, studentsAPI } from "../../../lib/api";
+import { chatAPI, companiesAPI } from "../../../lib/api";
 import {
   Card,
   CardContent,
@@ -17,15 +17,19 @@ import {
   AvatarImage,
 } from "../../../components/ui/avatar";
 import { Badge } from "../../../components/ui/badge";
-import { Search, Send, MessageSquare } from "lucide-react";
+import { Search, Send, MessageSquare, Building2 } from "lucide-react";
 import toast from "react-hot-toast";
 
-const CompanyChat = () => {
+const StudentChat = () => {
   const { user } = useAuth();
   const { socket, sendMessage, joinConversation, leaveConversation } =
     useSocket();
   const [searchParams] = useSearchParams();
-  const studentId = searchParams.get("studentId");
+  const companyId = searchParams.get("companyId");
+
+  console.log("=== STUDENT CHAT INIT ===");
+  console.log("Search params:", searchParams.toString());
+  console.log("Company ID from URL:", companyId);
 
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
@@ -35,46 +39,24 @@ const CompanyChat = () => {
   const [loading, setLoading] = useState(true);
   const messagesEndRef = useRef(null);
 
-  // Fetch conversations and handle studentId parameter
+  // Fetch conversations and handle companyId parameter
   useEffect(() => {
     const initializeChat = async () => {
-      console.log("=== INITIALIZING CHAT ===");
-      console.log("studentId from URL:", studentId);
+      await fetchConversations();
 
-      const loadedConversations = await fetchConversations();
-      console.log("Loaded conversations:", loadedConversations);
-
-      // Only handle studentId after conversations are loaded
-      if (studentId && loadedConversations.length > 0) {
-        console.log(
-          "Looking for existing conversation with studentId:",
-          studentId
-        );
-        const existingConversation = loadedConversations.find(
-          (conv) => conv.student._id === studentId
+      // Only handle companyId after conversations are loaded
+      if (companyId && conversations.length > 0) {
+        const existingConversation = conversations.find(
+          (conv) => conv.company._id === companyId
         );
         if (!existingConversation) {
-          console.log("No existing conversation found, creating new one");
-          fetchStudentAndCreateConversation(studentId);
-        } else {
-          console.log(
-            "Found existing conversation, selecting it:",
-            existingConversation
-          );
-          // Select the existing conversation
-          setSelectedConversation(existingConversation);
+          fetchCompanyAndCreateConversation(companyId);
         }
-      } else if (studentId) {
-        console.log(
-          "No conversations exist but studentId provided, creating conversation"
-        );
-        // If no conversations exist but studentId is provided, create conversation
-        fetchStudentAndCreateConversation(studentId);
       }
     };
 
     initializeChat();
-  }, [studentId]);
+  }, []);
 
   const fetchConversations = async () => {
     try {
@@ -85,7 +67,7 @@ const CompanyChat = () => {
       const conversationsData = response.data || [];
       console.log("Conversations data:", conversationsData);
 
-      // Transform conversations to include student info
+      // Transform conversations to include company info
       const transformedConversations = await Promise.all(
         conversationsData.map(async (conv) => {
           try {
@@ -95,26 +77,25 @@ const CompanyChat = () => {
             console.log("Other user:", otherUser);
             if (!otherUser) return null;
 
-            // Check if it's a user (has firstName/lastName) or a company (has companyName)
-            if (otherUser.firstName && otherUser.lastName) {
-              // It's a user (student)
-              const student = {
+            // Check if it's a company (has companyName) or a user (has firstName/lastName)
+            if (otherUser.companyName) {
+              // It's a company
+              const company = {
                 _id: otherUser._id,
-                firstName: otherUser.firstName,
-                lastName: otherUser.lastName,
-                profilePicUrl: otherUser.profilePictureUrl,
-                program: otherUser.program || "Unknown Program",
+                companyName: otherUser.companyName,
+                logoUrl: otherUser.logoUrl,
+                industry: otherUser.industry,
                 email: otherUser.email,
               };
-              console.log("Student data:", student);
+              console.log("Company data:", company);
 
               return {
                 id: conv._id,
-                student: {
-                  _id: student._id,
-                  name: `${student.firstName} ${student.lastName}`,
-                  avatar: student.profilePicUrl,
-                  program: student.program,
+                company: {
+                  _id: company._id,
+                  name: company.companyName,
+                  avatar: company.logoUrl,
+                  industry: company.industry,
                   status: "offline",
                 },
                 lastMessage: conv.lastMessage?.message || "No messages yet",
@@ -124,12 +105,12 @@ const CompanyChat = () => {
                 unread: conv.unreadCount || 0,
               };
             } else {
-              // It's a company, skip for now as this is CompanyChat
-              console.log("Skipping company conversation in CompanyChat");
+              // It's a user (student), skip for now as this is StudentChat
+              console.log("Skipping user conversation in StudentChat");
               return null;
             }
           } catch (error) {
-            console.error("Error fetching student info:", error);
+            console.error("Error fetching company info:", error);
             return null;
           }
         })
@@ -139,43 +120,39 @@ const CompanyChat = () => {
       const validConversations = transformedConversations.filter(Boolean);
       setConversations(validConversations);
 
-      // Only auto-select if no studentId provided and we have conversations
+      // Only auto-select if no companyId provided and we have conversations
       if (
-        !studentId &&
+        !companyId &&
         validConversations.length > 0 &&
         !selectedConversation
       ) {
         setSelectedConversation(validConversations[0]);
       }
-
-      return validConversations;
     } catch (error) {
       console.error("Error fetching conversations:", error);
       toast.error("Failed to load conversations");
-      return [];
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchStudentAndCreateConversation = async (studentId) => {
+  const fetchCompanyAndCreateConversation = async (companyId) => {
     try {
-      console.log("=== CREATING CONVERSATION ===");
-      console.log("Creating conversation with student:", studentId);
+      console.log("Creating conversation with company:", companyId);
 
-      // First fetch student info
-      const response = await studentsAPI.getById(studentId);
-      const student = response.data;
-      console.log("Student data:", student);
+      // First fetch company info
+      const response = await companiesAPI.getById(companyId);
+      const company = response.data;
+      console.log("Company data:", company);
 
       // Create a temporary conversation for immediate UI feedback
       const tempConversation = {
-        id: `temp_${studentId}_${Date.now()}`,
-        student: {
-          _id: student._id,
-          name: `${student.firstName} ${student.lastName}`,
-          avatar: student.profilePicUrl,
-          program: student.program,
+        id: `temp_${companyId}_${Date.now()}`,
+        company: {
+          _id: company._id,
+          name: company.companyName,
+          avatar: company.logoUrl,
+          industry: company.industry,
           status: "offline",
         },
         lastMessage: "Creating conversation...",
@@ -189,21 +166,27 @@ const CompanyChat = () => {
       setSelectedConversation(tempConversation);
 
       // Try to create the conversation
-      console.log("Calling chatAPI.createConversation...");
-      const createResponse = await chatAPI.createConversation(studentId);
+      const createResponse = await chatAPI.createConversation(companyId);
       console.log("Create conversation response:", createResponse);
 
+      if (!createResponse.data) {
+        throw new Error("No response data from createConversation");
+      }
+
       // Refresh conversations to get the real conversation
-      console.log("Refreshing conversations...");
       await fetchConversations();
-      console.log("Conversation creation completed successfully");
     } catch (error) {
       console.error("Error creating conversation:", error);
-      toast.error("Failed to start conversation");
+      console.error("Error details:", error.response?.data || error.message);
+      toast.error(
+        `Failed to start conversation: ${
+          error.response?.data?.message || error.message
+        }`
+      );
 
       // Remove the temporary conversation on error
       setConversations((prev) =>
-        prev.filter((conv) => !conv.id.startsWith(`temp_${studentId}_`))
+        prev.filter((conv) => !conv.id.startsWith(`temp_${companyId}_`))
       );
       setSelectedConversation(null);
     }
@@ -211,14 +194,14 @@ const CompanyChat = () => {
 
   // Fetch messages when conversation is selected
   useEffect(() => {
-    if (selectedConversation) {
-      fetchMessages(selectedConversation.student._id);
-      joinConversation(selectedConversation.student._id);
+    if (selectedConversation?.company?._id) {
+      fetchMessages(selectedConversation.company._id);
+      joinConversation(selectedConversation.company._id);
     }
 
     return () => {
-      if (selectedConversation) {
-        leaveConversation(selectedConversation.student._id);
+      if (selectedConversation?.company?._id) {
+        leaveConversation(selectedConversation.company._id);
       }
     };
   }, [selectedConversation]);
@@ -232,7 +215,7 @@ const CompanyChat = () => {
           const transformedMessage = {
             id: data.message._id,
             sender:
-              data.message.fromUser._id === user._id ? "company" : "student",
+              data.message.fromUser._id === user._id ? "student" : "company",
             text: data.message.message,
             timestamp: new Date(data.message.createdAt).toLocaleTimeString(
               "en-US",
@@ -281,17 +264,22 @@ const CompanyChat = () => {
     }
   }, [socket, selectedConversation, user._id]);
 
-  const fetchMessages = async (studentId) => {
+  const fetchMessages = async (companyId) => {
     try {
-      const response = await chatAPI.getMessages(studentId);
+      const response = await chatAPI.getMessages(companyId);
       const messagesData = response.data || [];
 
       // Transform messages to match our format
-      const transformedMessages = messagesData
-        .filter((msg) => msg.fromUser && msg.fromUser._id) // Filter out messages with null fromUser
-        .map((msg) => ({
+      const transformedMessages = messagesData.map((msg) => {
+        const fromId = msg?.fromUser?._id || msg?.fromUser;
+        const currentId = user?._id;
+        const senderRole =
+          fromId && currentId && String(fromId) === String(currentId)
+            ? "student"
+            : "company";
+        return {
           id: msg._id,
-          sender: msg.fromUser._id === user._id ? "company" : "student",
+          sender: senderRole,
           text: msg.message,
           timestamp: new Date(msg.createdAt).toLocaleTimeString("en-US", {
             hour: "2-digit",
@@ -300,7 +288,8 @@ const CompanyChat = () => {
           date: new Date(msg.createdAt).toLocaleDateString(),
           isRead: msg.isRead,
           createdAt: msg.createdAt,
-        }));
+        };
+      });
 
       setMessages(transformedMessages);
       scrollToBottom();
@@ -325,7 +314,7 @@ const CompanyChat = () => {
     try {
       // Send message via socket
       sendMessage({
-        toUserId: selectedConversation.student._id,
+        toUserId: selectedConversation.company._id,
         message: newMessage.trim(),
         messageType: "text",
       });
@@ -333,7 +322,7 @@ const CompanyChat = () => {
       // Add message to local state immediately for better UX
       const tempMessage = {
         id: `temp_${Date.now()}`,
-        sender: "company",
+        sender: "student",
         text: newMessage.trim(),
         timestamp: new Date().toLocaleTimeString("en-US", {
           hour: "2-digit",
@@ -355,15 +344,18 @@ const CompanyChat = () => {
     }
   };
 
-  const filteredConversations = conversations.filter((conv) =>
-    conv.student.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredConversations = conversations.filter((conv) => {
+    const name = conv?.company?.name || "";
+    return name.toLowerCase().includes((searchTerm || "").toLowerCase());
+  });
 
   return (
     <div className="p-6">
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Messages</h1>
-        <p className="text-gray-600 mt-1">Chat with potential interns</p>
+        <p className="text-gray-600 mt-1">
+          Chat with companies about internships
+        </p>
       </div>
 
       <div className="grid grid-cols-12 gap-4 h-[calc(100vh-220px)]">
@@ -372,13 +364,13 @@ const CompanyChat = () => {
           <CardHeader className="pb-3 border-b">
             <CardTitle className="text-lg flex items-center gap-2">
               <MessageSquare className="h-5 w-5 text-blue-600" />
-              Conversations
+              Companies
             </CardTitle>
             <div className="mt-3 relative">
               <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
               <Input
                 type="text"
-                placeholder="Search conversations..."
+                placeholder="Search companies..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-9 h-9 text-sm"
@@ -395,10 +387,10 @@ const CompanyChat = () => {
               </div>
             ) : filteredConversations.length === 0 ? (
               <div className="p-4 text-center">
-                <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-2" />
+                <Building2 className="h-12 w-12 text-gray-400 mx-auto mb-2" />
                 <p className="text-sm text-gray-600">No conversations yet</p>
                 <p className="text-xs text-gray-500">
-                  Start messaging students from Browse Interns
+                  Start messaging companies from Browse Internships
                 </p>
               </div>
             ) : (
@@ -415,29 +407,30 @@ const CompanyChat = () => {
                   <div className="flex items-start gap-3">
                     <div className="relative">
                       <Avatar className="h-12 w-12">
-                        <AvatarImage src={conv.student.avatar} />
+                        <AvatarImage src={conv?.company?.avatar || ""} />
                         <AvatarFallback className="bg-blue-500 text-white">
-                          {conv.student.name
+                          {(conv?.company?.name || "")
                             .split(" ")
+                            .filter(Boolean)
                             .map((n) => n[0])
                             .join("")}
                         </AvatarFallback>
                       </Avatar>
-                      {conv.student.status === "online" && (
+                      {conv.company.status === "online" && (
                         <div className="absolute bottom-0 right-0 h-3 w-3 bg-green-500 border-2 border-white rounded-full"></div>
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
                         <h3 className="font-semibold text-sm text-gray-900 truncate">
-                          {conv.student.name}
+                          {conv.company.name}
                         </h3>
                         <span className="text-xs text-gray-500">
                           {conv.timestamp}
                         </span>
                       </div>
                       <p className="text-xs text-gray-600 mb-1">
-                        {conv.student.program}
+                        {conv.company.industry}
                       </p>
                       <p className="text-sm text-gray-600 truncate">
                         {conv.lastMessage}
@@ -466,25 +459,26 @@ const CompanyChat = () => {
                     <div className="relative">
                       <Avatar className="h-10 w-10">
                         <AvatarImage
-                          src={selectedConversation.student.avatar}
+                          src={selectedConversation?.company?.avatar || ""}
                         />
                         <AvatarFallback className="bg-blue-500 text-white">
-                          {selectedConversation.student.name
+                          {(selectedConversation?.company?.name || "")
                             .split(" ")
+                            .filter(Boolean)
                             .map((n) => n[0])
                             .join("")}
                         </AvatarFallback>
                       </Avatar>
-                      {selectedConversation.student.status === "online" && (
+                      {selectedConversation.company.status === "online" && (
                         <div className="absolute bottom-0 right-0 h-2.5 w-2.5 bg-green-500 border-2 border-white rounded-full"></div>
                       )}
                     </div>
                     <div>
                       <h3 className="font-semibold text-gray-900">
-                        {selectedConversation.student.name}
+                        {selectedConversation.company.name}
                       </h3>
                       <p className="text-xs text-gray-600">
-                        {selectedConversation.student.program}
+                        {selectedConversation.company.industry}
                       </p>
                     </div>
                   </div>
@@ -498,14 +492,14 @@ const CompanyChat = () => {
                     <div
                       key={message.id}
                       className={`flex ${
-                        message.sender === "company"
+                        message.sender === "student"
                           ? "justify-end"
                           : "justify-start"
                       }`}
                     >
                       <div
                         className={`max-w-[70%] ${
-                          message.sender === "company"
+                          message.sender === "student"
                             ? "bg-blue-600 text-white"
                             : "bg-white text-gray-900"
                         } rounded-lg px-4 py-2 shadow-sm`}
@@ -513,7 +507,7 @@ const CompanyChat = () => {
                         <p className="text-sm">{message.text}</p>
                         <p
                           className={`text-xs mt-1 ${
-                            message.sender === "company"
+                            message.sender === "student"
                               ? "text-blue-100"
                               : "text-gray-500"
                           }`}
@@ -555,7 +549,7 @@ const CompanyChat = () => {
                   Select a conversation
                 </h3>
                 <p className="text-gray-600">
-                  Choose a conversation from the list to start chatting
+                  Choose a company from the list to start chatting
                 </p>
               </div>
             </CardContent>
@@ -566,4 +560,4 @@ const CompanyChat = () => {
   );
 };
 
-export default CompanyChat;
+export default StudentChat;

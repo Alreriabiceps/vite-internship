@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { studentsAPI, companiesAPI } from "../../../lib/api";
 import { useAuth } from "../../../contexts/AuthContext";
 import {
@@ -42,6 +42,7 @@ import {
   CheckCircle,
   Filter,
   ChevronDown,
+  MessageSquare,
 } from "lucide-react";
 import {
   Select,
@@ -55,6 +56,7 @@ import toast from "react-hot-toast";
 const BrowseInterns = () => {
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const internshipId = searchParams.get("internshipId");
   const [students, setStudents] = useState([]);
   const [filteredStudents, setFilteredStudents] = useState({
@@ -369,6 +371,11 @@ const BrowseInterns = () => {
     setSelectedSkills([]);
     setSelectedProfileCompleteness("All");
     setSelectedReadiness("All");
+  };
+
+  const handleMessageStudent = (student) => {
+    // Navigate to chat with the specific student
+    navigate(`/company/chat?studentId=${student._id}`);
   };
 
   const viewStudentProfile = (student) => {
@@ -695,6 +702,7 @@ const BrowseInterns = () => {
                       setShortlistedStudents={setShortlistedStudents}
                       onViewProfile={viewStudentProfile}
                       onRefreshShortlist={fetchShortlistedStudents}
+                      onMessageStudent={handleMessageStudent}
                     />
                   ))}
                 </div>
@@ -719,6 +727,7 @@ const BrowseInterns = () => {
                       setShortlistedStudents={setShortlistedStudents}
                       onViewProfile={viewStudentProfile}
                       onRefreshShortlist={fetchShortlistedStudents}
+                      onMessageStudent={handleMessageStudent}
                     />
                   ))}
                 </div>
@@ -747,6 +756,7 @@ const StudentCard = ({
   setShortlistedStudents,
   onViewProfile,
   onRefreshShortlist,
+  onMessageStudent,
 }) => {
   const { user } = useAuth();
   const [selectedStudent, setSelectedStudent] = useState(null);
@@ -1146,6 +1156,20 @@ const StudentCard = ({
               <span className="md:hidden">
                 {isShortlisted(student._id) ? "✓" : "+"}
               </span>
+            </Button>
+
+            {/* Message Button */}
+            <Button
+              className="flex-1 text-xs py-1.5 px-2 border bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+              onClick={(e) => {
+                e.stopPropagation();
+                onMessageStudent(student);
+              }}
+              title="Send message to student"
+            >
+              <MessageSquare className="h-3 w-3 mr-1" />
+              <span className="hidden md:inline">Message</span>
+              <span className="md:hidden">Msg</span>
             </Button>
 
             {/* View Profile Button */}

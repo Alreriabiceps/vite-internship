@@ -38,6 +38,11 @@ const StudentSidebar = ({ sidebarOpen, onCloseMobile }) => {
       href: "/student/browse-interns",
       icon: Users,
     },
+    {
+      name: "Messages",
+      href: "/student/chat",
+      icon: MessageSquare,
+    },
   ];
 
   return (

@@ -31,6 +31,7 @@ import {
   Eye,
   Shield,
   ShieldCheck,
+  MessageSquare,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -100,6 +101,16 @@ const ExploreCompanies = () => {
 
   const viewCompanyProfile = (companyId) => {
     navigate(`/student/company/${companyId}`);
+  };
+
+  const handleMessageCompany = (company) => {
+    console.log("=== HANDLE MESSAGE COMPANY ===");
+    console.log("Company object:", company);
+    console.log("Company ID:", company._id);
+    // Navigate to chat with the specific company
+    const url = `/student/chat?companyId=${company._id}`;
+    console.log("Navigating to:", url);
+    navigate(url);
   };
 
   const uniqueIndustries = [
@@ -301,18 +312,30 @@ const ExploreCompanies = () => {
                     </div>
                   </div>
 
-                  {/* View Profile Button - always at bottom */}
+                  {/* Action Buttons - always at bottom */}
                   <div className="mt-auto">
-                    <Button
-                      className="w-full bg-gray-800 hover:bg-gray-900 text-sm sm:text-base"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        viewCompanyProfile(company._id);
-                      }}
-                    >
-                      <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
-                      Explore Company
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        className="flex-1 bg-gray-800 hover:bg-gray-900 text-sm sm:text-base"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          viewCompanyProfile(company._id);
+                        }}
+                      >
+                        <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
+                        <span className="hidden sm:inline">Explore</span>
+                      </Button>
+                      <Button
+                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-sm sm:text-base"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleMessageCompany(company);
+                        }}
+                      >
+                        <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
+                        <span className="hidden sm:inline">Message</span>
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

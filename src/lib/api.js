@@ -16,8 +16,13 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
+    console.log("API Request:", config.url);
+    console.log("Token from localStorage:", token ? "EXISTS" : "NOT FOUND");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+      console.log("Authorization header set");
+    } else {
+      console.log("No token found, request will fail");
     }
     return config;
   },
@@ -124,6 +129,8 @@ export const chatAPI = {
   getConversations: () => api.get("/chat/conversations"),
   getMessages: (userId) => api.get(`/chat/messages/${userId}`),
   sendMessage: (data) => api.post("/chat/send", data),
+  createConversation: (otherUserId) =>
+    api.post("/chat/conversations", { otherUserId }),
   markAsRead: (messageId) => api.put(`/chat/messages/${messageId}/read`),
   deleteMessage: (messageId) => api.delete(`/chat/messages/${messageId}`),
   getUnreadCount: () => api.get("/chat/unread-count"),

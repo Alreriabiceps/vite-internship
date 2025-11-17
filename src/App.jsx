@@ -22,6 +22,7 @@ import {
   MyMatches,
   BrowseInterns as StudentBrowseInterns,
   CompanyProfile,
+  StudentChat,
 } from "./pages/user/student";
 
 // Company Pages
@@ -160,6 +161,17 @@ function App() {
                   }
                 >
                   <Route index element={<CompanyProfile />} />
+                </Route>
+
+                <Route
+                  path="/student/chat"
+                  element={
+                    <ProtectedRoute allowedRoles={["student"]}>
+                      <Layout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<StudentChat />} />
                 </Route>
 
                 {/* COMPANY ROUTES */}
