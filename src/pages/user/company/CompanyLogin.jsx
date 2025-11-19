@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import {
   Eye,
@@ -10,6 +10,7 @@ import {
   AlertCircle,
   Info,
 } from "lucide-react";
+import { useAuth } from "../../../contexts/AuthContext";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import {
@@ -24,8 +25,8 @@ const CompanyLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState("");
   const [showEmailWarning, setShowEmailWarning] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const timeoutRef = useRef(null);
+  const { login, isLoading } = useAuth();
+  const navigate = useNavigate();
 
   const {
     register,
@@ -33,28 +34,33 @@ const CompanyLogin = () => {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = () => {
+  const onSubmit = async (data) => {
+    console.log("🏢 Company login attempt");
+    setLoginError(""); // Clear previous errors
     setShowEmailWarning(false);
-    setLoginError("");
 
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
+    const result = await login(data);
+    console.log("📦 Login result:", result);
 
-    setIsLoading(true);
-    timeoutRef.current = setTimeout(() => {
-      setIsLoading(false);
-      setLoginError("Network error. Please try again later.");
-    }, 1200);
-  };
-
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
+    if (result.success) {
+      // Redirect to company dashboard
+      console.log("✅ Login successful! Redirecting to /company/dashboard");
+      navigate("/company/dashboard", { replace: true });
+    } else {
+      console.log("❌ Login failed - staying on login page");
+      // Set specific error messages based on common issues
+      if (data.email && !data.email.includes("@")) {
+        setLoginError("Please enter a valid email address");
+      } else {
+        setLoginError(
+          "Invalid email or password. Please check your credentials."
+        );
+        setShowEmailWarning(true);
       }
-    };
-  }, []);
+      // DO NOT navigate anywhere on login failure - stay on login page
+      console.log("⚠️ Staying on company login page (/clogin)");
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
