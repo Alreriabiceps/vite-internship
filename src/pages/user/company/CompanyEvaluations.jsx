@@ -149,20 +149,6 @@ const CompanyEvaluations = () => {
     );
   };
 
-  const handleCommentChange = (sectionIndex, questionIndex, comment) => {
-    setFormSections((prev) =>
-      prev.map((section, sIdx) => {
-        if (sIdx !== sectionIndex) return section;
-        return {
-          ...section,
-          questions: section.questions.map((question, qIdx) =>
-            qIdx === questionIndex ? { ...question, comments: comment } : question
-          ),
-        };
-      })
-    );
-  };
-
   const handleSaveEvaluation = async (submit = false) => {
     if (!selectedEvaluation) return;
     if (!formSections || formSections.length === 0) {
@@ -260,7 +246,7 @@ const CompanyEvaluations = () => {
   }, [formSections, selectedEvaluation]);
 
   return (
-    <div className="p-3 sm:p-4 space-y-4 bg-gray-50 min-h-screen">
+    <div className="p-3 sm:p-4 space-y-3 bg-gray-50 min-h-screen">
       <div className="space-y-2">
         <div className="flex items-center gap-2">
           <ClipboardList className="h-5 w-5 text-gray-700" />
@@ -274,7 +260,7 @@ const CompanyEvaluations = () => {
           </div>
         </div>
         {selectedEvaluation && (
-          <div className="mt-2 p-3 bg-blue-50 rounded border border-blue-200">
+          <div className="mt-2 p-2.5 bg-blue-50 rounded border border-blue-200">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <TrendingUp className="h-4 w-4 text-blue-600" />
@@ -299,27 +285,27 @@ const CompanyEvaluations = () => {
         )}
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[280px,1fr]">
+      <div className="grid gap-3 lg:grid-cols-[280px,1fr]">
         <Card className="h-fit border border-gray-200">
-          <CardHeader className="bg-gray-100 border-b p-3">
+          <CardHeader className="bg-gray-100 border-b p-2.5">
             <CardTitle className="flex items-center gap-2 text-sm font-semibold">
               <ClipboardList className="h-4 w-4 text-gray-700" />
               Assigned Evaluations
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-3">
+          <CardContent className="p-2.5">
             {loadingList ? (
-              <div className="py-12 text-center">
-                <Loader2 className="h-8 w-8 animate-spin mx-auto text-indigo-600 mb-2" />
-                <p className="text-gray-500">Loading...</p>
+              <div className="py-8 text-center">
+                <Loader2 className="h-6 w-6 animate-spin mx-auto text-indigo-600 mb-2" />
+                <p className="text-gray-500 text-xs">Loading...</p>
               </div>
             ) : evaluations.length === 0 ? (
-              <div className="py-12 text-center">
-                <div className="p-4 bg-gray-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                  <ClipboardList className="h-8 w-8 text-gray-400" />
+              <div className="py-8 text-center">
+                <div className="p-3 bg-gray-100 rounded-full w-12 h-12 mx-auto mb-2 flex items-center justify-center">
+                  <ClipboardList className="h-6 w-6 text-gray-400" />
                 </div>
-                <p className="text-gray-500 font-medium">No evaluation requests yet</p>
-                <p className="text-sm text-gray-400 mt-1">
+                <p className="text-gray-500 font-medium text-xs">No evaluation requests yet</p>
+                <p className="text-xs text-gray-400 mt-1">
                   Evaluations will appear here when assigned
                 </p>
               </div>
@@ -401,7 +387,7 @@ const CompanyEvaluations = () => {
                 : "Select an evaluation from the list to begin."}
             </p>
           </CardHeader>
-          <CardContent className="space-y-4 p-4">
+          <CardContent className="space-y-3 p-3">
             {loadingDetail ? (
               <div className="flex h-64 items-center justify-center">
                 <div className="text-center">
@@ -485,7 +471,7 @@ const CompanyEvaluations = () => {
                   </div>
                 </div>
 
-                <div className="rounded border border-blue-200 bg-blue-50 p-3 text-xs text-gray-700 flex items-start gap-2">
+                <div className="rounded border border-blue-200 bg-blue-50 p-2.5 text-xs text-gray-700 flex items-start gap-2">
                   <Star className="h-4 w-4 text-blue-600 flex-shrink-0 mt-0.5" />
                   <div className="flex-1">
                     <p className="font-semibold text-sm mb-0.5">Rating Guide</p>
@@ -493,11 +479,11 @@ const CompanyEvaluations = () => {
                   </div>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {formSections.map((section, sectionIndex) => (
                     <div
                       key={section._sectionId || `${section.label}-${sectionIndex}`}
-                      className="rounded border border-gray-200 p-3 space-y-3 bg-white"
+                      className="rounded border border-gray-200 p-3 space-y-2 bg-white"
                     >
                       <div className="pb-2 border-b border-gray-100">
                         <div className="flex items-center gap-2 mb-1">
@@ -515,18 +501,18 @@ const CompanyEvaluations = () => {
                         )}
                       </div>
 
-                      <div className="space-y-3">
+                      <div className="space-y-2">
                         {section.questions.map((question, questionIndex) => (
                           <div
                             key={question._questionId || `${section.label}-${questionIndex}`}
-                            className="rounded border border-gray-200 p-3 space-y-2 bg-gray-50"
+                            className="rounded border border-gray-200 p-2.5 space-y-2 bg-gray-50"
                           >
                             <div className="flex flex-col gap-0.5">
                               <p className="font-medium text-gray-800 text-sm">
                                 {question.prompt}
                               </p>
                               {question.description && (
-                                <p className="text-xs text-gray-500">
+                                <p className="text-xs text-gray-500 mt-0.5">
                                   {question.description}
                                 </p>
                               )}
@@ -548,7 +534,7 @@ const CompanyEvaluations = () => {
                                         value
                                       )
                                     }
-                                    className={`h-8 px-2 text-xs ${
+                                    className={`h-8 px-3 text-xs ${
                                       isSelected
                                         ? "bg-blue-600 hover:bg-blue-700"
                                         : "hover:bg-blue-50"
@@ -565,20 +551,6 @@ const CompanyEvaluations = () => {
                                 );
                               })}
                             </div>
-                            <Textarea
-                              value={question.comments}
-                              onChange={(event) =>
-                                handleCommentChange(
-                                  sectionIndex,
-                                  questionIndex,
-                                  event.target.value
-                                )
-                              }
-                              placeholder="Add your comments here (optional)"
-                              disabled={disableForm}
-                              className="text-xs resize-none"
-                              rows={2}
-                            />
                           </div>
                         ))}
                       </div>
@@ -601,7 +573,7 @@ const CompanyEvaluations = () => {
                 </div>
 
                 {disableForm ? (
-                  <div className="rounded border border-green-200 bg-green-50 p-3 text-xs text-gray-700 flex items-start gap-2">
+                  <div className="rounded border border-green-200 bg-green-50 p-2.5 text-xs text-gray-700 flex items-start gap-2">
                     <CheckCircle2 className="h-4 w-4 text-green-600 flex-shrink-0 mt-0.5" />
                     <div className="flex-1">
                       <p className="font-semibold text-sm mb-0.5">Evaluation Submitted</p>
@@ -616,22 +588,22 @@ const CompanyEvaluations = () => {
                     </div>
                   </div>
                 ) : (
-                  <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-gray-200">
+                  <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-gray-200">
                     <Button
                       type="button"
                       variant="outline"
                       onClick={() => handleSaveEvaluation(false)}
                       disabled={saving}
-                      className="h-8 text-xs"
+                      className="h-8 text-xs px-3"
                     >
                       {saving ? (
                         <>
-                          <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                          <Loader2 className="h-3 w-3 mr-1.5 animate-spin" />
                           Saving...
                         </>
                       ) : (
                         <>
-                          <Clock className="h-3 w-3 mr-1" />
+                          <Clock className="h-3 w-3 mr-1.5" />
                           Save Progress
                         </>
                       )}
@@ -640,16 +612,16 @@ const CompanyEvaluations = () => {
                       type="button"
                       onClick={() => handleSaveEvaluation(true)}
                       disabled={saving}
-                      className="h-8 bg-blue-600 hover:bg-blue-700 text-xs"
+                      className="h-8 bg-blue-600 hover:bg-blue-700 text-xs px-3"
                     >
                       {saving ? (
                         <>
-                          <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                          <Loader2 className="h-3 w-3 mr-1.5 animate-spin" />
                           Submitting...
                         </>
                       ) : (
                         <>
-                          <CheckCircle2 className="h-3 w-3 mr-1" />
+                          <CheckCircle2 className="h-3 w-3 mr-1.5" />
                           Submit Evaluation
                         </>
                       )}

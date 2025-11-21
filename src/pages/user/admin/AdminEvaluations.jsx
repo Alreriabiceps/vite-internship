@@ -983,54 +983,50 @@ const AdminEvaluations = () => {
         </CardHeader>
         <CardContent className="p-3">
           <form onSubmit={handleAssignmentSubmit} className="space-y-3">
-            <div className="space-y-1">
-              <Label className="text-xs">Evaluation Template</Label>
-              <Select
-                value={assignmentForm.templateId}
-                onValueChange={(value) =>
-                  handleAssignmentChange("templateId", value)
-                }
-              >
-                <SelectTrigger className="h-8 text-xs">
-                  <SelectValue placeholder="Select template" />
-                </SelectTrigger>
-                <SelectContent>
-                  {templates.map((template) => (
-                    <SelectItem key={template._id} value={template._id}>
-                      {template.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label className="text-xs">Evaluation Template</Label>
+                <Select
+                  value={assignmentForm.templateId}
+                  onValueChange={(value) =>
+                    handleAssignmentChange("templateId", value)
+                  }
+                >
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue placeholder="Select template" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {templates.map((template) => (
+                      <SelectItem key={template._id} value={template._id}>
+                        {template.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-            <div className="space-y-1">
-              <Label className="text-xs">Company</Label>
-              <Input
-                placeholder="Search company..."
-                value={companySearch}
-                onChange={(e) => setCompanySearch(e.target.value)}
-                className="h-8 text-xs mb-1.5"
-              />
-              <Select
-                value={assignmentForm.companyId}
-                onValueChange={(value) =>
-                  handleAssignmentChange("companyId", value)
-                }
-              >
-                <SelectTrigger className="h-8 text-xs">
-                  <SelectValue placeholder="Select company" />
-                </SelectTrigger>
-                <SelectContent>
-                  {filteredCompanies.map((company) => (
-                    <SelectItem key={company._id} value={company._id}>
-                      {company.companyName} • {company.totalPreferredApplicants}{" "}
-                      student
-                      {company.totalPreferredApplicants === 1 ? "" : "s"}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="space-y-1">
+                <Label className="text-xs">Company</Label>
+                <Select
+                  value={assignmentForm.companyId}
+                  onValueChange={(value) =>
+                    handleAssignmentChange("companyId", value)
+                  }
+                >
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue placeholder="Select company" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {filteredCompanies.map((company) => (
+                      <SelectItem key={company._id} value={company._id}>
+                        {company.companyName} • {company.totalPreferredApplicants}{" "}
+                        student
+                        {company.totalPreferredApplicants === 1 ? "" : "s"}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <div className="space-y-1">
@@ -1053,24 +1049,26 @@ const AdminEvaluations = () => {
               </div>
             </div>
 
-            <div className="space-y-1">
-              <Label className="text-xs">Due Date (optional)</Label>
-              <Input
-                type="date"
-                value={assignmentForm.dueDate}
-                onChange={(e) => handleAssignmentChange("dueDate", e.target.value)}
-                className="h-8 text-xs"
-              />
-            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label className="text-xs">Due Date (optional)</Label>
+                <Input
+                  type="date"
+                  value={assignmentForm.dueDate}
+                  onChange={(e) => handleAssignmentChange("dueDate", e.target.value)}
+                  className="h-8 text-xs"
+                />
+              </div>
 
-            <div className="space-y-1">
-              <Label className="text-xs">Internship Assignment / Role</Label>
-              <Input
-                placeholder="e.g., Admin Trainee"
-                value={assignmentForm.internshipAssignment}
-                onChange={(e) => handleAssignmentChange("internshipAssignment", e.target.value)}
-                className="h-8 text-xs"
-              />
+              <div className="space-y-1">
+                <Label className="text-xs">Internship Assignment / Role</Label>
+                <Input
+                  placeholder="e.g., Admin Trainee"
+                  value={assignmentForm.internshipAssignment}
+                  onChange={(e) => handleAssignmentChange("internshipAssignment", e.target.value)}
+                  className="h-8 text-xs"
+                />
+              </div>
             </div>
 
             <div className="space-y-1">
