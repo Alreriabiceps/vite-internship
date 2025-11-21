@@ -247,13 +247,14 @@ const AdminCompanyView = () => {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() =>
-                        navigate(`/admin/companies/${companyId}/edit`)
-                      }
+                      onClick={() => {
+                        toast.info("Company editing is available through the Companies page. Use the actions menu there.");
+                        navigate("/admin/companies");
+                      }}
                       className="flex items-center gap-2"
                     >
                       <Edit className="h-4 w-4" />
-                      Edit Company
+                      Back to Companies
                     </Button>
                     {company.website && (
                       <Button
@@ -477,25 +478,15 @@ const AdminCompanyView = () => {
                         variant="outline"
                         size="sm"
                         className="flex-1"
-                        onClick={() =>
+                        onClick={() => {
+                          // Navigate to internship postings page and open modal
                           navigate(
                             `/admin/internship-postings?company=${companyId}&slot=${slot._id}`
-                          )
-                        }
+                          );
+                        }}
                       >
                         <Eye className="h-4 w-4 mr-2" />
                         View Details
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          navigate(
-                            `/admin/internship-postings?company=${companyId}&slot=${slot._id}&action=edit`
-                          )
-                        }
-                      >
-                        <Edit className="h-4 w-4" />
                       </Button>
                     </div>
                   </CardContent>

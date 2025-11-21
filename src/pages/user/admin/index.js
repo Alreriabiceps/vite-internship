@@ -8,3 +8,4 @@ export { default as AdminCompanies } from "./AdminCompanies";
 export { default as AdminInternshipPostings } from "./AdminInternshipPostings";
 export { default as AdminPreferredApplicants } from "./AdminPreferredApplicants";
 export { default as AdminCompanyView } from "./AdminCompanyView";
+export { default as AdminEvaluations } from "./AdminEvaluations";

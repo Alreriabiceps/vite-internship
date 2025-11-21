@@ -74,7 +74,7 @@ const CompanyProfile = () => {
         setCompany(response.data.data);
       } else {
         toast.error("Company not found");
-        navigate("/student/browse-internships");
+        navigate("/student/find-internships");
       }
     } catch (error) {
       console.error("❌ Error fetching company profile:", error);
@@ -221,7 +221,7 @@ const CompanyProfile = () => {
           <p className="text-gray-600 mb-4">
             The company you're looking for doesn't exist or has been removed.
           </p>
-          <Button onClick={() => navigate("/student/browse-internships")}>
+          <Button onClick={() => navigate("/student/find-internships")}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Internships
           </Button>
@@ -237,7 +237,7 @@ const CompanyProfile = () => {
         <div className="mb-4 sm:mb-6">
           <Button
             variant="outline"
-            onClick={() => navigate("/student/browse-internships")}
+            onClick={() => navigate("/student/find-internships")}
             className="flex items-center gap-2 text-sm sm:text-base"
           >
             <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4" />

@@ -34,6 +34,7 @@ import {
   CompanyChat,
   PostInternship,
   Internships,
+  CompanyEvaluations,
 } from "./pages/user/company";
 
 // Admin Pages
@@ -45,6 +46,7 @@ import {
   AdminInterns,
   AdminCompanies,
   AdminCompanyView,
+  AdminEvaluations,
 } from "./pages/user/admin";
 import Reports from "./pages/user/admin/Reports";
 import AdminInternshipPostings from "./pages/user/admin/AdminInternshipPostings";
@@ -241,6 +243,17 @@ function App() {
                   <Route index element={<Internships />} />
                 </Route>
 
+                <Route
+                  path="/company/evaluations"
+                  element={
+                    <ProtectedRoute allowedRoles={["company"]}>
+                      <Layout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<CompanyEvaluations />} />
+                </Route>
+
                 {/* ADMIN ROUTES */}
                 <Route
                   path="/admin/dashboard"
@@ -318,6 +331,17 @@ function App() {
                   }
                 >
                   <Route index element={<AdminPreferredApplicants />} />
+                </Route>
+
+                <Route
+                  path="/admin/evaluations"
+                  element={
+                    <ProtectedRoute allowedRoles={["admin"]}>
+                      <Layout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<AdminEvaluations />} />
                 </Route>
 
                 <Route

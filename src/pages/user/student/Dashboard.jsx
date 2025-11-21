@@ -376,7 +376,7 @@ const Dashboard = () => {
 
               {/* Edit Profile Button */}
               <div className="flex items-center">
-                <Link to="/profile">
+                <Link to="/student/profile">
                   <Button
                     size="lg"
                     className="bg-white hover:bg-gray-100 text-gray-900 px-6 py-3 shadow-lg hover:shadow-xl transition-all duration-200 font-semibold"

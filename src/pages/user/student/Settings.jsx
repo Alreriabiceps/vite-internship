@@ -34,6 +34,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { authAPI } from "../../../lib/api";
 
 const StudentSettings = () => {
   const { user } = useAuth();
@@ -63,31 +64,9 @@ const StudentSettings = () => {
   const handleEmailChange = async (data) => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/auth/change-email", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify(data),
-      });
+      const response = await authAPI.changeEmail(data);
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        let errorMessage = "Failed to change email";
-
-        try {
-          const errorData = JSON.parse(errorText);
-          errorMessage = errorData.message || errorMessage;
-        } catch {
-          errorMessage = errorText || errorMessage;
-        }
-
-        throw new Error(errorMessage);
-      }
-
-      const result = await response.json();
-      toast.success(result.message);
+      toast.success(response.data.message || "Email changed successfully");
 
       // Reset form
       emailForm.reset();
@@ -98,7 +77,12 @@ const StudentSettings = () => {
       });
     } catch (error) {
       console.error("Error changing email:", error);
-      toast.error(error.message || "Failed to change email");
+      const errorMessage = 
+        error.response?.data?.message || 
+        error.response?.data?.errors?.[0]?.msg ||
+        error.message || 
+        "Failed to change email";
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -107,40 +91,23 @@ const StudentSettings = () => {
   const handlePasswordChange = async (data) => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/auth/change-password", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({
-          currentPassword: data.currentPassword,
-          newPassword: data.newPassword,
-        }),
+      const response = await authAPI.changePassword({
+        currentPassword: data.currentPassword,
+        newPassword: data.newPassword,
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        let errorMessage = "Failed to change password";
-
-        try {
-          const errorData = JSON.parse(errorText);
-          errorMessage = errorData.message || errorMessage;
-        } catch {
-          errorMessage = errorText || errorMessage;
-        }
-
-        throw new Error(errorMessage);
-      }
-
-      const result = await response.json();
-      toast.success(result.message);
+      toast.success(response.data.message || "Password changed successfully");
 
       // Reset form
       passwordForm.reset();
     } catch (error) {
       console.error("Error changing password:", error);
-      toast.error(error.message || "Failed to change password");
+      const errorMessage = 
+        error.response?.data?.message || 
+        error.response?.data?.errors?.[0]?.msg ||
+        error.message || 
+        "Failed to change password";
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }

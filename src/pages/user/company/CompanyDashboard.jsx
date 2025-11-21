@@ -305,7 +305,7 @@ const CompanyDashboard = () => {
                   Recent Internships
                 </CardTitle>
                 <Button asChild variant="outline" size="sm">
-                  <Link to="/my-internships">View All</Link>
+                  <Link to="/company/internships">View All</Link>
                 </Button>
               </div>
             </CardHeader>

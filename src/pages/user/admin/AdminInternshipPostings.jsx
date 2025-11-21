@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -49,6 +50,7 @@ import { toast } from "react-hot-toast";
 import { adminAPI } from "../../../lib/api";
 
 const AdminInternshipPostings = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [postings, setPostings] = useState([]);
   const [pagination, setPagination] = useState({});
@@ -103,6 +105,33 @@ const AdminInternshipPostings = () => {
   useEffect(() => {
     fetchPostings();
   }, [currentPage, searchTerm, statusFilter]);
+
+  // Handle query params for direct navigation from company view
+  useEffect(() => {
+    const companyId = searchParams.get("company");
+    const slotId = searchParams.get("slot");
+    const action = searchParams.get("action");
+
+    if (companyId && slotId) {
+      // Find the posting that matches
+      const posting = postings.find(
+        (p) => p.companyId === companyId && (p._id === slotId || p._id.includes(slotId))
+      );
+      
+      if (posting) {
+        setSelectedPosting(posting);
+        if (action === "edit") {
+          // For edit action, show modal with edit option
+          setShowModal(true);
+          toast.info("Edit functionality is available through the posting actions menu.");
+        } else {
+          setShowModal(true);
+        }
+        // Clear query params after handling
+        setSearchParams({});
+      }
+    }
+  }, [postings, searchParams, setSearchParams]);
 
   const handleToggleVisibility = async (companyId, slotIndex) => {
     try {

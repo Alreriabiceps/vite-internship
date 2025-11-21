@@ -38,19 +38,27 @@ api.interceptors.response.use(
   },
   (error) => {
     if (error.response?.status === 401) {
-      // Token expired or invalid – clear local session
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-
       const path = window.location.pathname || "";
-      // Avoid reload loops; pick the correct login page based on current section
-      if (path.startsWith("/company")) {
-        if (path !== "/clogin") window.location.replace("/clogin");
-      } else if (path.startsWith("/admin")) {
-        if (path !== "/alogin") window.location.replace("/alogin");
-      } else if (path !== "/login" && path !== "/") {
-        window.location.replace("/login");
+      const isLoginPage = path === "/login" || path === "/clogin" || path === "/alogin";
+      const isLoginRequest = error.config?.url?.includes("/auth/login");
+      
+      // Only redirect if NOT on a login page AND NOT a login request
+      // (i.e., token expired on authenticated route, not a failed login attempt)
+      if (!isLoginPage && !isLoginRequest) {
+        // Token expired or invalid – clear local session
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+
+        // Avoid reload loops; pick the correct login page based on current section
+        if (path.startsWith("/company")) {
+          if (path !== "/clogin") window.location.replace("/clogin");
+        } else if (path.startsWith("/admin")) {
+          if (path !== "/alogin") window.location.replace("/alogin");
+        } else if (path !== "/login" && path !== "/") {
+          window.location.replace("/login");
+        }
       }
+      // If on login page or it's a login request, don't redirect - just let the error propagate
     } else if (error.response?.status === 429) {
       // Rate limit exceeded
       console.warn(
@@ -70,6 +78,7 @@ export const authAPI = {
   getMe: () => api.get("/auth/me"),
   updateProfile: (data) => api.put("/auth/profile", data),
   changePassword: (data) => api.put("/auth/change-password", data),
+  changeEmail: (data) => api.put("/auth/change-email", data),
   forgotPassword: (email) => api.post("/auth/forgot-password", { email }),
   resetPassword: (data) => api.post("/auth/reset-password", data),
 };
@@ -110,6 +119,11 @@ export const companiesAPI = {
   verify: (id, data) => api.put(`/companies/${id}/verify`, data),
   applyToInternship: (companyId, slotId) =>
     api.post(`/companies/${companyId}/slots/${slotId}/apply`),
+  getEvaluations: (params) => api.get("/companies/evaluations", { params }),
+  getEvaluation: (evaluationId) =>
+    api.get(`/companies/evaluations/${evaluationId}`),
+  updateEvaluation: (evaluationId, data) =>
+    api.put(`/companies/evaluations/${evaluationId}`, data),
 };
 
 // Admin API
@@ -122,6 +136,22 @@ export const adminAPI = {
   getSystemLogs: (params) => api.get("/admin/logs", { params }),
   createAnnouncement: (data) => api.post("/admin/announcements", data),
   getReports: (params) => api.get("/admin/reports", { params }),
+  getPreferredApplicants: (params) =>
+    api.get("/admin/companies/preferred-applicants", { params }),
+  createEvaluationTemplate: (data) =>
+    api.post("/admin/evaluation-templates", data),
+  updateEvaluationTemplate: (id, data) =>
+    api.put(`/admin/evaluation-templates/${id}`, data),
+  deleteEvaluationTemplate: (id) =>
+    api.delete(`/admin/evaluation-templates/${id}`),
+  getEvaluationTemplates: (params) =>
+    api.get("/admin/evaluation-templates", { params }),
+  assignStudentEvaluations: (data) =>
+    api.post("/admin/evaluations/assign", data),
+  getStudentEvaluations: (params) =>
+    api.get("/admin/evaluations", { params }),
+  getStudentEvaluation: (id) => api.get(`/admin/evaluations/${id}`),
+  deleteStudentEvaluation: (id) => api.delete(`/admin/evaluations/${id}`),
 };
 
 // Chat API

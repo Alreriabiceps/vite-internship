@@ -7,3 +7,4 @@ export { default as BrowseInterns } from "./BrowseInterns";
 export { default as CompanyChat } from "./CompanyChat";
 export { default as PostInternship } from "./PostInternship";
 export { default as Internships } from "./Internships";
+export { default as CompanyEvaluations } from "./CompanyEvaluations";

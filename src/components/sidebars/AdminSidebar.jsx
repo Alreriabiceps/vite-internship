@@ -11,6 +11,7 @@ import {
   FileText,
   Briefcase,
   UserCheck,
+  ClipboardList,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 
@@ -28,6 +29,11 @@ const AdminSidebar = ({ sidebarOpen, onCloseMobile }) => {
       name: "Whitelisted Students",
       href: "/admin/preferred-applicants",
       icon: UserCheck,
+    },
+    {
+      name: "Evaluations",
+      href: "/admin/evaluations",
+      icon: ClipboardList,
     },
     { name: "Reports & Analytics", href: "/admin/reports", icon: FileText },
   ];

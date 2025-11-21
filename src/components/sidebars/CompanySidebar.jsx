@@ -9,6 +9,7 @@ import {
   Users,
   Briefcase,
   X,
+  ClipboardList,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 
@@ -18,6 +19,7 @@ const CompanySidebar = ({ sidebarOpen, onCloseMobile }) => {
     { name: "Company Profile", href: "/company/profile", icon: Building2 },
     { name: "Internships", href: "/company/internships", icon: Briefcase },
     { name: "Browse Interns", href: "/company/browse-interns", icon: Users },
+    { name: "Evaluations", href: "/company/evaluations", icon: ClipboardList },
     { name: "Messages", href: "/company/chat", icon: MessageSquare },
   ];
 
