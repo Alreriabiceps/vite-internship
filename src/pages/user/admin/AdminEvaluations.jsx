@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "../../../components/ui/select";
 import { Checkbox } from "../../../components/ui/checkbox";
+import Modal from "../../../components/ui/modal";
 import {
   AlertCircle,
   Building2,
@@ -1365,12 +1366,20 @@ const AdminEvaluations = () => {
                             return (
                               <div
                                 key={evaluation._id}
-                                className={`border rounded p-1.5 bg-white transition-all cursor-pointer ${
+                                className={`border rounded p-1.5 bg-white transition-all cursor-pointer hover:shadow-sm ${
                                   isSelected 
-                                    ? "border-blue-500 bg-blue-50" 
-                                    : "border-gray-200 hover:border-blue-300"
+                                    ? "border-blue-500 bg-blue-50 ring-2 ring-blue-200" 
+                                    : "border-gray-200 hover:border-blue-300 hover:bg-blue-50"
                                 }`}
                                 onClick={() => handleViewEvaluationDetail(evaluation._id)}
+                                role="button"
+                                tabIndex={0}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    handleViewEvaluationDetail(evaluation._id);
+                                  }
+                                }}
                               >
                                 <div className="flex items-start justify-between gap-2">
                                   <div className="flex-1">
@@ -1450,246 +1459,249 @@ const AdminEvaluations = () => {
         </CardContent>
       </Card>
 
-      {/* Evaluation Detail View */}
-      {selectedEvaluationDetail && (
-        <Card className="border border-gray-200">
-          <CardHeader className="bg-gray-100 border-b p-2">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-xs font-semibold flex items-center gap-1.5">
-                <ClipboardList className="h-3 w-3 text-gray-700" />
-                Evaluation Details
-              </CardTitle>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSelectedEvaluationDetail(null)}
-                className="h-6 w-6 p-0"
-              >
-                <X className="h-3 w-3" />
-              </Button>
+      {/* Evaluation Detail Modal */}
+      <Modal
+        isOpen={!!selectedEvaluationDetail}
+        onClose={() => setSelectedEvaluationDetail(null)}
+        title={
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 bg-blue-100 rounded-lg flex items-center justify-center">
+              <ClipboardList className="h-5 w-5 text-blue-600" />
             </div>
-          </CardHeader>
-          <CardContent className="p-2">
-            {loadingEvaluationDetail ? (
-              <div className="py-4 text-center">
-                <Loader2 className="h-4 w-4 animate-spin mx-auto text-gray-600 mb-1" />
-                <p className="text-xs text-gray-500">Loading evaluation details...</p>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {/* Student Info */}
-                <div className="border border-gray-200 rounded p-2 bg-white">
-                  <div className="flex items-center gap-1.5 mb-1.5">
-                    <Users className="h-3 w-3 text-gray-600" />
-                    <p className="text-xs font-semibold text-gray-700 uppercase">Student Information</p>
+            <div>
+              <h3 className="text-lg font-bold text-gray-900">
+                Evaluation Details
+              </h3>
+              <p className="text-xs text-gray-500">
+                {selectedEvaluationDetail?.studentInfo?.fullName || 
+                 (selectedEvaluationDetail?.student?.firstName && selectedEvaluationDetail?.student?.lastName 
+                  ? `${selectedEvaluationDetail.student.firstName} ${selectedEvaluationDetail.student.lastName}` 
+                  : "Unknown Student")}
+              </p>
+            </div>
+          </div>
+        }
+      >
+        {loadingEvaluationDetail ? (
+          <div className="py-12 text-center">
+            <Loader2 className="h-8 w-8 animate-spin mx-auto text-gray-600 mb-3" />
+            <p className="text-sm text-gray-500">Loading evaluation details...</p>
+          </div>
+        ) : selectedEvaluationDetail ? (
+          <div className="space-y-4">
+            {/* Performance Metrics Summary at Top */}
+            {calculatePerformanceMetrics && (
+              <div className="border border-blue-200 rounded-lg p-4 bg-blue-50 mb-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <TrendingUp className="h-4 w-4 text-blue-600" />
+                  <p className="text-sm font-semibold text-gray-700 uppercase">Performance Summary</p>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+                  <div className="text-center p-3 bg-white rounded-lg border border-blue-200">
+                    <p className="text-2xl font-bold text-blue-600">
+                      {calculatePerformanceMetrics.overallAverage.toFixed(2)}
+                    </p>
+                    <p className="text-xs text-gray-600 mt-1">Overall Average</p>
                   </div>
-                  <div className="grid grid-cols-2 gap-1.5 text-xs">
-                    <div>
-                      <p className="text-gray-500 mb-0.5">Name</p>
-                      <p className="font-medium text-gray-900">
-                        {selectedEvaluationDetail.studentInfo?.fullName || 
-                         (selectedEvaluationDetail.student?.firstName && selectedEvaluationDetail.student?.lastName 
-                          ? `${selectedEvaluationDetail.student.firstName} ${selectedEvaluationDetail.student.lastName}` 
-                          : "Unknown")}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500 mb-0.5">Program</p>
-                      <p className="font-medium text-gray-900">
-                        {selectedEvaluationDetail.studentInfo?.program || selectedEvaluationDetail.student?.program || "N/A"}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500 mb-0.5">Student ID</p>
-                      <p className="font-medium text-gray-900">
-                        {selectedEvaluationDetail.studentInfo?.studentNumber || selectedEvaluationDetail.student?.studentId || "N/A"}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500 mb-0.5">Status</p>
-                      <Badge className={`text-xs ${statusStyles[selectedEvaluationDetail.status] || "bg-gray-100 text-gray-800"}`}>
-                        {selectedEvaluationDetail.status.replace("_", " ")}
-                      </Badge>
-                    </div>
+                  <div className="text-center p-3 bg-white rounded-lg border border-green-200">
+                    <p className="text-2xl font-bold text-green-600">
+                      {calculatePerformanceMetrics.completionRate.toFixed(0)}%
+                    </p>
+                    <p className="text-xs text-gray-600 mt-1">Completion Rate</p>
+                  </div>
+                  <div className="text-center p-3 bg-white rounded-lg border border-gray-200">
+                    <p className="text-2xl font-bold text-gray-600">
+                      {calculatePerformanceMetrics.answeredQuestions}/{calculatePerformanceMetrics.totalQuestions}
+                    </p>
+                    <p className="text-xs text-gray-600 mt-1">Questions Answered</p>
+                  </div>
+                  <div className="text-center p-3 bg-white rounded-lg border border-gray-200">
+                    <p className="text-2xl font-bold text-gray-600">
+                      {selectedEvaluationDetail.sections?.length || 0}
+                    </p>
+                    <p className="text-xs text-gray-600 mt-1">Total Sections</p>
                   </div>
                 </div>
-
-                {/* Performance Metrics Summary */}
-                {calculatePerformanceMetrics && (
-                  <div className="border border-gray-200 rounded p-2 bg-white">
-                    <div className="flex items-center gap-1.5 mb-2">
-                      <TrendingUp className="h-3 w-3 text-gray-600" />
-                      <p className="text-xs font-semibold text-gray-700 uppercase">Performance Summary</p>
-                    </div>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-2">
-                      <div className="text-center p-1.5 bg-blue-50 rounded">
-                        <p className="text-sm font-bold text-blue-600">
-                          {calculatePerformanceMetrics.overallAverage.toFixed(2)}
-                        </p>
-                        <p className="text-xs text-gray-600">Overall Average</p>
-                      </div>
-                      <div className="text-center p-1.5 bg-green-50 rounded">
-                        <p className="text-sm font-bold text-green-600">
-                          {calculatePerformanceMetrics.completionRate.toFixed(0)}%
-                        </p>
-                        <p className="text-xs text-gray-600">Completion Rate</p>
-                      </div>
-                      <div className="text-center p-1.5 bg-gray-50 rounded">
-                        <p className="text-sm font-bold text-gray-600">
-                          {calculatePerformanceMetrics.answeredQuestions}/{calculatePerformanceMetrics.totalQuestions}
-                        </p>
-                        <p className="text-xs text-gray-600">Questions Answered</p>
-                      </div>
-                      <div className="text-center p-1.5 bg-gray-50 rounded">
-                        <p className="text-sm font-bold text-gray-600">
-                          {selectedEvaluationDetail.sections?.length || 0}
-                        </p>
-                        <p className="text-xs text-gray-600">Total Sections</p>
-                      </div>
-                    </div>
-                    
-                    {/* Rating Distribution */}
-                    <div className="mb-2">
-                      <p className="text-xs font-medium text-gray-700 mb-1.5">Rating Distribution</p>
-                      <div className="flex items-center gap-1.5">
-                        {[5, 4, 3, 2, 1].map((rating) => {
-                          const count = calculatePerformanceMetrics.ratingDistribution[rating] || 0;
-                          const total = calculatePerformanceMetrics.answeredQuestions;
-                          const percentage = total > 0 ? (count / total) * 100 : 0;
-                          return (
-                            <div key={rating} className="flex-1">
-                              <div className="flex items-center justify-between mb-0.5">
-                                <span className="text-xs text-gray-600">{rating}★</span>
-                                <span className="text-xs font-medium text-gray-700">{count}</span>
-                              </div>
-                              <div className="w-full bg-gray-200 rounded-full h-1.5">
-                                <div
-                                  className={`h-1.5 rounded-full ${
-                                    rating === 5 ? 'bg-green-500' :
-                                    rating === 4 ? 'bg-blue-500' :
-                                    rating === 3 ? 'bg-yellow-500' :
-                                    rating === 2 ? 'bg-orange-500' : 'bg-red-500'
-                                  }`}
-                                  style={{ width: `${percentage}%` }}
-                                />
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-
-                    {/* Section Averages */}
-                    {calculatePerformanceMetrics.sectionMetrics.length > 0 && (
-                      <div>
-                        <p className="text-xs font-medium text-gray-700 mb-1.5">Section Averages</p>
-                        <div className="space-y-0.5">
-                          {calculatePerformanceMetrics.sectionMetrics.map((section) => (
-                            <div key={section.label} className="flex items-center justify-between text-xs p-1 bg-gray-50 rounded">
-                              <span className="font-medium text-gray-700">
-                                {section.label}: {section.title}
-                              </span>
-                              <div className="flex items-center gap-1.5">
-                                <span className="text-gray-600">
-                                  {section.answered}/{section.total}
-                                </span>
-                                <span className="font-semibold text-gray-900">
-                                  {section.average > 0 ? section.average.toFixed(2) : "N/A"}
-                                </span>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Evaluation Sections */}
-                {selectedEvaluationDetail.sections && selectedEvaluationDetail.sections.length > 0 ? (
-                  <div className="space-y-2">
-                    {selectedEvaluationDetail.sections.map((section, sectionIndex) => (
-                      <div key={sectionIndex} className="border border-gray-200 rounded p-2 bg-white">
-                        <div className="flex items-center gap-1.5 mb-1.5 pb-1.5 border-b border-gray-100">
-                          <div className="px-1.5 py-0.5 bg-gray-100 text-gray-700 rounded text-xs font-bold">
-                            {section.label}
-                          </div>
-                          <p className="font-semibold text-xs text-gray-900">{section.title}</p>
-                        </div>
-                        {section.description && (
-                          <p className="text-xs text-gray-600 mb-1.5">{section.description}</p>
-                        )}
-                        <div className="space-y-1.5">
-                          {section.questions?.map((question, questionIndex) => (
-                            <div key={questionIndex} className="border border-gray-200 rounded p-1.5 bg-gray-50">
-                              <p className="font-medium text-xs text-gray-900 mb-0.5">
-                                {question.prompt}
-                              </p>
-                              {question.description && (
-                                <p className="text-xs text-gray-500 mb-1">{question.description}</p>
-                              )}
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-1.5">
-                                  {question.rating !== null && question.rating !== undefined ? (
-                                    <>
-                                      <div className="flex items-center gap-0.5">
-                                        {[1, 2, 3, 4, 5].map((star) => (
-                                          <Star
-                                            key={star}
-                                            className={`h-3 w-3 ${
-                                              star <= question.rating
-                                                ? "fill-yellow-400 text-yellow-400"
-                                                : "text-gray-300"
-                                            }`}
-                                          />
-                                        ))}
-                                      </div>
-                                      <span className="text-xs font-semibold text-gray-700">
-                                        {question.rating}/5
-                                      </span>
-                                    </>
-                                  ) : (
-                                    <span className="text-xs text-gray-400">Not rated</span>
-                                  )}
-                                </div>
-                              </div>
-                              {question.comments && (
-                                <div className="mt-1 pt-1 border-t border-gray-200">
-                                  <p className="text-xs text-gray-600">
-                                    <span className="font-medium">Comments: </span>
-                                    {question.comments}
-                                  </p>
-                                </div>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-3 text-xs text-gray-500">
-                    No evaluation sections available yet
-                  </div>
-                )}
-
-                {/* Overall Comments */}
-                {selectedEvaluationDetail.overallComments && (
-                  <div className="border border-gray-200 rounded p-2 bg-white">
-                    <div className="flex items-center gap-1.5 mb-1.5">
-                      <Info className="h-3 w-3 text-gray-600" />
-                      <p className="text-xs font-semibold text-gray-700 uppercase">Overall Comments</p>
-                    </div>
-                    <p className="text-xs text-gray-700 whitespace-pre-wrap">
-                      {selectedEvaluationDetail.overallComments}
-                    </p>
-                  </div>
-                )}
               </div>
             )}
-          </CardContent>
-        </Card>
-      )}
+
+            {/* Student Info */}
+            <div className="border border-gray-200 rounded-lg p-3 bg-white">
+              <div className="flex items-center gap-2 mb-2">
+                <Users className="h-4 w-4 text-gray-600" />
+                <p className="text-sm font-semibold text-gray-700 uppercase">Student Information</p>
+              </div>
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div>
+                  <p className="text-gray-500 mb-1 text-xs">Name</p>
+                  <p className="font-medium text-gray-900">
+                    {selectedEvaluationDetail.studentInfo?.fullName || 
+                     (selectedEvaluationDetail.student?.firstName && selectedEvaluationDetail.student?.lastName 
+                      ? `${selectedEvaluationDetail.student.firstName} ${selectedEvaluationDetail.student.lastName}` 
+                      : "Unknown")}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-gray-500 mb-1 text-xs">Program</p>
+                  <p className="font-medium text-gray-900">
+                    {selectedEvaluationDetail.studentInfo?.program || selectedEvaluationDetail.student?.program || "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-gray-500 mb-1 text-xs">Student ID</p>
+                  <p className="font-medium text-gray-900">
+                    {selectedEvaluationDetail.studentInfo?.studentNumber || selectedEvaluationDetail.student?.studentId || "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-gray-500 mb-1 text-xs">Status</p>
+                  <Badge className={`text-xs ${statusStyles[selectedEvaluationDetail.status] || "bg-gray-100 text-gray-800"}`}>
+                    {selectedEvaluationDetail.status.replace("_", " ")}
+                  </Badge>
+                </div>
+              </div>
+            </div>
+                    
+            {/* Rating Distribution */}
+            {calculatePerformanceMetrics && (
+              <div className="border border-gray-200 rounded-lg p-3 bg-white">
+                <p className="text-sm font-semibold text-gray-700 mb-3">Rating Distribution</p>
+                <div className="flex items-center gap-2">
+                  {[5, 4, 3, 2, 1].map((rating) => {
+                    const count = calculatePerformanceMetrics.ratingDistribution[rating] || 0;
+                    const total = calculatePerformanceMetrics.answeredQuestions;
+                    const percentage = total > 0 ? (count / total) * 100 : 0;
+                    return (
+                      <div key={rating} className="flex-1">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-sm text-gray-700 font-medium">{rating}★</span>
+                          <span className="text-sm font-semibold text-gray-900">{count}</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            className={`h-2 rounded-full ${
+                              rating === 5 ? 'bg-green-500' :
+                              rating === 4 ? 'bg-blue-500' :
+                              rating === 3 ? 'bg-yellow-500' :
+                              rating === 2 ? 'bg-orange-500' : 'bg-red-500'
+                            }`}
+                            style={{ width: `${percentage}%` }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Section Averages */}
+            {calculatePerformanceMetrics && calculatePerformanceMetrics.sectionMetrics.length > 0 && (
+              <div className="border border-gray-200 rounded-lg p-3 bg-white">
+                <p className="text-sm font-semibold text-gray-700 mb-2">Section Averages</p>
+                <div className="space-y-1.5">
+                  {calculatePerformanceMetrics.sectionMetrics.map((section) => (
+                    <div key={section.label} className="flex items-center justify-between text-sm p-2 bg-gray-50 rounded border border-gray-100">
+                      <span className="font-medium text-gray-700">
+                        {section.label}: {section.title}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-600 text-xs">
+                          {section.answered}/{section.total}
+                        </span>
+                        <span className="font-semibold text-gray-900">
+                          {section.average > 0 ? section.average.toFixed(2) : "N/A"}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Evaluation Sections */}
+            {selectedEvaluationDetail.sections && selectedEvaluationDetail.sections.length > 0 ? (
+              <div className="space-y-3">
+                {selectedEvaluationDetail.sections.map((section, sectionIndex) => (
+                  <div key={sectionIndex} className="border border-gray-200 rounded-lg p-3 bg-white">
+                    <div className="flex items-center gap-2 mb-2 pb-2 border-b border-gray-100">
+                      <div className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-sm font-bold">
+                        {section.label}
+                      </div>
+                      <p className="font-semibold text-sm text-gray-900">{section.title}</p>
+                    </div>
+                    {section.description && (
+                      <p className="text-sm text-gray-600 mb-2">{section.description}</p>
+                    )}
+                    <div className="space-y-2">
+                      {section.questions?.map((question, questionIndex) => (
+                        <div key={questionIndex} className="border border-gray-200 rounded p-2 bg-gray-50">
+                          <p className="font-medium text-sm text-gray-900 mb-1">
+                            {question.prompt}
+                          </p>
+                          {question.description && (
+                            <p className="text-xs text-gray-500 mb-2">{question.description}</p>
+                          )}
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              {question.rating !== null && question.rating !== undefined ? (
+                                <>
+                                  <div className="flex items-center gap-0.5">
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                      <Star
+                                        key={star}
+                                        className={`h-4 w-4 ${
+                                          star <= question.rating
+                                            ? "fill-yellow-400 text-yellow-400"
+                                            : "text-gray-300"
+                                        }`}
+                                      />
+                                    ))}
+                                  </div>
+                                  <span className="text-sm font-semibold text-gray-700">
+                                    {question.rating}/5
+                                  </span>
+                                </>
+                              ) : (
+                                <span className="text-sm text-gray-400">Not rated</span>
+                              )}
+                            </div>
+                          </div>
+                          {question.comments && (
+                            <div className="mt-2 pt-2 border-t border-gray-200">
+                              <p className="text-sm text-gray-600">
+                                <span className="font-medium">Comments: </span>
+                                {question.comments}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-6 text-sm text-gray-500">
+                No evaluation sections available yet
+              </div>
+            )}
+
+            {/* Overall Comments */}
+            {selectedEvaluationDetail.overallComments && (
+              <div className="border border-gray-200 rounded-lg p-3 bg-white">
+                <div className="flex items-center gap-2 mb-2">
+                  <Info className="h-4 w-4 text-gray-600" />
+                  <p className="text-sm font-semibold text-gray-700 uppercase">Overall Comments</p>
+                </div>
+                <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                  {selectedEvaluationDetail.overallComments}
+                </p>
+              </div>
+            )}
+          </div>
+        ) : null}
+      </Modal>
     </div>
   ), [evaluationsByCompany, loadingEvaluationsByCompany, loadEvaluationsByCompany, expandedCompanies, handleDeleteEvaluation, selectedEvaluationDetail, loadingEvaluationDetail, calculatePerformanceMetrics, handleViewEvaluationDetail]);
 
